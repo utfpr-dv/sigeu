@@ -1,0 +1,49 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Período Letivo</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmPesquisaPeriodoLetivo" prependId="false">
+			<h2>Período Letivo</h2>
+
+			<table style="border: 10px; spacing: 0px; width: 100%">
+				<tr>
+					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" /> <p:inputText id="textoPesquisa" size="20"
+							value="#{pesquisaPeriodoLetivoBean.textoPesquisa}" /> <p:commandButton id="p1" value="Pesquisar" icon="ui-icon-search" style="width:100px"
+							action="#{pesquisaPeriodoLetivoBean.pesquisa}" update="@form" process="@this textoPesquisa" /></td>
+
+					<td align="right"><p:button value="Novo" outcome="/restrito/periodoletivo/PeriodoLetivo.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
+				</tr>
+			</table>
+
+			<p:dataTable id="periodoLetivoTable" value="#{pesquisaPeriodoLetivoBean.lista}" var="i" style="margin-top: 20px" emptyMessage="Nenhum registro encontrado."
+				rows="7" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+
+				<p:column headerText="ID" style="text-align: center; width: 80px">
+					<h:outputText value="#{i.idPeriodoLetivo}" />
+				</p:column>
+
+				<p:column style="width: 80px; text-align: center" headerText="Data de Início">
+					<h:outputText value="#{i.dataInicio}" converter="dateConverter" />
+				</p:column>
+
+				<p:column style="width: 80px; text-align: center" headerText="Data de Fim">
+					<h:outputText value="#{i.dataFim}" converter="dateConverter" />
+				</p:column>
+
+				<p:column headerText="Nome">
+					<h:outputText value="#{i.nome}" />
+				</p:column>
+
+				<p:column style="width: 104px; text-align: center">
+					<p:button value="Editar" outcome="/restrito/periodoletivo/PeriodoLetivo.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
+						<f:param name="editarId" value="#{i.idPeriodoLetivo}" />
+					</p:button>
+				</p:column>
+
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

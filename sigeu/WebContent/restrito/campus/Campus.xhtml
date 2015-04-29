@@ -1,0 +1,52 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Campus</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmCampus" prependId="false">
+			<h2>Campus</h2>
+
+			<p:panelGrid columns="2" id="painel" style="margin-top: 5px; width: 100%">
+				<p:outputLabel value="ID" />
+				<p:outputLabel value="#{campusBean.campus.idCampus}" id="id" />
+
+				<p:outputLabel value="Instituição" for="pesquisaInstituicao" />
+				<p:autoComplete id="pesquisaInstituicao" forceSelection="true" value="#{campusBean.pesquisaInstituicao}" completeMethod="#{campusBean.selecionaInstituicao}"
+					required="true" minQueryLength="1" queryDelay="250">
+					<p:ajax event="itemSelect" listener="#{campusBean.defineInstituicao}" update="pesquisaInstituicao" />
+				</p:autoComplete>
+
+				<p:outputLabel value="Sigla do Campus" for="sigla" />
+				<p:inputText label="Sigla" value="#{campusBean.campus.sigla}" id="sigla" size="10" maxlength="10" />
+
+				<p:outputLabel value="Nome do Campus" for="nome" />
+				<p:inputText label="Nome" value="#{campusBean.campus.nome}" id="nome" size="100" maxlength="200" />
+
+				<p:outputLabel value="URL Logo" for="url" />
+				<p:inputText label="URL" value="#{campusBean.campus.urlLogo}" id="url" size="100" maxlength="1024" />
+
+				<p:outputLabel value="Ativo" for="ativo" />
+				<p:selectBooleanCheckbox id="ativo" value="#{campusBean.campus.ativo}" onLabel="Ativo" offLabel="Inativo" onIcon="ui-icon-check" offIcon="ui-icon-close"
+					style="width:80px" />
+
+			</p:panelGrid>
+
+			<div id="buttons" style="margin-top: 15px">
+				<p:commandButton value="Salvar" id="botaoSalvar" action="#{campusBean.gravar}" icon="ui-icon-disk" style="width:100px" process="@form" update="@form" />
+				<p:commandButton value="Excluir" id="botaoExcluir" actionListener="#{campusBean.excluir}" icon="ui-icon-trash" update="@form" process="@this"
+					style="width:100px">
+					<p:confirm header="Excluir" message="Confirma exclusão?" icon="ui-icon-alert" />
+				</p:commandButton>
+				<p:commandButton value="Cancelar" id="botaoCancelar" onclick="history.go(-1)" icon="ui-icon-arrowreturn-1-w" style="width:100px" process="@this" />
+			</div>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

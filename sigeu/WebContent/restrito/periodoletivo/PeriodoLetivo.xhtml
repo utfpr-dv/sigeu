@@ -1,0 +1,42 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Período Letivo</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmPeriodoLetivo" prependId="false">
+			<h2>Período Letivo</h2>
+
+			<p:panelGrid columns="2" id="painel" style="margin-top: 5px; width: 100%">
+				<p:outputLabel value="ID" />
+				<p:outputLabel value="#{periodoLetivoBean.periodoLetivo.idPeriodoLetivo}" id="id" />
+
+				<p:outputLabel value="Nome" for="nome" />
+				<p:inputText label="Nome" id="nome" value="#{periodoLetivoBean.periodoLetivo.nome}" required="true" maxlength="32" size="32" />
+
+				<p:outputLabel value="Data de Início" for="datai" />
+				<p:calendar label="Data de Início" id="datai" pattern="dd/MM/yyyy" mask="true" value="#{periodoLetivoBean.periodoLetivo.dataInicio}" showOn="button"
+					required="true" />
+
+				<p:outputLabel value="Data de Fim" for="dataf" />
+				<p:calendar label="Data de Fim" id="dataf" pattern="dd/MM/yyyy" mask="true" value="#{periodoLetivoBean.periodoLetivo.dataFim}" showOn="button" required="true" />
+			</p:panelGrid>
+
+			<div id="buttons" style="margin-top: 15px">
+				<p:commandButton value="Salvar" id="botaoSalvar" action="#{periodoLetivoBean.gravar}" icon="ui-icon-disk" style="width:100px" process="@form" update="@form" />
+				<p:commandButton value="Excluir" id="botaoExcluir" actionListener="#{periodoLetivoBean.excluir}" icon="ui-icon-trash" update="@form" process="@this"
+					style="width:100px">
+					<p:confirm header="Excluir" message="Confirma exclusão?" icon="ui-icon-alert" />
+				</p:commandButton>
+				<p:commandButton value="Cancelar" id="botaoCancelar" onclick="history.go(-1)" icon="ui-icon-arrowreturn-1-w" style="width:100px" process="@this" />
+			</div>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

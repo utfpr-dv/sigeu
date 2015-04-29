@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta charset="UTF-8" />
+	<h:outputStylesheet library="css" name="default.css" />
+	<title><ui:insert name="titulo">SIGEU - Sistema Integrado de Gestão Universitária</ui:insert></title>
+	<h:outputScript library="js" name="jquery.maskMoney.js" />
+	<style>
+</style>
+</h:head>
+<h:body>
+	<div>
+		<p:ajaxStatus styleClass="ajax-status" onsuccess="configurarMoeda()">
+			<f:facet name="start">
+				<div style="position: absolute; right: 0; top: 0;">
+					<h:graphicImage library="img" name="aguarde.gif" style="" />
+				</div>
+			</f:facet>
+			<f:facet name="complete">
+				<h:outputText value="" />
+			</f:facet>
+		</p:ajaxStatus>
+
+		<header>
+			<p:messages id="messages" showDetail="false" autoUpdate="true" closable="true" />
+		</header>
+
+		<div id="conteudo" style="background-color: #FFF">
+			<ui:insert name="corpo" />
+		</div>
+	</div>
+	<script>
+		function configurarMoeda() {
+			$(".moeda").maskMoney({
+				decimal : ",",
+				thousands : ".",
+				allowZero : true
+			});
+		}
+
+		$(document).ready(function() {
+			configurarMoeda();
+		});
+	</script>
+</h:body>
+
+</html>

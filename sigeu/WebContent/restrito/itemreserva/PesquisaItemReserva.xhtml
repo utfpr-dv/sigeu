@@ -1,0 +1,52 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Itens de Reserva</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmPesquisaItemReserva" prependId="false">
+			<h2>Pesquisa de Item de Reserva</h2>
+
+			<table style="border: 10px; spacing: 0px; width: 100%">
+				<tr>
+					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" /> <p:inputText id="textoPesquisa" size="64"
+							value="#{pesquisaItemReservaBean.textoPesquisa}" /> <p:commandButton value="Pesquisar" icon="ui-icon-search" style="width:100px"
+							action="#{pesquisaItemReservaBean.pesquisa}" update="@form" /></td>
+					<td align="right"><p:button value="Novo" outcome="/restrito/itemreserva/ItemReserva.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
+				</tr>
+			</table>
+
+			<p:dataTable id="ItemReservaTable" value="#{pesquisaItemReservaBean.lista}" var="i" style="margin-top: 20px" emptyMessage="Nenhum registro encontrado."
+				rows="7" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+
+				<p:column headerText="ID" style="text-align: center; width: 80px">
+					<h:outputText value="#{i.idItemReserva}" />
+				</p:column>
+
+				<p:column headerText="Categoria">
+					<h:outputText value="#{i.idCategoria.nome}" />
+				</p:column>
+
+				<p:column headerText="Descrição">
+					<h:outputText value="#{i.nome}" />
+				</p:column>
+
+				<p:column headerText="Patrimônio">
+					<h:outputText value="#{i.patrimonio}" />
+				</p:column>
+
+				<p:column headerText="Ativo" style="text-align: center; width: 80px">
+					<p:selectBooleanCheckbox value="#{i.ativo}" disabled="true" />
+				</p:column>
+
+				<p:column style="width: 104px; text-align: center">
+					<p:button value="Editar" outcome="/restrito/itemreserva/ItemReserva.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
+						<f:param name="editarId" value="#{i.idItemReserva}" />
+					</p:button>
+				</p:column>
+
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,59 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Pessoa</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmPesquisaPessoa" prependId="false">
+			<h2>Pesquisa Pessoa</h2>
+
+			<table style="border: 10px; spacing: 0px; width: 100%">
+				<tr>
+					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" /> <p:inputText id="textoPesquisa" size="64" value="#{pesquisaPessoaBean.textoPesquisa}" />
+						<p:commandButton value="Pesquisar" icon="ui-icon-search" style="width:100px" action="#{pesquisaPessoaBean.pesquisa}" update="@form" /></td>
+				</tr>
+			</table>
+
+			<p:dataTable id="entTable" value="#{pesquisaPessoaBean.lista}" var="ent" style="margin-top: 20px" emptyMessage="Nenhum registro encontrado." rows="7"
+				paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+
+				<p:column headerText="ID" style="text-align: center; width: 80px">
+					<h:outputText value="#{ent.idPessoa}" />
+				</p:column>
+
+				<p:column headerText="Instituição">
+					<h:outputText value="#{ent.idCampus.idInstituicao.sigla} - #{ent.idCampus.idInstituicao.nome}" />
+				</p:column>
+
+				<p:column headerText="Campus">
+					<h:outputText value="#{ent.idCampus.sigla} - #{ent.idCampus.nome}" />
+				</p:column>
+
+				<p:column headerText="E-Mail">
+					<h:outputText value="#{ent.email}" />
+				</p:column>
+
+				<p:column headerText="Nome Completo">
+					<h:outputText value="#{ent.nomeCompleto}" />
+				</p:column>
+
+				<p:column headerText="Ativo" style="text-align: center; width: 80px">
+					<p:selectBooleanCheckbox value="#{ent.ativo}" disabled="true" />
+				</p:column>
+
+				<p:column style="width: 104px; text-align: center">
+					<p:button value="Editar" outcome="/restrito/pessoa/Pessoa.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
+						<f:param name="editarId" value="#{ent.idPessoa}" />
+					</p:button>
+				</p:column>
+
+			</p:dataTable>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

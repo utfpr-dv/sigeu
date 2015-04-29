@@ -1,0 +1,54 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Feriados</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmPesquisaFeriado" prependId="false">
+			<h2>Feriados</h2>
+
+			<table style="border: 10px; spacing: 0px; width: 100%">
+				<tr>
+					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" /> <p:inputText id="textoPesquisa" size="20" value="#{pesquisaFeriadoBean.textoPesquisa}" />
+						<p:commandButton id="p1" value="Pesquisar" icon="ui-icon-search" style="width:100px" action="#{pesquisaFeriadoBean.pesquisa}" update="@form"
+							process="@this textoPesquisa" /></td>
+					<td><p:outputLabel value="Período de " /> <p:calendar label="Data Inicial" id="dataInicial" value="#{pesquisaFeriadoBean.dataInicial}" showOn="button" size="10"
+							pattern="dd/MM/yyyy" mask="true" required="true" requiredMessage="Preencha data inicial e final para pesquisa por período" /> <p:outputLabel value=" a " />
+						<p:calendar label="Data Final" id="dataFinal" value="#{pesquisaFeriadoBean.dataFinal}" showOn="button" size="10" pattern="dd/MM/yyyy" mask="true" required="true"
+							requiredMessage="Preencha data inicial e final para pesquisa por período" /> 
+							<p:commandButton id="p2" value="Pesquisar" icon="ui-icon-search"
+							style="width:100px" action="#{pesquisaFeriadoBean.pesquisaPorData}" update="@form" process="@this dataInicial dataFinal" /></td>
+					<td align="right"><p:button value="Novo" outcome="/restrito/feriado/Feriado.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
+				</tr>
+			</table>
+
+			<p:dataTable id="feriadoTable" value="#{pesquisaFeriadoBean.lista}" var="i" style="margin-top: 20px" emptyMessage="Nenhum registro encontrado." rows="7"
+				paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+
+				<p:column headerText="ID" style="text-align: center; width: 80px">
+					<h:outputText value="#{i.idFeriado}" />
+				</p:column>
+
+				<p:column style="width: 80px; text-align: center" headerText="Data">
+					<h:outputText value="#{i.dataFormatada}" />
+				</p:column>
+
+				<p:column headerText="Descrição">
+					<h:outputText value="#{i.descricao}" />
+				</p:column>
+
+				<p:column headerText="Tipo" style="width: 100px;">
+					<h:outputText value="#{i.tipoLabel}" />
+				</p:column>
+
+				<p:column style="width: 104px; text-align: center">
+					<p:button value="Editar" outcome="/restrito/feriado/Feriado.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
+						<f:param name="editarId" value="#{i.idFeriado}" />
+					</p:button>
+				</p:column>
+
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

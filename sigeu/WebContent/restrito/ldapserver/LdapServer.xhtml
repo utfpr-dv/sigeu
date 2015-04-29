@@ -1,0 +1,81 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: LdapServer</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmLdapServer" prependId="false">
+			<h2>LdapServer</h2>
+
+			<p:panelGrid columns="2" id="painel" style="margin-top: 5px; width: 100%">
+				<p:outputLabel value="ID" />
+				<p:outputLabel value="#{ldapServerBean.ldapServer.idServer}" id="id" />
+
+				<p:outputLabel value="Instituição" for="pesquisaInstituicao" />
+				<p:autoComplete id="pesquisaInstituicao" forceSelection="true" value="#{ldapServerBean.pesquisaInstituicao}"
+					completeMethod="#{ldapServerBean.selecionaInstituicao}" minQueryLength="2" required="true">
+					<p:ajax event="itemSelect" listener="#{ldapServerBean.defineInstituicao}" update="pesquisaInstituicao pesquisaCampus" />
+				</p:autoComplete>
+
+				<p:outputLabel value="Campus" for="pesquisaCampus" />
+				<p:autoComplete id="pesquisaCampus" forceSelection="true" value="#{ldapServerBean.pesquisaCampus}" completeMethod="#{ldapServerBean.selecionaCampus}"
+					minQueryLength="2" required="true">
+					<p:ajax event="itemSelect" listener="#{ldapServerBean.defineCampus}" update="pesquisaCampus" />
+				</p:autoComplete>
+
+				<p:outputLabel value="Host" for="host" />
+				<p:inputText label="host" value="#{ldapServerBean.ldapServer.host}" id="host" size="100" maxlength="256" required="true" />
+
+				<p:outputLabel value="Porta" for="port" />
+				<p:spinner id="port" value="#{ldapServerBean.ldapServer.port}" prefix="" min="1" max="65536" required="true" />
+
+				<p:outputLabel value="Usa SSL" for="ssl" />
+				<p:selectBooleanCheckbox id="ssl" value="#{ldapServerBean.ldapServer.ssl}" onLabel="Usa SSL" offLabel="Não usa SSL" onIcon="ui-icon-check"
+					offIcon="ui-icon-close" style="width:80px" />
+
+				<p:outputLabel value="DN Base" for="baseDn" />
+				<p:inputText label="DN Base" value="#{ldapServerBean.ldapServer.basedn}" id="baseDn" size="100" maxlength="2000" required="true" />
+
+				<p:outputLabel value="Sufixo de E-mail (com '@')" for="sufixoEmail" />
+				<p:inputText label="Sufixo de E-mail" value="#{ldapServerBean.ldapServer.sufixoEmail}" id="sufixoEmail" size="100" maxlength="256" required="true" />
+
+				<p:outputLabel value="Variável Nome Completo" for="varNomeCompleto" />
+				<p:inputText label="Variável Nome Completo" value="#{ldapServerBean.ldapServer.varLdapNomeCompleto}" id="varNomeCompleto" size="32" maxlength="32"
+					required="false" />
+
+				<p:outputLabel value="Variável E-Mail" for="varEmail" />
+				<p:inputText label="Variável E-Mail" value="#{ldapServerBean.ldapServer.varLdapEmail}" id="varEmail" size="32" maxlength="32" required="false" />
+
+				<p:outputLabel value="Variável CNPJ/CPF" for="varCpf" />
+				<p:inputText label="Variável CNPJ/CPF" value="#{ldapServerBean.ldapServer.varLdapCnpjCpf}" id="varCpf" size="32" maxlength="32" required="false" />
+
+				<p:outputLabel value="Variável Matrícula" for="varMat" />
+				<p:inputText label="Variável Matrícula" value="#{ldapServerBean.ldapServer.varLdapMatricula}" id="varMat" size="32" maxlength="32" required="false" />
+
+				<p:outputLabel value="Variável UID" for="varUid" />
+				<p:inputText label="Variável UID" value="#{ldapServerBean.ldapServer.varLdapUid}" id="varUid" size="32" maxlength="32" required="false" />
+
+				<p:outputLabel value="Ativo" for="ativo" />
+				<p:selectBooleanCheckbox id="ativo" value="#{ldapServerBean.ldapServer.ativo}" onLabel="Ativo" offLabel="Inativo" onIcon="ui-icon-check"
+					offIcon="ui-icon-close" style="width:80px" />
+
+			</p:panelGrid>
+
+			<div id="buttons" style="margin-top: 15px">
+				<p:commandButton value="Salvar" id="botaoSalvar" action="#{ldapServerBean.gravar}" icon="ui-icon-disk" style="width:100px" process="@form" update="@form" />
+				<p:commandButton value="Excluir" id="botaoExcluir" actionListener="#{ldapServerBean.excluir}" icon="ui-icon-trash" update="@form" process="@this"
+					style="width:100px">
+					<p:confirm header="Excluir" message="Confirma exclusão?" icon="ui-icon-alert" />
+				</p:commandButton>
+				<p:commandButton value="Cancelar" id="botaoCancelar" onclick="history.go(-1)" icon="ui-icon-arrowreturn-1-w" style="width:100px" process="@this" />
+			</div>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

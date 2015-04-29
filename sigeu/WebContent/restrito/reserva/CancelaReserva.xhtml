@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta charset="UTF-8" />
+	<h:outputStylesheet
+		library="css"
+		name="default.css" />
+	<title><ui:insert name="titulo">SIGEU - Sistema Integrado de Gestão Universitária</ui:insert></title>
+</h:head>
+<h:body>
+	<script>
+		function btn_disable() {
+			b1 = document.getElementById("idb1");
+			b2 = document.getElementById("idb2");
+
+			b1.disabled = !b1.disabled;
+			b2.disabled = !b2.disabled;
+		}
+	</script>
+	<h2>Confirme as reservas relacionadas a serem excluídas</h2>
+	<h:form
+		id="frmCancelaReserva"
+		prependId="false">
+		<p:dataTable
+			id="cancelaReservasTable"
+			value="#{cancelaReservaBean.listaReservaVO}"
+			var="i"
+			style="margin-top: 5px"
+			emptyMessage="Nenhum registro encontrado."
+			rows="6"
+			paginator="true"
+			paginatorAlwaysVisible="true"
+			paginatorPosition="bottom">
+			<p:column
+				headerText="Excluir"
+				style="text-align: center; width: 40px">
+				<p:selectBooleanCheckbox value="#{i.excluir}" />
+			</p:column>
+			<p:column
+				headerText="Data"
+				style="text-align: center; width: 70px">
+				<h:outputText value="#{i.dataReserva}" />
+			</p:column>
+			<p:column
+				headerText="Recurso/Item"
+				style="text-align: center; width: 200px">
+				<h:outputText value="#{i.nomeItemReserva}" />
+			</p:column>
+			<p:column
+				headerText="Horário"
+				style="text-align: center; width: 70px">
+				<h:outputText value="#{i.horaReserva}" />
+			</p:column>
+			<p:column headerText="Usuário">
+				<h:outputText value="#{i.usuarioReserva}" />
+			</p:column>
+		</p:dataTable>
+		<div
+			id="divButtons"
+			style="margin-top: 10px">
+			<p:commandButton
+				id="idb1"
+				value="Excluir"
+				icon="ui-icon-trash"
+				style="width:100px;"
+				action="#{cancelaReservaBean.excluiReservas}"
+				update="@form"
+				onclick="btn_disable()" />
+			<p:commandButton
+				id="idb2"
+				value="Cancelar"
+				icon="ui-icon-arrowreturn-1-w"
+				style="width:100px;"
+				action="#{cancelaReservaBean.fechaModal}"
+				update="@form"
+				onclick="btn_disable()" />
+		</div>
+	</h:form>
+</h:body>
+</html>

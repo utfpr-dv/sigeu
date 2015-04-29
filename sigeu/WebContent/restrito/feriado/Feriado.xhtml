@@ -1,0 +1,44 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Feriado</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmFeriado" prependId="false">
+			<h2>Feriados e Recessos</h2>
+
+			<p:panelGrid columns="2" id="painel" style="margin-top: 5px; width: 100%">
+				<p:outputLabel value="ID" />
+				<p:outputLabel value="#{feriadoBean.feriado.idFeriado}" id="id" />
+
+				<p:outputLabel value="Data" for="data" />
+				<p:calendar label="Data" id="data" value="#{feriadoBean.feriado.data}" mode="inline" required="true" />
+
+				<p:outputLabel value="Tipo" for="tipo" />
+				<p:selectOneRadio label="Tipo" id="tipo" value="#{feriadoBean.feriado.tipo}" required="true">
+					<f:selectItem itemLabel="Feriado" itemValue="F" />
+					<f:selectItem itemLabel="Recesso" itemValue="R" />
+				</p:selectOneRadio>
+
+				<p:outputLabel value="Descrição" for="desc" />
+				<p:inputText label="Descrição" value="#{feriadoBean.feriado.descricao}" id="desc" size="80" maxlength="128" />
+			</p:panelGrid>
+
+			<div id="buttons" style="margin-top: 15px">
+				<p:commandButton value="Salvar" id="botaoSalvar" action="#{feriadoBean.gravar}" icon="ui-icon-disk" style="width:100px" process="@form" update="@form" />
+				<p:commandButton value="Excluir" id="botaoExcluir" actionListener="#{feriadoBean.excluir}" icon="ui-icon-trash" update="@form" process="@this"
+					style="width:100px">
+					<p:confirm header="Excluir" message="Confirma exclusão?" icon="ui-icon-alert" />
+				</p:commandButton>
+				<p:commandButton value="Cancelar" id="botaoCancelar" onclick="history.go(-1)" icon="ui-icon-arrowreturn-1-w" style="width:100px" process="@this" />
+			</div>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>
