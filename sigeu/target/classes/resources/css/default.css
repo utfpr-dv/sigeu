@@ -1,0 +1,129 @@
+h2 {
+	font-family: Arial, Helvetica, Sans-serif;
+	color: #BABACA;
+	margin: 15px 0px 10px 0px;
+}
+
+.ui-widget {
+	font-size: 8pt !important;
+	font-family: Arial, Helvetica, Sans-serif !important;
+}
+
+.ui-widget .ui-widget {
+	font-size: 8pt !important;
+	font-family: Arial, Helvetica, Sans-serif !important;
+}
+
+.ui-helper-reset {
+	font-size: 8pt !important;
+	font-family: Arial, Helvetica, Sans-serif !important;
+}
+
+.bodyBackground {
+	background-image: url("#{resource['img/fundo.png']}");
+	background-color: #cccccc;
+}
+
+.header {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+.tableDiv {
+	width: 100%;
+	border: 0px;
+	border-color: #000;
+	border-style: solid;
+	spacing: 0px;
+}
+
+.headerLogo {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	background-color: #FFF;
+}
+
+.headerInfo {
+	background-color: #FFF;
+	text-align: right;
+	padding-right: 0px;
+}
+
+#login-dialog {
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 100px;
+}
+
+.gridLogin tr, .gridLogin td {
+	border-width: 0px !important;
+}
+
+.footer.ui-layout-pane .ui-layout-unit-content.ui-widget-content {
+	background-color: #EEEE11;
+	padding: 0px;
+}
+
+.footer.ui-corner-all {
+	background-color: #EEEE11;
+	border-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
+
+.footer.ui-widget-content {
+	background-color: #EEEE11;
+	padding: 0px;
+}
+
+#mainBody {
+	/*width: 1024px;
+	margin-left: auto;
+	margin-right: auto;*/
+	margin-left: 20px;
+	margin-right: 20px;
+	background-color: #FFF;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding: 10px;
+}
+
+.gridLabel {
+	/*width: 120px;*/
+	text-align: right;
+}
+
+.gridColumn {
+	margin: 0 px;
+}
+
+.gridPanelWithoutLines tr, .gridPanelWithoutLines td {
+	border: none !important;
+	border-style: none !important
+}
+
+.gridPanelNoBorder tr, .gridPanelNoBorder td {
+	border: none !important;
+	padding: 0px 10px 0px 0px !important;
+}
+
+.ui-panelgrid tr, .ui-panelgrid td {
+	border: none !important;
+	border-style: none !important
+}
+
+#waitgif {
+	background-color: white;
+	border: 3px solid orange;
+	overflow: auto;
+	position: fixed;
+	right: 0px;
+	top: 0px;
+	vertical-align: middle;
+	width: 300px;
+	z-index: 1002;
+}

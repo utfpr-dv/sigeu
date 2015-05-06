@@ -25,6 +25,7 @@ public class CancelaReservaBean extends JavaBean {
 	private static final long serialVersionUID = 6166875342336109321L;
 
 	private List<ReservaVO> listaReservaVO;
+	private String motivoCancelamento;
 
 	public CancelaReservaBean() {
 		super();
@@ -86,7 +87,7 @@ public class CancelaReservaBean extends JavaBean {
 			}
 
 			try {
-				mail = ReservaService.criaEmailCancelamento(listExcluir);
+				mail = ReservaService.criaEmailCancelamento(listExcluir, motivoCancelamento);
 			} catch (Exception e) {
 				addErrorMessage("Erro", "Erro ao tentar criar e-mail de exclusão de reserva.");
 				e.printStackTrace();
@@ -153,6 +154,14 @@ public class CancelaReservaBean extends JavaBean {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public String getMotivoCancelamento() {
+		return motivoCancelamento;
+	}
+
+	public void setMotivoCancelamento(String motivoCancelamento) {
+		this.motivoCancelamento = motivoCancelamento;
 	}
 
 }

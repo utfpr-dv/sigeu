@@ -119,9 +119,10 @@ public class ReservaService {
 	 * Envia 1 e-mail informando o cancelamento das reservas
 	 * 
 	 * @param listaReserva
+	 * @param motivoCancelamento
 	 * @throws Exception
 	 */
-	public static MensagemEmail criaEmailCancelamento(List<Reserva> listaReserva) throws Exception {
+	public static MensagemEmail criaEmailCancelamento(List<Reserva> listaReserva, String motivoCancelamento) throws Exception {
 		MensagemEmail email = new MensagemEmail();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
@@ -151,9 +152,10 @@ public class ReservaService {
 				sb.append(" (").append(r.getIdTipoReserva().getDescricao()).append(")\n\n");
 				sb.append(r.getIdItemReserva().getNome()).append("\n");
 				sb.append(diaDaSemana).append(", ").append(data).append(" ").append(horario).append("\n\n");
-				sb.append("Motivo:\n").append(motivo).append("\n\n\n");
+				sb.append("Motivo da Reserva:\n").append(motivo).append("\n\n\n");
 				sb.append("Cancelamento de reserva ").append("#").append(r.getIdReserva()).append(" feita por ");
 				sb.append(pessoa.getNomeCompleto().trim().toUpperCase()).append("\n\n");
+				sb.append("Motivo do Cancelamento:\n").append(motivoCancelamento).append("\n\n");
 				sb.append("Este é um e-mail automático enviado pelo SIGEU - Sistema de Gestão Universitária");
 
 				email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto, sb.toString());

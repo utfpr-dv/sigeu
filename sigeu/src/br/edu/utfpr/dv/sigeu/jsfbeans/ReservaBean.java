@@ -1,6 +1,5 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -437,32 +436,6 @@ public class ReservaBean extends JavaBean {
 		RequestContext.getCurrentInstance().openDialog("CancelaReserva", options, args);
 	}
 
-	/**
-	 * Exclui a reserva
-	 * 
-	 * @param r
-	 */
-	public void excluiReserva0(Reserva r) {
-		try {
-			Date lastReserva = ReservaService.verificaReservaRecorrente(r);
-
-			if (lastReserva == null) {
-				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-				String msg = "Reserva de " + r.getIdItemReserva().getNome() + " em " + sdf.format(r.getData()) + " cancelada com sucesso!";
-				ReservaService.excluir(r);
-				addInfoMessage("Cancelamento", msg);
-			} else {
-
-			}
-
-			limpa(true, false);
-
-			pesquisa();
-		} catch (Exception e) {
-			addErrorMessage("Cancelamento", "Houve um erro ao tentar cancelar a reserva. Informe ao admin do sistema.");
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Cancela a gravação de reserva e volta à tela de pesquisa
