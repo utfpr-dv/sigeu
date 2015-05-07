@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import br.edu.utfpr.dv.sigeu.enumeration.RepeticaoReservaEnum;
 import br.edu.utfpr.dv.sigeu.exception.DestinatarioInexistenteException;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
+import br.edu.utfpr.dv.sigeu.sort.ReservaDataComparator;
 import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
@@ -57,11 +59,13 @@ public class ReservaService {
 	 * @param listaReserva
 	 * @throws Exception
 	 */
-	public static MensagemEmail criaEmailConfirmacao(List<Reserva> listaReserva) throws Exception {
+	public static void enviaEmailConfirmacao(List<Reserva> listaReserva) throws Exception {
 		MensagemEmail email = new MensagemEmail();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
+		Collections.sort(listaReserva, new ReservaDataComparator());
+		
 		try {
 			for (Reserva r : listaReserva) {
 				String emailUsuario = r.getIdUsuario().getEmail();
@@ -93,13 +97,12 @@ public class ReservaService {
 				email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto, sb.toString());
 			}
 
-			return email;
+			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e1) {
 			e1.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 
 	/**
@@ -109,10 +112,11 @@ public class ReservaService {
 	 * @param reserva
 	 * @throws Exception
 	 */
-	public static MensagemEmail criaEmailConfirmacao(Reserva reserva) throws Exception {
+	public static void enviaEmailConfirmacao(Reserva reserva) throws Exception {
 		List<Reserva> lr = new ArrayList<Reserva>();
 		lr.add(reserva);
-		return ReservaService.criaEmailConfirmacao(lr);
+		
+		ReservaService.enviaEmailConfirmacao(lr);
 	}
 
 	/**
@@ -129,6 +133,8 @@ public class ReservaService {
 
 		Pessoa pessoa = Config.getInstance().getPessoaLogin();
 
+		Collections.sort(listaReserva, new ReservaDataComparator());
+		
 		try {
 			for (Reserva r : listaReserva) {
 				String emailUsuario = r.getIdUsuario().getEmail();

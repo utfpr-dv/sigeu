@@ -3,16 +3,13 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
 import org.apache.commons.io.IOUtils;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -33,6 +30,7 @@ import br.edu.utfpr.dv.sigeu.service.PessoaService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
 import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
+import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.StringUtils;
 
@@ -89,6 +87,10 @@ public class ReservaBean extends JavaBean {
 	private List<CategoriaItemReserva> listaCategoriaItemReserva;
 	private List<String> categorias;
 	private List<ItemReserva> listaItemReserva;
+
+	// Atributos para cancelamento
+	private List<ReservaVO> listaReservaVO;
+	private String motivoCancelamento;
 
 	public ReservaBean() {
 		super();
@@ -374,13 +376,14 @@ public class ReservaBean extends JavaBean {
 					ReservaService.gravar(reserva);
 
 					// Envia e-mail de confirmação
-					MensagemEmail mail = ReservaService.criaEmailConfirmacao(reserva);
-					mail.enviaMensagens();
+					ReservaService.enviaEmailConfirmacao(reserva);
 
 					addInfoMessage("Reserva", "Reserva de " + itemReservaGravacao.getNome() + " realizada com sucesso!");
 
 					// Limpa todos os campos de listas
 					this.limpa(true, false);
+
+					this.showTab = 1;
 
 				} catch (Exception e) {
 					addWarnMessage("Gravar", "Houve um erro ao tentar gravar a reserva. Tente novamente.");
@@ -403,13 +406,15 @@ public class ReservaBean extends JavaBean {
 			List<Reserva> lista = ReservaService.gravarRecorrente(reserva, repeticaoReservaEnum, campoDataFimRepete);
 
 			// Envia e-mails das reservas
-			MensagemEmail mail = ReservaService.criaEmailConfirmacao(lista);
-			mail.enviaMensagens();
-			
+			ReservaService.enviaEmailConfirmacao(lista);
+
 			addInfoMessage("Reserva", "Reserva de " + itemReservaGravacao.getNome() + " realizada com sucesso!");
 
 			// Limpa todos os campos de listas
 			this.limpa(true, false);
+
+			this.showTab = 1;
+
 		} catch (ExisteReservaConcorrenteException e) {
 			String msg = "Há uma reserva concorrente para as datas subsequentes. Possivelmente foi gravada por outro usuário após a pesquisa. Refaça a pesquisa e tente novamente.";
 			addWarnMessage("Gravar", msg);
@@ -420,22 +425,6 @@ public class ReservaBean extends JavaBean {
 			e.printStackTrace();
 		}
 	}
-
-	public void excluirReserva(Reserva r) {
-		Map<String, Object> options = new HashMap<String, Object>();
-		Map<String, List<String>> args = new HashMap<String, List<String>>();
-		List<String> transCode = new ArrayList<String>();
-		options.put("modal", true);
-		options.put("resizable", false);
-		// options.put("contentHeight", 500);
-		options.put("contentWidth", 900);
-
-		transCode.add(r.getIdTransacao().getIdTransacao().toString());
-		args.put("trans", transCode);
-
-		RequestContext.getCurrentInstance().openDialog("CancelaReserva", options, args);
-	}
-
 
 	/**
 	 * Cancela a gravação de reserva e volta à tela de pesquisa
@@ -557,6 +546,88 @@ public class ReservaBean extends JavaBean {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void excluirReserva(Reserva r) {
+		// Map<String, Object> options = new HashMap<String, Object>();
+		// Map<String, List<String>> args = new HashMap<String, List<String>>();
+		// List<String> transCode = new ArrayList<String>();
+		// options.put("modal", true);
+		// options.put("resizable", false);
+		// // options.put("contentHeight", 500);
+		// options.put("contentWidth", 900);
+		//
+		// transCode.add(r.getIdTransacao().getIdTransacao().toString());
+		// args.put("trans", transCode);
+		//
+		// System.out.println("Passo 1");
+		// RequestContext.getCurrentInstance().openDialog("CancelaReserva",
+		// options, args);
+		// System.out.println("Passo 2");
+		listaReservaVO = ReservaService.listaReservaPorTransacao(Config.getInstance().getCampus(), r.getIdTransacao().getIdTransacao());
+		this.showTab = 3;
+	}
+
+	/**
+	 * Exclui todas as reservas marcadas
+	 */
+	public void excluiReservas() {
+		if (this.motivoCancelamento == null || this.motivoCancelamento.trim().length() == 0) {
+			this.addWarnMessage("Cancelamento", "Motivo do cancelamento não preenchido!");
+		} else {
+			if (listaReservaVO != null) {
+				MensagemEmail mail = null;
+				List<Reserva> listExcluir = new ArrayList<Reserva>();
+
+				for (ReservaVO vo : listaReservaVO) {
+					if (vo.isExcluir()) {
+						try {
+							listExcluir.add(ReservaService.pesquisaReservaPorId(vo.getIdReserva()));
+						} catch (Exception e) {
+							addErrorMessage("Erro", "Erro ao tentar carregar reserva " + vo.getIdReserva() + " de " + vo.getDataReserva());
+						}
+					}
+				}
+
+				try {
+					mail = ReservaService.criaEmailCancelamento(listExcluir, motivoCancelamento);
+				} catch (Exception e) {
+					addErrorMessage("Erro", "Erro ao tentar criar e-mail de exclusão de reserva.");
+					e.printStackTrace();
+				}
+
+				for (Reserva r : listExcluir) {
+					try {
+						ReservaService.excluir(r);
+					} catch (Exception e) {
+						addErrorMessage("Erro", "Erro ao tentar excluir reserva " + r.getIdReserva());
+						e.printStackTrace();
+					}
+				}
+
+				this.showTab = 1;
+				this.motivoCancelamento = "";
+
+				try {
+					mail.enviaMensagens();
+				} catch (Exception e) {
+					addErrorMessage("Erro", "Erro ao tentar enviar e-mails");
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+
+	/**
+	 * Exclui todas as reservas selecionadas
+	 */
+	public void excluiReservasTodas() {
+		for (ReservaVO vo : listaReservaVO) {
+			vo.setExcluir(true);
+		}
+
+		this.excluiReservas();
 	}
 
 	/**********************************************************************************/
@@ -833,5 +904,20 @@ public class ReservaBean extends JavaBean {
 		this.repeticaoReservaEnum = repeticaoReservaEnum;
 	}
 
+	public List<ReservaVO> getListaReservaVO() {
+		return listaReservaVO;
+	}
+
+	public void setListaReservaVO(List<ReservaVO> listaReservaVO) {
+		this.listaReservaVO = listaReservaVO;
+	}
+
+	public String getMotivoCancelamento() {
+		return motivoCancelamento;
+	}
+
+	public void setMotivoCancelamento(String motivoCancelamento) {
+		this.motivoCancelamento = motivoCancelamento;
+	}
 
 }

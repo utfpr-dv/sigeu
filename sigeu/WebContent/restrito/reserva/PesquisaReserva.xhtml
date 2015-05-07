@@ -1,256 +1,105 @@
-<ui:composition
-	template="/WEB-INF/template/template.xhtml"
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
 	<ui:define name="titulo">SIGEU: Reserva</ui:define>
 	<ui:define name="corpo">
 		<h2>Reservas</h2>
-		<h:form
-			id="frmPesquisaReserva"
-			prependId="false">
+		<h:form id="frmPesquisaReserva" prependId="false">
 			<p:tabView style="margin-top:15px">
-				<p:tab
-					id="tabPesquisa"
-					title="Informações da Reserva"
-					rendered="#{reservaBean.showTab eq 1}">
+				<p:tab id="tabPesquisa" title="Informações da Reserva" rendered="#{reservaBean.showTab eq 1}">
 					<p:panelGrid columns="8">
-						<p:outputLabel
-							value="Data"
-							for="data" />
-						<p:calendar
-							label="Data da Reserva"
-							id="data"
-							value="#{reservaBean.campoData}"
-							showOn="button"
-							size="6"
-							pattern="dd/MM/yyyy"
-							mask="true"
-							required="true"
+						<p:outputLabel value="Data" for="data" />
+						<p:calendar label="Data da Reserva" id="data" value="#{reservaBean.campoData}" showOn="button" size="6" pattern="dd/MM/yyyy" mask="true" required="true"
 							requiredMessage="Preencha a data da reserva" />
-						<p:outputLabel
-							value="  Horário"
-							for="inicio" />
-						<p:calendar
-							label="Hora inicial"
-							id="inicio"
-							value="#{reservaBean.campoHoraInicial}"
-							showOn="button"
-							size="2"
-							pattern="HH:mm"
-							timeOnly="true"
-							mask="false"
-							required="true"
-							requiredMessage="Preencha a hora inicial e final da reserva" />
-						<p:outputLabel
-							value="  até"
-							for="final" />
-						<p:calendar
-							label="Hora inicial"
-							id="final"
-							value="#{reservaBean.campoHoraFinal}"
-							showOn="button"
-							size="2"
-							pattern="HH:mm"
-							timeOnly="true"
-							mask="false"
-							required="true"
-							requiredMessage="Preencha a hora inicial e final da reserva" />
-						<p:outputLabel
-							value="  Categoria"
-							for="categoria" />
-						<p:selectOneMenu
-							id="categoria"
-							value="#{reservaBean.campoCategoria}"
-							required="true"
-							var="i"
-							style="width: 140px">
+						<p:outputLabel value="  Horário" for="inicio" />
+						<p:calendar label="Hora inicial" id="inicio" value="#{reservaBean.campoHoraInicial}" showOn="button" size="2" pattern="HH:mm" timeOnly="true" mask="false"
+							required="true" requiredMessage="Preencha a hora inicial e final da reserva" />
+						<p:outputLabel value="  até" for="final" />
+						<p:calendar label="Hora inicial" id="final" value="#{reservaBean.campoHoraFinal}" showOn="button" size="2" pattern="HH:mm" timeOnly="true" mask="false"
+							required="true" requiredMessage="Preencha a hora inicial e final da reserva" />
+						<p:outputLabel value="  Categoria" for="categoria" />
+						<p:selectOneMenu id="categoria" value="#{reservaBean.campoCategoria}" required="true" var="i" style="width: 140px">
 							<f:selectItems value="#{reservaBean.categorias}" />
 						</p:selectOneMenu>
-						<p:outputLabel
-							value="  Recurso"
-							for="item" />
-						<p:autoComplete
-							id="item"
-							forceSelection="true"
-							value="#{reservaBean.campoItem}"
-							completeMethod="#{reservaBean.selecionaItem}"
-							required="false"
-							minQueryLength="2"
-							queryDelay="250"
-							size="16">
-							<p:ajax
-								event="itemSelect"
-								listener="#{reservaBean.defineItem}"
-								update="item" />
+						<p:outputLabel value="  Recurso" for="item" />
+						<p:autoComplete id="item" forceSelection="true" value="#{reservaBean.campoItem}" completeMethod="#{reservaBean.selecionaItem}" required="false"
+							minQueryLength="2" queryDelay="250" size="16">
+							<p:ajax event="itemSelect" listener="#{reservaBean.defineItem}" update="item" />
 						</p:autoComplete>
-						<p:outputLabel
-							value="  Repete"
-							for="repete" />
-						<p:selectOneMenu
-							id="repete"
-							value="#{reservaBean.campoRepete}"
-							required="true"
-							style="width: 140px">
-							<f:selectItem
-								itemLabel="Não repete"
-								itemValue="N" />
-							<f:selectItem
-								itemLabel="Semanalmente"
-								itemValue="S" />
+						<p:outputLabel value="  Repete" for="repete" />
+						<p:selectOneMenu id="repete" value="#{reservaBean.campoRepete}" required="true" style="width: 140px">
+							<f:selectItem itemLabel="Não repete" itemValue="N" />
+							<f:selectItem itemLabel="Semanalmente" itemValue="S" />
 						</p:selectOneMenu>
-						<p:outputLabel
-							value="   Até"
-							for="dataRepete" />
-						<p:calendar
-							label="Data fim de repetição"
-							id="dataRepete"
-							value="#{reservaBean.campoDataFimRepete}"
-							showOn="button"
-							size="6"
-							pattern="dd/MM/yyyy"
-							mask="true"
-							required="false"
-							requiredMessage="Preencha a data final para repetição de reservas" />
+						<p:outputLabel value="   Até" for="dataRepete" />
+						<p:calendar label="Data fim de repetição" id="dataRepete" value="#{reservaBean.campoDataFimRepete}" showOn="button" size="6" pattern="dd/MM/yyyy"
+							mask="true" required="false" requiredMessage="Preencha a data final para repetição de reservas" />
 					</p:panelGrid>
-					<div
-						style="margin-left: auto !important; margin-right: auto !important; width: 102px">
-						<p:commandButton
-							value="Pesquisar"
-							icon="ui-icon-search"
-							style="width:100px; margin-top:10px"
-							action="#{reservaBean.pesquisa}"
-							update="@form" />
+					<div style="margin-left: auto !important; margin-right: auto !important; width: 102px">
+						<p:commandButton value="Pesquisar" icon="ui-icon-search" style="width:100px; margin-top:10px" action="#{reservaBean.pesquisa}" update="@form" />
 					</div>
 					<p:tabView style="margin-top:15px">
 						<p:tab title="Recursos disponíveis">
-							<p:dataTable
-								id="reservaTable"
-								value="#{reservaBean.listaItemDisponivel}"
-								var="i"
-								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado."
-								rows="7"
-								paginator="true"
-								paginatorAlwaysVisible="true"
-								paginatorPosition="bottom">
-								<p:column
-									headerText="Patrimonio"
-									style="text-align: center; width: 80px">
+							<p:dataTable id="reservaTable" value="#{reservaBean.listaItemDisponivel}" var="i" style="margin-top: 5px" emptyMessage="Nenhum registro encontrado."
+								rows="7" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+								<p:column headerText="Patrimonio" style="text-align: center; width: 80px">
 									<h:outputText value="#{i.patrimonio}" />
 								</p:column>
-								<p:column
-									headerText="Rótulo"
-									style="text-align: center; width: 80px">
+								<p:column headerText="Rótulo" style="text-align: center; width: 80px">
 									<h:outputText value="#{i.rotulo}" />
 								</p:column>
-								<p:column
-									headerText="Categoria"
-									style="text-align: center; width: 120px">
+								<p:column headerText="Categoria" style="text-align: center; width: 120px">
 									<h:outputText value="#{i.idCategoria.nome}" />
 								</p:column>
 								<p:column headerText="Nome">
 									<h:outputText value="#{i.nome}" />
 								</p:column>
-								<p:column
-									headerText="Ações"
-									style="text-align: center; width: 100px">
-									<p:commandButton
-										value="Reservar"
-										icon="ui-icon-calendar"
-										action="#{reservaBean.reserva(i)}"
-										update="@form" />
+								<p:column headerText="Ações" style="text-align: center; width: 100px">
+									<p:commandButton value="Reservar" icon="ui-icon-calendar" action="#{reservaBean.reserva(i)}" update="@form" />
 								</p:column>
 							</p:dataTable>
 						</p:tab>
 						<p:tab title="Reservas do dia">
-							<p:dataTable
-								id="itemTable"
-								value="#{reservaBean.listaReservaDia}"
-								var="i"
-								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado."
-								rows="7"
-								paginator="true"
-								paginatorAlwaysVisible="true"
-								paginatorPosition="bottom">
-								<p:column
-									headerText="Patrimonio"
-									style="text-align: center; width: 80px">
+							<p:dataTable id="itemTable" value="#{reservaBean.listaReservaDia}" var="i" style="margin-top: 5px" emptyMessage="Nenhum registro encontrado." rows="7"
+								paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+								<p:column headerText="Patrimonio" style="text-align: center; width: 80px">
 									<h:outputText value="#{i.idItemReserva.patrimonio}" />
 								</p:column>
-								<p:column
-									headerText="Rótulo"
-									style="text-align: center; width: 80px">
+								<p:column headerText="Rótulo" style="text-align: center; width: 80px">
 									<h:outputText value="#{i.idItemReserva.rotulo}" />
 								</p:column>
-								<p:column
-									headerText="Categoria"
-									style="width: 120px">
+								<p:column headerText="Categoria" style="width: 120px">
 									<h:outputText value="#{i.idItemReserva.idCategoria.nome}" />
 								</p:column>
-								<p:column
-									headerText="Nome"
-									style="width: 120px">
+								<p:column headerText="Nome" style="width: 120px">
 									<h:outputText value="#{i.idItemReserva.nome}" />
 								</p:column>
-								<p:column
-									headerText="Tipo"
-									style="width: 120px">
+								<p:column headerText="Tipo" style="width: 120px">
 									<h:outputText value="#{i.idTipoReserva.descricao}" />
 								</p:column>
 								<p:column headerText="Motivo">
 									<h:outputText value="#{i.motivo}" />
 								</p:column>
-								<p:column
-									headerText="Data"
-									style="text-align: center; width: 70px">
-									<h:outputText
-										value="#{i.data}"
-										converter="dateConverter" />
+								<p:column headerText="Data" style="text-align: center; width: 70px">
+									<h:outputText value="#{i.data}" converter="dateConverter" />
 								</p:column>
-								<p:column
-									headerText="Início"
-									style="text-align: center; width: 50px">
-									<h:outputText
-										value="#{i.horaInicio}"
-										converter="hourConverter" />
+								<p:column headerText="Início" style="text-align: center; width: 50px">
+									<h:outputText value="#{i.horaInicio}" converter="hourConverter" />
 								</p:column>
-								<p:column
-									headerText="Fim"
-									style="text-align: center; width: 50px">
-									<h:outputText
-										value="#{i.horaFim}"
-										converter="hourConverter" />
+								<p:column headerText="Fim" style="text-align: center; width: 50px">
+									<h:outputText value="#{i.horaFim}" converter="hourConverter" />
 								</p:column>
 							</p:dataTable>
 						</p:tab>
 						<p:tab title="Minhas reservas">
-							<p:dataTable
-								id="minhasReservasTable"
-								value="#{reservaBean.listaMinhasReservas}"
-								var="i"
-								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado."
-								rows="7"
-								paginator="true"
-								paginatorAlwaysVisible="true"
-								paginatorPosition="bottom">
-								<p:column
-									headerText="Patrimonio"
-									style="text-align: center; width: 80px">
+							<p:dataTable id="minhasReservasTable" value="#{reservaBean.listaMinhasReservas}" var="i" style="margin-top: 5px"
+								emptyMessage="Nenhum registro encontrado." rows="7" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+								<p:column headerText="Patrimonio" style="text-align: center; width: 80px">
 									<h:outputText value="#{i.idItemReserva.patrimonio}" />
 								</p:column>
-								<p:column
-									headerText="Rótulo"
-									style="text-align: center; width: 80px">
+								<p:column headerText="Rótulo" style="text-align: center; width: 80px">
 									<h:outputText value="#{i.idItemReserva.rotulo}" />
 								</p:column>
-								<p:column
-									headerText="Categoria"
-									style="width: 80px">
+								<p:column headerText="Categoria" style="width: 80px">
 									<h:outputText value="#{i.idItemReserva.idCategoria.nome}" />
 								</p:column>
 								<p:column headerText="Nome">
@@ -262,200 +111,96 @@
 								<p:column headerText="Motivo">
 									<h:outputText value="#{i.motivo}" />
 								</p:column>
-								<p:column
-									headerText="Data"
-									style="text-align: center; width: 70px">
-									<h:outputText
-										value="#{i.data}"
-										converter="dateConverter" />
+								<p:column headerText="Data" style="text-align: center; width: 70px">
+									<h:outputText value="#{i.data}" converter="dateConverter" />
 								</p:column>
-								<p:column
-									headerText="Início"
-									style="text-align: center; width: 50px">
-									<h:outputText
-										value="#{i.horaInicio}"
-										converter="hourConverter" />
+								<p:column headerText="Início" style="text-align: center; width: 50px">
+									<h:outputText value="#{i.horaInicio}" converter="hourConverter" />
 								</p:column>
-								<p:column
-									headerText="Fim"
-									style="text-align: center; width: 50px">
-									<h:outputText
-										value="#{i.horaFim}"
-										converter="hourConverter" />
+								<p:column headerText="Fim" style="text-align: center; width: 50px">
+									<h:outputText value="#{i.horaFim}" converter="hourConverter" />
 								</p:column>
-								<p:column
-									headerText="Ações"
-									style="text-align: center; width: 100px">
-									<p:commandButton
-										value="Excluir"
-										icon="ui-icon-trash"
-										action="#{reservaBean.excluirReserva(i)}"
-										update="@form" />
+								<p:column headerText="Ações" style="text-align: center; width: 100px">
+									<p:commandButton value="Cancelar" icon="ui-icon-trash" action="#{reservaBean.excluirReserva(i)}" update="@form" />
 								</p:column>
 							</p:dataTable>
 						</p:tab>
 					</p:tabView>
 				</p:tab>
-				<p:tab
-					id="tabReserva"
-					title="Confirmar Reserva"
-					rendered="#{reservaBean.showTab eq 2}">
-					<p:panelGrid
-						columns="2"
-						id="painel"
-						style="margin-top: 5px; width: 100%"
-						columnClasses="gridLabel gridColumn">
+				<p:tab id="tabReserva" title="Confirmar Reserva" rendered="#{reservaBean.showTab eq 2}">
+					<p:panelGrid columns="2" id="painel" style="margin-top: 5px; width: 100%" columnClasses="gridLabel gridColumn">
 						<p:outputLabel value="Categoria" />
 						<p:outputLabel value="#{reservaBean.itemReservaGravacao.idCategoria.nome}" />
 						<p:outputLabel value="Recurso (sala, laboratório, item, etc)" />
 						<p:outputLabel value="#{reservaBean.itemReservaGravacao.nome}" />
-						<p:outputLabel
-							value="Tipo"
-							for="tipoReserva" />
-						<p:selectOneMenu
-							id="tipoReserva"
-							value="#{reservaBean.tipoReserva}"
-							required="true"
-							converter="tipoReservaConverter">
-							<f:selectItem
-								itemLabel="Selecionar"
-								itemValue="" />
-							<f:selectItems
-								value="#{reservaBean.listaTipoReserva}"
-								var="i"
-								itemLabel="#{i.descricao}"
-								itemValue="#{i.descricao}" />
+						<p:outputLabel value="Tipo" for="tipoReserva" />
+						<p:selectOneMenu id="tipoReserva" value="#{reservaBean.tipoReserva}" required="true" converter="tipoReservaConverter">
+							<f:selectItem itemLabel="Selecionar" itemValue="" />
+							<f:selectItems value="#{reservaBean.listaTipoReserva}" var="i" itemLabel="#{i.descricao}" itemValue="#{i.descricao}" />
 						</p:selectOneMenu>
-						<p:outputLabel
-							value="Usuário"
-							for="pesquisaUsuario" />
-						<p:autoComplete
-							id="pesquisaUsuario"
-							forceSelection="true"
-							value="#{reservaBean.campoUsuario}"
-							completeMethod="#{reservaBean.selecionaUsuario}"
-							required="true"
-							minQueryLength="1"
-							queryDelay="250"
-							size="60">
-							<p:ajax
-								event="itemSelect"
-								listener="#{reservaBean.defineUsuario}"
-								update="pesquisaUsuario emailNotificacaoG" />
+						<p:outputLabel value="Usuário" for="pesquisaUsuario" />
+						<p:autoComplete id="pesquisaUsuario" forceSelection="true" value="#{reservaBean.campoUsuario}" completeMethod="#{reservaBean.selecionaUsuario}"
+							required="true" minQueryLength="1" queryDelay="250" size="60">
+							<p:ajax event="itemSelect" listener="#{reservaBean.defineUsuario}" update="pesquisaUsuario emailNotificacaoG" />
 						</p:autoComplete>
-						<p:outputLabel
-							value="E-mail para notificação"
-							for="emailNotificacaoG" />
-						<p:inputText
-							id="emailNotificacaoG"
-							value="#{reservaBean.emailNotificacao}"
-							size="40"
-							maxlength="200"
-							required="true" />
-						<p:outputLabel
-							value="Data da Reserva"
-							for="dataG" />
-						<p:calendar
-							label="Data da Reserva"
-							id="dataG"
-							value="#{reservaBean.campoData}"
-							showOn="button"
-							size="10"
-							pattern="dd/MM/yyyy"
-							mask="true"
-							required="true"
-							requiredMessage="Preencha a data da reserva"
-							disabled="true" />
-						<p:outputLabel
-							value="Horário"
-							for="inicioG" />
-						<p:calendar
-							label="Hora inicial"
-							id="inicioG"
-							value="#{reservaBean.campoHoraInicial}"
-							showOn="button"
-							size="10"
-							pattern="HH:mm"
-							timeOnly="true"
-							mask="false"
-							required="true"
-							requiredMessage="Preencha a hora inicial e final da reserva"
-							disabled="true" />
-						<p:outputLabel
-							value="até"
-							for="finalG" />
-						<p:calendar
-							label="Hora inicial"
-							id="finalG"
-							value="#{reservaBean.campoHoraFinal}"
-							showOn="button"
-							size="10"
-							pattern="HH:mm"
-							timeOnly="true"
-							mask="false"
-							required="true"
-							requiredMessage="Preencha a hora inicial e final da reserva"
-							disabled="true" />
+						<p:outputLabel value="E-mail para notificação" for="emailNotificacaoG" />
+						<p:inputText id="emailNotificacaoG" value="#{reservaBean.emailNotificacao}" size="40" maxlength="200" required="true" />
+						<p:outputLabel value="Data da Reserva" for="dataG" />
+						<p:calendar label="Data da Reserva" id="dataG" value="#{reservaBean.campoData}" showOn="button" size="10" pattern="dd/MM/yyyy" mask="true" required="true"
+							requiredMessage="Preencha a data da reserva" disabled="true" />
+						<p:outputLabel value="Horário" for="inicioG" />
+						<p:calendar label="Hora inicial" id="inicioG" value="#{reservaBean.campoHoraInicial}" showOn="button" size="10" pattern="HH:mm" timeOnly="true"
+							mask="false" required="true" requiredMessage="Preencha a hora inicial e final da reserva" disabled="true" />
+						<p:outputLabel value="até" for="finalG" />
+						<p:calendar label="Hora inicial" id="finalG" value="#{reservaBean.campoHoraFinal}" showOn="button" size="10" pattern="HH:mm" timeOnly="true" mask="false"
+							required="true" requiredMessage="Preencha a hora inicial e final da reserva" disabled="true" />
 						<p:outputLabel value="Recorrência" />
 						<p:outputLabel value="#{reservaBean.repeticaoReservaEnum.descricao}" />
 						<p:outputLabel value="Recorrente até" />
-						<p:calendar
-							label="Data recorrente"
-							id="dataLimiteG"
-							value="#{reservaBean.campoDataFimRepete}"
-							showOn="button"
-							size="10"
-							pattern="dd/MM/yyyy"
-							mask="false"
-							required="true"
-							disabled="true" />
-						<p:outputLabel
-							value="Motivo"
-							for="motivoG" />
-						<p:inputTextarea
-							id="motivoG"
-							value="#{reservaBean.motivo}"
-							rows="3"
-							cols="80"
-							maxlength="4000"
-							required="true" />
+						<p:calendar label="Data recorrente" id="dataLimiteG" value="#{reservaBean.campoDataFimRepete}" showOn="button" size="10" pattern="dd/MM/yyyy" mask="false"
+							required="true" disabled="true" />
+						<p:outputLabel value="Motivo" for="motivoG" />
+						<p:inputTextarea id="motivoG" value="#{reservaBean.motivo}" rows="3" cols="80" maxlength="4000" required="true" />
 					</p:panelGrid>
-					<div
-						id="buttonsGravar"
-						style="margin-top: 15px">
-						<p:commandButton
-							value="Salvar"
-							id="botaoSalvar"
-							action="#{reservaBean.gravaReserva}"
-							icon="ui-icon-disk"
-							style="width:100px"
-							process="dataG inicioG finalG motivoG tipoReserva @this"
-							update="@form" />
-						<p:commandButton
-							value="Cancelar"
-							id="botaoCancelar"
-							action="#{reservaBean.cancela}"
-							icon="ui-icon-arrowreturn-1-w"
-							style="width:100px"
-							process="@this"
+					<div id="buttonsGravar" style="margin-top: 15px">
+						<p:commandButton value="Salvar" id="botaoSalvar" action="#{reservaBean.gravaReserva}" icon="ui-icon-disk" style="width:100px"
+							process="dataG inicioG finalG motivoG tipoReserva @this" update="@form" />
+						<p:commandButton value="Cancelar" id="botaoCancelar" action="#{reservaBean.cancela}" icon="ui-icon-arrowreturn-1-w" style="width:100px" process="@this"
 							update="@form" />
 					</div>
 				</p:tab>
+				<p:tab id="tabCancelarReserva" title="Cancelar Reserva" rendered="#{reservaBean.showTab eq 3}">
+					<p:dataTable id="cancelaReservasTable" value="#{reservaBean.listaReservaVO}" var="i" style="margin-top: 5px" emptyMessage="Nenhum registro encontrado."
+						rows="6" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+						<p:column headerText="Excluir" style="text-align: center; width: 40px">
+							<p:selectBooleanCheckbox value="#{i.excluir}" />
+						</p:column>
+						<p:column headerText="Data" style="text-align: center; width: 70px">
+							<h:outputText value="#{i.dataReserva}" />
+						</p:column>
+						<p:column headerText="Recurso/Item" style="text-align: center; width: 200px">
+							<h:outputText value="#{i.nomeItemReserva}" />
+						</p:column>
+						<p:column headerText="Horário" style="text-align: center; width: 70px">
+							<h:outputText value="#{i.horaReserva}" />
+						</p:column>
+						<p:column headerText="Usuário">
+							<h:outputText value="#{i.usuarioReserva}" />
+						</p:column>
+					</p:dataTable>
+					<p:inputTextarea style="margin-top: 10px" id="motivoCancelamento" value="#{reservaBean.motivoCancelamento}" rows="3" cols="80" maxlength="2000"
+						required="true" requiredMessage="É obrigatório informar o motivo do cancelamento" />
+					<div id="divButtons" style="margin-top: 10px">
+						<p:commandButton id="idb1" value="Excluir" icon="ui-icon-trash" style="width:120px;" action="#{reservaBean.excluiReservas}" update="@form" />
+						<p:commandButton id="idb2" value="Excluir Todas" icon="ui-icon-trash" style="width:120px;" action="#{reservaBean.excluiReservasTodas}" update="@form" />
+						<p:commandButton id="idb3" value="Cancelar" icon="ui-icon-arrowreturn-1-w" style="width:120px;" action="#{reservaBean.cancela}" update="@form"
+							process="@this" immediate="true" />
+					</div>
+				</p:tab>
 			</p:tabView>
-			<p:confirmDialog
-				global="true"
-				showEffect="fade"
-				hideEffect="fade">
-				<p:commandButton
-					value="Sim"
-					type="button"
-					styleClass="ui-confirmdialog-yes"
-					icon="ui-icon-check" />
-				<p:commandButton
-					value="Não"
-					type="button"
-					styleClass="ui-confirmdialog-no"
-					icon="ui-icon-close" />
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 			</p:confirmDialog>
 		</h:form>
 	</ui:define>
