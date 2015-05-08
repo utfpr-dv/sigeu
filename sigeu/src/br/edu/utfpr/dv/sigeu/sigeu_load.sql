@@ -34,8 +34,8 @@ INSERT INTO LDAP_SERVER( id_campus, id_server, host, port, ssl, basedn, sufixo_e
 VALUES( 100, 100, 'ldap.dv.utfpr.edu.br', 636, true, 'dc=utfpr,dc=edu,dc=br', '@utfpr.edu.br', 'uid', 'cn', 'mail', 'employeeNumber', 'carLicense', 'l' );
 
 -- Cria pessoa para o Administrador do sistema no campus BRASIL do MEC
-INSERT INTO PESSOA( id_campus, id_pessoa, nome_completo, senha_md5, email, pessoa_fisica, matricula, ativo )
-VALUES( 1, 1, 'Administrador', md5('1'), 'admin', false, 0, true );
+INSERT INTO PESSOA( id_campus, id_pessoa, nome_completo, senha_md5, email, pessoa_fisica, matricula, ativo, admin )
+VALUES( 1, 1, 'Administrador', md5('1'), 'admin', false, 0, true, true );
 
 -- Cria grupo de Administração
 INSERT INTO grupo_pessoa( id_campus, id_grupo_pessoa, nome ) 

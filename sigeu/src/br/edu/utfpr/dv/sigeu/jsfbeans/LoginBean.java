@@ -42,15 +42,18 @@ public class LoginBean extends JavaBean {
 				this.setPessoaLogin(LoginService.autentica(email, password));
 
 				if (pessoaLogin == null) {
-					this.addErrorMessage("Login", "Acesso não autorizado!");
+					this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");
 				} else {
+					if (!pessoaLogin.getAtivo()) {
+						this.addErrorMessage("Login", "Acesso inativado. Informe ao administrador do sistema.");
+					} else {
+						this.setNomeUsuario(pessoaLogin.getNomeCompleto());
 
-					this.setNomeUsuario(pessoaLogin.getNomeCompleto());
+						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+						request.getSession().setAttribute(LoginFilter.SESSION_USUARIO_AUTENTICADO, email);
 
-					HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-					request.getSession().setAttribute(LoginFilter.SESSION_USUARIO_AUTENTICADO, email);
-
-					// FacesContext.getCurrentInstance().getExternalContext().redirect("/restrito/Home.xhtml");
+						// FacesContext.getCurrentInstance().getExternalContext().redirect("/restrito/Home.xhtml");
+					}
 				}
 			} catch (CommunicationException e) {
 				ok = false;
@@ -69,7 +72,7 @@ public class LoginBean extends JavaBean {
 				e.printStackTrace();
 			} catch (UsuarioDesativadoException e) {
 				ok = false;
-				this.addWarnMessage("Login", "Usuário não autorizado. Entre em contato com sua chefia imediata solicitando acesso.");
+				this.addWarnMessage("Login", "Usuário não autorizado. Entre em contato com o Administrador do sistema.");
 				e.printStackTrace();
 			} catch (GenericJDBCException e) {
 				ok = false;
