@@ -15,7 +15,6 @@ import org.primefaces.context.RequestContext;
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
-import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 @ManagedBean(name = "cancelaReservaBean")
@@ -73,7 +72,6 @@ public class CancelaReservaBean extends JavaBean {
 			// System.out.println(">>> Excluindo " + listaReservaVO.size() +
 			// " reservas");
 
-			MensagemEmail mail = null;
 			List<Reserva> listExcluir = new ArrayList<Reserva>();
 
 			for (ReservaVO vo : listaReservaVO) {
@@ -87,7 +85,7 @@ public class CancelaReservaBean extends JavaBean {
 			}
 
 			try {
-				mail = ReservaService.criaEmailCancelamento(listExcluir, motivoCancelamento);
+				ReservaService.enviaEmailCancelamento(listExcluir, motivoCancelamento);
 			} catch (Exception e) {
 				addErrorMessage("Erro", "Erro ao tentar criar e-mail de exclusão de reserva.");
 				e.printStackTrace();
@@ -100,13 +98,6 @@ public class CancelaReservaBean extends JavaBean {
 					addErrorMessage("Erro", "Erro ao tentar excluir reserva " + r.getIdReserva());
 					e.printStackTrace();
 				}
-			}
-
-			try {
-				mail.enviaMensagens();
-			} catch (Exception e) {
-				addErrorMessage("Erro", "Erro ao tentar enviar e-mails");
-				e.printStackTrace();
 			}
 
 			this.fechaModal();

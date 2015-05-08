@@ -31,6 +31,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		if (r != null) {
 			Hibernate.initialize(r.getIdItemReserva());
+			Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
 			Hibernate.initialize(r.getIdPessoa());
 			Hibernate.initialize(r.getIdTransacao());
 			Hibernate.initialize(r.getIdTipoReserva());
@@ -205,7 +206,19 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		q.setInteger("idCampus", campus.getIdCampus());
 		q.setInteger("idTransacao", idTransacao);
 
-		return this.pesquisaObjetos(q, 0);
+		List<Reserva> list = this.pesquisaObjetos(q, 0);
+
+		for (Reserva r : list) {
+			Hibernate.initialize(r.getIdItemReserva());
+			Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+			Hibernate.initialize(r.getIdPessoa());
+			Hibernate.initialize(r.getIdTransacao());
+			Hibernate.initialize(r.getIdTipoReserva());
+			Hibernate.initialize(r.getIdCampus());
+			Hibernate.initialize(r.getIdUsuario());
+		}
+
+		return list;
 	}
 
 }

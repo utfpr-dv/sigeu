@@ -29,7 +29,6 @@ import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
-import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.StringUtils;
@@ -576,7 +575,6 @@ public class ReservaBean extends JavaBean {
 			this.addWarnMessage("Cancelamento", "Motivo do cancelamento não preenchido!");
 		} else {
 			if (listaReservaVO != null) {
-				MensagemEmail mail = null;
 				List<Reserva> listExcluir = new ArrayList<Reserva>();
 
 				for (ReservaVO vo : listaReservaVO) {
@@ -590,7 +588,7 @@ public class ReservaBean extends JavaBean {
 				}
 
 				try {
-					mail = ReservaService.criaEmailCancelamento(listExcluir, motivoCancelamento);
+					ReservaService.enviaEmailCancelamento(listExcluir, motivoCancelamento);
 				} catch (Exception e) {
 					addErrorMessage("Erro", "Erro ao tentar criar e-mail de exclusão de reserva.");
 					e.printStackTrace();
@@ -607,14 +605,6 @@ public class ReservaBean extends JavaBean {
 
 				this.showTab = 1;
 				this.motivoCancelamento = "";
-
-				try {
-					mail.enviaMensagens();
-				} catch (Exception e) {
-					addErrorMessage("Erro", "Erro ao tentar enviar e-mails");
-					e.printStackTrace();
-				}
-
 			}
 		}
 	}

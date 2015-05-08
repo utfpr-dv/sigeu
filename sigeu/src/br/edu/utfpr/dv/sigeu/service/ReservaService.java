@@ -65,38 +65,55 @@ public class ReservaService {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
 		Collections.sort(listaReserva, new ReservaDataComparator());
-		
+
+		String emailUsuario = listaReserva.get(0).getIdUsuario().getEmail();
+		String emailReserva = listaReserva.get(0).getIdPessoa().getEmail();
+
+		if (Config.getInstance().isDebugMode()) {
+			emailUsuario = "derdi-dv@utfpr.edu.br";
+			emailReserva = "derdi-dv@utfpr.edu.br";
+		}
+
+		String assunto = "SIGEU: Confirmação de Reserva(s)";
+
+		StringBuilder sb = new StringBuilder("Confirmações de Reservas de Recursos feitas pelo SIGEU:\n\n");
+
 		try {
 			for (Reserva r : listaReserva) {
-				String emailUsuario = r.getIdUsuario().getEmail();
-				String emailReserva = r.getIdPessoa().getEmail();
-
-				if (Config.getInstance().isDebugMode()) {
-					emailUsuario = "derdi-dv@utfpr.edu.br";
-					emailReserva = "derdi-dv@utfpr.edu.br";
-				}
-
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(r.getData());
 				String diaDaSemana = DiaEnum.getDiaEnumByDia(cal.get(Calendar.DAY_OF_WEEK)).getNome();
 
 				String data = dateFormat.format(r.getData());
-				String horario = "das " + timeFormat.format(r.getHoraInicio()) + " hs às " + timeFormat.format(r.getHoraFim()) + " hs";
-				String assunto = "Reserva " + r.getIdItemReserva().getNome() + " em " + data + " (" + diaDaSemana + ")";
-				String motivo = r.getMotivo().replaceAll("\\r?\\n", "\n   ");
+				String horario = "horário de " + timeFormat.format(r.getHoraInicio()) + " até " + timeFormat.format(r.getHoraFim()) + " hs.";
+				// String assunto = "Reserva " + r.getIdItemReserva().getNome()
+				// + " em " + data + " (" + diaDaSemana + ")";
 
-				StringBuilder sb = new StringBuilder("CONFIRMAÇÃO DE RESERVA PARA: ").append(r.getIdUsuario().getNomeCompleto().trim().toUpperCase());
-				sb.append(" (").append(r.getIdTipoReserva().getDescricao()).append(")\n\n");
-				sb.append(r.getIdItemReserva().getNome()).append("\n");
-				sb.append(diaDaSemana).append(", ").append(data).append(" ").append(horario).append("\n\n");
-				sb.append("Motivo:\n").append(motivo).append("\n\n\n");
-				sb.append("Reserva ").append("#").append(r.getIdReserva()).append(" feita por ");
-				sb.append(r.getIdPessoa().getNomeCompleto().trim().toUpperCase()).append("\n\n");
-				sb.append("Este é um e-mail automático enviado pelo SIGEU - Sistema de Gestão Universitária");
+				String motivo = r.getMotivo().replaceAll("\\r?\\n", " ");
+				motivo = motivo.replaceAll("\\r\\n", " ");
+				motivo = motivo.replaceAll("\\r", " ");
+				motivo = motivo.replaceAll("\\n", " ");
 
-				email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto, sb.toString());
+				// StringBuilder sb = new
+				// StringBuilder("CONFIRMAÇÃO DE RESERVA PARA: ").append(r.getIdUsuario().getNomeCompleto().trim().toUpperCase());
+				// sb.append(" (").append(r.getIdTipoReserva().getDescricao()).append(")\n\n");
+				// sb.append(r.getIdItemReserva().getNome()).append("\n");
+				// sb.append(diaDaSemana).append(", ").append(data).append(" ").append(horario).append("\n\n");
+				// sb.append("Motivo:\n").append(motivo).append("\n\n\n");
+				// sb.append("Reserva ").append("#").append(r.getIdReserva()).append(" feita por ");
+				// sb.append(r.getIdPessoa().getNomeCompleto().trim().toUpperCase()).append("\n\n");
+				// sb.append("Este é um e-mail automático enviado pelo SIGEU - Sistema de Gestão Universitária");
+
+				sb.append("Reservado para: ");
+				sb.append(r.getIdUsuario().getNomeCompleto().trim().toUpperCase()).append("\n");
+				sb.append(r.getIdItemReserva().getNome()).append(" [").append(r.getIdItemReserva().getIdCategoria().getNome()).append("], ");
+				sb.append(diaDaSemana).append(", dia ").append(data).append(", ").append(horario).append("\n\n");
+				sb.append("Motivo:\n").append(r.getIdTipoReserva().getDescricao()).append(":\n").append(motivo).append("\n");
+				sb.append("---\n\n");
+
 			}
 
+			email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto, sb.toString());
 			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e1) {
 			e1.printStackTrace();
@@ -115,7 +132,7 @@ public class ReservaService {
 	public static void enviaEmailConfirmacao(Reserva reserva) throws Exception {
 		List<Reserva> lr = new ArrayList<Reserva>();
 		lr.add(reserva);
-		
+
 		ReservaService.enviaEmailConfirmacao(lr);
 	}
 
@@ -126,7 +143,7 @@ public class ReservaService {
 	 * @param motivoCancelamento
 	 * @throws Exception
 	 */
-	public static MensagemEmail criaEmailCancelamento(List<Reserva> listaReserva, String motivoCancelamento) throws Exception {
+	public static void enviaEmailCancelamento(List<Reserva> listaReserva, String motivoCancelamento) throws Exception {
 		MensagemEmail email = new MensagemEmail();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
@@ -134,49 +151,56 @@ public class ReservaService {
 		Pessoa pessoa = Config.getInstance().getPessoaLogin();
 
 		Collections.sort(listaReserva, new ReservaDataComparator());
-		
+
+		String emailUsuario = listaReserva.get(0).getIdUsuario().getEmail();
+		String emailReserva = listaReserva.get(0).getIdPessoa().getEmail();
+
+		if (Config.getInstance().isDebugMode()) {
+			emailUsuario = "derdi-dv@utfpr.edu.br";
+			emailReserva = "derdi-dv@utfpr.edu.br";
+		}
+
+		String assunto = "SIGEU: Cancelamento de Reserva(s)";
+
+		StringBuilder sb = new StringBuilder("Cancelamento de Reservas de Recursos feitas pelo SIGEU:\n\n");
+
 		try {
 			for (Reserva r : listaReserva) {
-				String emailUsuario = r.getIdUsuario().getEmail();
-				String emailReserva = r.getIdPessoa().getEmail();
-
-				if (Config.getInstance().isDebugMode()) {
-					emailUsuario = "derdi-dv@utfpr.edu.br";
-					emailReserva = "derdi-dv@utfpr.edu.br";
-				}
-
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(r.getData());
 				String diaDaSemana = DiaEnum.getDiaEnumByDia(cal.get(Calendar.DAY_OF_WEEK)).getNome();
 
 				String data = dateFormat.format(r.getData());
-				String horario = "das " + timeFormat.format(r.getHoraInicio()) + " hs às " + timeFormat.format(r.getHoraFim()) + " hs";
-				String assunto = "Cancelamento de reserva " + r.getIdItemReserva().getNome() + " em " + data + " (" + diaDaSemana + ")";
-				String motivo = r.getMotivo().replaceAll("\\r?\\n", "\n   ");
+				String horario = "horário de " + timeFormat.format(r.getHoraInicio()) + " até " + timeFormat.format(r.getHoraFim()) + " hs.";
 
-				StringBuilder sb = new StringBuilder("**CANCELAMENTO** DE RESERVA PARA: ").append(r.getIdUsuario().getNomeCompleto().trim().toUpperCase());
-				sb.append(" (").append(r.getIdTipoReserva().getDescricao()).append(")\n\n");
-				sb.append(r.getIdItemReserva().getNome()).append("\n");
-				sb.append(diaDaSemana).append(", ").append(data).append(" ").append(horario).append("\n\n");
-				sb.append("Motivo da Reserva:\n").append(motivo).append("\n\n\n");
-				sb.append("Cancelamento de reserva ").append("#").append(r.getIdReserva()).append(" feita por ");
-				sb.append(pessoa.getNomeCompleto().trim().toUpperCase()).append("\n\n");
-				sb.append("Motivo do Cancelamento:\n").append(motivoCancelamento).append("\n\n");
-				sb.append("Este é um e-mail automático enviado pelo SIGEU - Sistema de Gestão Universitária");
+				String motivo = r.getMotivo().replaceAll("\\r?\\n", " ");
+				motivo = motivo.replaceAll("\\r\\n", " ");
+				motivo = motivo.replaceAll("\\r", " ");
+				motivo = motivo.replaceAll("\\n", " ");
 
-				email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto, sb.toString());
+				sb.append("Reservado para: ");
+				sb.append(r.getIdUsuario().getNomeCompleto().trim().toUpperCase()).append("\n");
+				sb.append(r.getIdItemReserva().getNome()).append(" [").append(r.getIdItemReserva().getIdCategoria().getNome()).append("], ");
+				sb.append(diaDaSemana).append(", dia ").append(data).append(", ").append(horario).append("\n\n");
+				sb.append("Motivo:\n").append(r.getIdTipoReserva().getDescricao()).append(":\n").append(motivo).append("\n");
+				sb.append("---\n\n");
 
-				// Envia também um e-mail p/ quem cancelou
-				email.criaMensagemTextoSimples(pessoa.getEmail(), null, assunto, sb.toString());
 			}
 
-			return email;
+			sb.append("Cancelamento feito por: ").append(pessoa.getNomeCompleto().trim().toUpperCase()).append("\n\n");
+			sb.append("Motivo para cancelamento: ").append(motivoCancelamento);
+
+			// Envia mensagem para o usuário e para quem reservou
+			email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto, sb.toString());
+			// Envia também um e-mail p/ quem cancelou
+			email.criaMensagemTextoSimples(pessoa.getEmail(), null, assunto, sb.toString());
+			// Envia as mensagens por Thread
+			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e1) {
 			e1.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 
 	/**
@@ -746,11 +770,6 @@ public class ReservaService {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 			List<Reserva> list = dao.listaReservaPorTransacao(Config.getInstance().getCampus(), idTransacao);
-
-			for (Reserva r : list) {
-				Hibernate.initialize(r.getIdTransacao());
-				Hibernate.initialize(r.getIdCampus());
-			}
 
 			return ReservaService.listToVO(list);
 		} catch (Exception e) {

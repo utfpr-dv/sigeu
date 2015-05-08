@@ -42,7 +42,7 @@
 
 				<h:form>
 					<p:menubar autoDisplay="false">
-						<p:submenu label="Administração">
+						<p:submenu label="Administração" rendered="#{loginBean.pessoaLogin.admin eq true}">
 							<p:menuitem value="Instituição" outcome="/restrito/instituicao/PesquisaInstituicao.xhtml" />
 							<p:menuitem value="Campus" outcome="/restrito/campus/PesquisaCampus.xhtml" />
 							<p:separator />

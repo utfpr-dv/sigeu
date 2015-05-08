@@ -39,6 +39,11 @@ public class LdapServerDAO extends HibernateDAO<LdapServer> {
 
 		email = email.trim().toLowerCase();
 		posAt = email.indexOf("@");
+
+		if (posAt <= 0) {
+			return null;
+		}
+
 		suffix = email.substring(posAt);
 
 		String hql = "from LdapServer o where o.sufixoEmail = :suffix";

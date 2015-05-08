@@ -37,7 +37,7 @@ public class LoginService {
 
 		if (ldap == null) {
 			// Não existe servidor cadastrado
-			throw new ServidorLdapNaoCadastradoException("Servidor LDAP não encontrado para " + email);
+			throw new ServidorLdapNaoCadastradoException("E-mail inválido ou Servidor LDAP não encontrado (" + email + ")");
 		} else {
 			// Define o objeto Campus do Singleton para uso
 			Config.getInstance().setCampus(ldap.getIdCampus());
@@ -139,17 +139,21 @@ public class LoginService {
 	 * @param email
 	 * @return
 	 */
-	public static LdapServer getLdapByEmail(String email) {
+	public static LdapServer getLdapByEmail(String email) throws Exception {
 		Transaction trans = new Transaction();
-		trans.begin();
+		LdapServer ldap = null;
+		try {
+			trans.begin();
 
-		LdapServerDAO ldapDAO;
-		LdapServer ldap;
+			LdapServerDAO ldapDAO;
 
-		ldapDAO = new LdapServerDAO(trans);
-		ldap = ldapDAO.encontrePorEmail(email);
-
-		trans.close();
+			ldapDAO = new LdapServerDAO(trans);
+			ldap = ldapDAO.encontrePorEmail(email);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			trans.close();
+		}
 
 		return ldap;
 	}
