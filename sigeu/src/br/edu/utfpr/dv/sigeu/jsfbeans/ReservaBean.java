@@ -70,7 +70,6 @@ public class ReservaBean extends JavaBean {
 	private ItemReserva itemReserva;
 	private ItemReserva itemReservaGravacao;
 	private List<ItemReserva> listaItemDisponivel;
-	private List<Reserva> listaReservaDia;
 	private List<Reserva> listaMinhasReservas;
 	private List<Reserva> listaTodasReservas;
 	private Integer showTab = 1;
@@ -112,19 +111,23 @@ public class ReservaBean extends JavaBean {
 		listaCategoriaItemReserva = null;
 
 		try {
-			listaCategoriaItemReserva = CategoriaItemReservaService.pesquisar(query, true);
+			listaCategoriaItemReserva = CategoriaItemReservaService.pesquisar(
+					query, true);
 
-			if (listaCategoriaItemReserva != null && listaCategoriaItemReserva.size() > 0) {
+			if (listaCategoriaItemReserva != null
+					&& listaCategoriaItemReserva.size() > 0) {
 				for (CategoriaItemReserva i : listaCategoriaItemReserva) {
 					list.add(i.getNome());
 				}
 			} else {
-				this.addInfoMessage("Selecionar", "Nenhuma categoria encontrada.");
+				this.addInfoMessage("Selecionar",
+						"Nenhuma categoria encontrada.");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.addErrorMessage("Selecionar", "Erro na pesquisa de categorias.");
+			this.addErrorMessage("Selecionar",
+					"Erro na pesquisa de categorias.");
 			return list;
 		}
 
@@ -139,21 +142,24 @@ public class ReservaBean extends JavaBean {
 	 */
 	public List<String> selecionaItem(String query) {
 		if (this.categoriaItemReserva == null) {
-			this.addWarnMessage("Selecionar", "Selecione uma categoria antes de pesquisar o item de reserva.");
+			this.addWarnMessage("Selecionar",
+					"Selecione uma categoria antes de pesquisar o item de reserva.");
 		}
 
 		List<String> list = new ArrayList<String>();
 		listaItemReserva = null;
 
 		try {
-			listaItemReserva = ItemReservaService.pesquisar(categoriaItemReserva, query, true);
+			listaItemReserva = ItemReservaService.pesquisar(
+					categoriaItemReserva, query, true);
 
 			if (listaItemReserva != null && listaItemReserva.size() > 0) {
 				for (ItemReserva i : listaItemReserva) {
 					list.add(i.getNome());
 				}
 			} else {
-				this.addInfoMessage("Selecionar", "Nenhum item de reserva encontrado.");
+				this.addInfoMessage("Selecionar",
+						"Nenhum item de reserva encontrado.");
 			}
 
 		} catch (Exception e) {
@@ -180,7 +186,8 @@ public class ReservaBean extends JavaBean {
 
 			if (listaUsuario != null && listaUsuario.size() > 0) {
 				for (Pessoa p : listaUsuario) {
-					list.add(p.getNomeCompleto() + " (Mat:" + p.getMatricula() + ")");
+					list.add(p.getNomeCompleto() + " (Mat:" + p.getMatricula()
+							+ ")");
 				}
 			} else {
 				this.addInfoMessage("Selecionar", "Nenhum usuário encontrado.");
@@ -236,7 +243,8 @@ public class ReservaBean extends JavaBean {
 		usuario = null;
 
 		for (Pessoa p : listaUsuario) {
-			String match = p.getNomeCompleto() + " (Mat:" + p.getMatricula() + ")";
+			String match = p.getNomeCompleto() + " (Mat:" + p.getMatricula()
+					+ ")";
 
 			if (campoUsuario.equals(match)) {
 				usuario = p;
@@ -257,6 +265,20 @@ public class ReservaBean extends JavaBean {
 
 		repeticaoReservaEnum = RepeticaoReservaEnum.getEnum(campoRepete);
 
+		if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
+			if (campoDataFimRepete == null
+					|| campoDataFimRepete.before(campoData)
+					|| campoDataFimRepete.compareTo(campoData) == 0) {
+				addWarnMessage("consulta",
+						"A data limite de repetição deve ser maior que a data da reserva.");
+//				EditableValueHolder evh = (EditableValueHolder) FacesContext
+//						.getCurrentInstance().getViewRoot()
+//						.findComponent(":frmPesquisaReserva:dataRepete");
+//				evh.setValid(false);
+				return;
+			}
+		}
+
 		for (CategoriaItemReserva c : listaCategoriaItemReserva) {
 			if (c.getNome().equals(campoCategoria)) {
 				categoriaItemReserva = c;
@@ -264,29 +286,43 @@ public class ReservaBean extends JavaBean {
 			}
 		}
 
-		if (campoData == null || categoriaItemReserva == null || campoHoraInicial == null || campoHoraFinal == null) {
-			this.addErrorMessage("Informações insuficientes", "Necessário informar: Categoria, Data e Horário para buscar reservas.");
+		if (campoData == null || categoriaItemReserva == null
+				|| campoHoraInicial == null || campoHoraFinal == null) {
+			this.addErrorMessage("Informações insuficientes",
+					"Necessário informar: Categoria, Data e Horário para buscar reservas.");
 		} else {
 
-			if (campoHoraInicial.after(campoHoraFinal) || campoHoraInicial.equals(campoHoraFinal)) {
-				this.addErrorMessage("Horário inválido", "Hora inicial deve ser menor que hora final.");
+			if (campoHoraInicial.after(campoHoraFinal)
+					|| campoHoraInicial.equals(campoHoraFinal)) {
+				this.addErrorMessage("Horário inválido",
+						"Hora inicial deve ser menor que hora final.");
 			} else {
 				try {
 					// Preenche a lista de reservas do dia
-					this.listaReservaDia = ReservaService.pesquisaReservasDoDia(campoData, categoriaItemReserva, itemReserva);
+					// this.listaReservaDia =
+					// ReservaService.pesquisaReservasDoDia(campoData,
+					// categoriaItemReserva, itemReserva);
 
 					// Preenche a lista de itens disponíveis
-					this.listaItemDisponivel = ReservaService.pesquisaItemReservaDisponivel(campoData, campoHoraInicial, campoHoraFinal, categoriaItemReserva,
-							itemReserva);
+					this.listaItemDisponivel = ReservaService
+							.pesquisaItemReservaDisponivel(campoData,
+									campoHoraInicial, campoHoraFinal,
+									categoriaItemReserva, itemReserva);
 
 					// Preenche lista das minhas reservas
-					this.listaMinhasReservas = ReservaService.pesquisaReservas(pessoaLogin, campoData, categoriaItemReserva, itemReserva);
+					this.listaMinhasReservas = ReservaService.pesquisaReservas(
+							pessoaLogin, campoData, categoriaItemReserva,
+							itemReserva);
 
 					// Rola entre a lista de itens disponíveis para checar se
 					// realmente está disponível com o repeteco
-					if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
-						listaItemDisponivel = ReservaService.removeItensNaoDisponiveisParaReservaRecorrente(campoData, campoHoraInicial, campoHoraFinal,
-								repeticaoReservaEnum, campoDataFimRepete, listaItemDisponivel);
+					if (!repeticaoReservaEnum
+							.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
+						listaItemDisponivel = ReservaService
+								.removeItensNaoDisponiveisParaReservaRecorrente(
+										campoData, campoHoraInicial,
+										campoHoraFinal, repeticaoReservaEnum,
+										campoDataFimRepete, listaItemDisponivel);
 					}
 
 				} catch (Exception e) {
@@ -312,16 +348,22 @@ public class ReservaBean extends JavaBean {
 			}
 		}
 
-		if (campoData == null || categoriaItemReserva == null || campoHoraInicial == null || campoHoraFinal == null) {
-			this.addErrorMessage("Informações insuficientes", "Necessário informar: Categoria, Data e Horário para buscar reservas.");
+		if (campoData == null || categoriaItemReserva == null
+				|| campoHoraInicial == null || campoHoraFinal == null) {
+			this.addErrorMessage("Informações insuficientes",
+					"Necessário informar: Categoria, Data e Horário para buscar reservas.");
 		} else {
 
-			if (campoHoraInicial.after(campoHoraFinal) || campoHoraInicial.equals(campoHoraFinal)) {
-				this.addErrorMessage("Horário inválido", "Hora inicial deve ser menor que hora final.");
+			if (campoHoraInicial.after(campoHoraFinal)
+					|| campoHoraInicial.equals(campoHoraFinal)) {
+				this.addErrorMessage("Horário inválido",
+						"Hora inicial deve ser menor que hora final.");
 			} else {
 				// Preenche a lista de todas as reservas conforme filtros
 				try {
-					this.listaTodasReservas = ReservaService.pesquisaReservas(campoData, campoHoraInicial, campoHoraFinal, categoriaItemReserva, itemReserva);
+					this.listaTodasReservas = ReservaService.pesquisaReservas(
+							campoData, campoHoraInicial, campoHoraFinal,
+							categoriaItemReserva, itemReserva);
 				} catch (Exception e) {
 					addErrorMessage("Pesquisa", "A pequisa falhou.");
 					addErrorMessage("Pesquisa", e.getMessage());
@@ -352,7 +394,8 @@ public class ReservaBean extends JavaBean {
 		reserva.setIdUsuario(usuario);
 		reserva.setIdTipoReserva(tipoReserva);
 		reserva.setEmailNotificacao(emailNotificacao);
-		reserva.setRotulo(StringUtils.left(tipoReserva.getDescricao().trim(), 32));
+		reserva.setRotulo(StringUtils.left(tipoReserva.getDescricao().trim(),
+				32));
 
 		if (repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
 			gravaReservaNormal(reserva);
@@ -366,10 +409,13 @@ public class ReservaBean extends JavaBean {
 	 */
 	private void gravaReservaNormal(Reserva reserva) {
 		try {
-			boolean existeConcorrente = ReservaService.existeConcorrente(reserva);
+			boolean existeConcorrente = ReservaService
+					.existeConcorrente(reserva);
 
 			if (existeConcorrente) {
-				addWarnMessage("Gravar", "Já foi feita uma reserva para este recurso na data informada que conflita com o horário desejado. Verifique!");
+				addWarnMessage(
+						"Gravar",
+						"Já foi feita uma reserva para este recurso na data informada que conflita com o horário desejado. Verifique!");
 			} else {
 				try {
 					ReservaService.gravar(reserva);
@@ -377,7 +423,9 @@ public class ReservaBean extends JavaBean {
 					// Envia e-mail de confirmação
 					ReservaService.enviaEmailConfirmacao(reserva);
 
-					addInfoMessage("Reserva", "Reserva de " + itemReservaGravacao.getNome() + " realizada com sucesso!");
+					addInfoMessage("Reserva", "Reserva de "
+							+ itemReservaGravacao.getNome()
+							+ " realizada com sucesso!");
 
 					// Limpa todos os campos de listas
 					this.limpa(true, false);
@@ -385,14 +433,16 @@ public class ReservaBean extends JavaBean {
 					this.showTab = 1;
 
 				} catch (Exception e) {
-					addWarnMessage("Gravar", "Houve um erro ao tentar gravar a reserva. Tente novamente.");
+					addWarnMessage("Gravar",
+							"Houve um erro ao tentar gravar a reserva. Tente novamente.");
 					addErrorMessage("Gravar", e.getMessage());
 					e.printStackTrace();
 				}
 			}
 
 		} catch (Exception e) {
-			addErrorMessage("Gravar", "Erro ao buscar reservas previamente realizadas!");
+			addErrorMessage("Gravar",
+					"Erro ao buscar reservas previamente realizadas!");
 			e.printStackTrace();
 		}
 	}
@@ -402,12 +452,15 @@ public class ReservaBean extends JavaBean {
 	 */
 	private void gravaReservaSemanal(Reserva reserva) {
 		try {
-			List<Reserva> lista = ReservaService.gravarRecorrente(reserva, repeticaoReservaEnum, campoDataFimRepete);
+			List<Reserva> lista = ReservaService.gravarRecorrente(reserva,
+					repeticaoReservaEnum, campoDataFimRepete);
 
 			// Envia e-mails das reservas
 			ReservaService.enviaEmailConfirmacao(lista);
 
-			addInfoMessage("Reserva", "Reserva de " + itemReservaGravacao.getNome() + " realizada com sucesso!");
+			addInfoMessage("Reserva",
+					"Reserva de " + itemReservaGravacao.getNome()
+							+ " realizada com sucesso!");
 
 			// Limpa todos os campos de listas
 			this.limpa(true, false);
@@ -419,7 +472,8 @@ public class ReservaBean extends JavaBean {
 			addWarnMessage("Gravar", msg);
 			addErrorMessage("Gravar", e.getMessage());
 		} catch (Exception e) {
-			addWarnMessage("Gravar", "Houve um erro ao tentar gravar a reserva. Tente novamente.");
+			addWarnMessage("Gravar",
+					"Houve um erro ao tentar gravar a reserva. Tente novamente.");
 			addErrorMessage("Gravar", e.getMessage());
 			e.printStackTrace();
 		}
@@ -467,14 +521,16 @@ public class ReservaBean extends JavaBean {
 
 		if (listas) {
 			this.listaItemDisponivel = null;
-			this.listaReservaDia = null;
+			// this.listaReservaDia = null;
 			this.listaMinhasReservas = null;
 			this.listaTipoReserva = null;
 
 			try {
-				listaCategoriaItemReserva = CategoriaItemReservaService.pesquisar(null, true);
+				listaCategoriaItemReserva = CategoriaItemReservaService
+						.pesquisar(null, true);
 				listaTipoReserva = TipoReservaService.pesquisar(null, true);
-				listaPeriodoLetivo = PeriodoLetivoService.pesquisar(Config.getInstance().getCampus());
+				listaPeriodoLetivo = PeriodoLetivoService.pesquisar(Config
+						.getInstance().getCampus());
 
 				// System.out.println("Lista de Período Letivo: " +
 				// listaPeriodoLetivo.size());
@@ -508,11 +564,13 @@ public class ReservaBean extends JavaBean {
 				byte[] data = IOUtils.toByteArray(xmlFile.getInputstream());
 
 				if (data == null) {
-					this.addErrorMessage(fileName, "Arquivo importado não contem dados!");
+					this.addErrorMessage(fileName,
+							"Arquivo importado não contem dados!");
 				} else {
 					IntegrationService.writeUploadFile(fileName, data);
 					this.xmlFileName = fileName;
-					this.addInfoMessage("XML",
+					this.addInfoMessage(
+							"XML",
 							"Arquivo importado com sucesso! Pronto para criar calendário de aulas. Clique no botão Processar para continuar.");
 				}
 			}
@@ -532,10 +590,13 @@ public class ReservaBean extends JavaBean {
 		try {
 			timetable_id = IntegrationService.importXml(xmlFileName);
 			try {
-				IntegrationService.criaCalendarioAula(timetable_id, periodoLetivo.getIdPeriodoLetivo());
-				this.addInfoMessage("Importação XML", "Importação realizada com sucesso! Reservas do calendário criadas!");
+				IntegrationService.criaCalendarioAula(timetable_id,
+						periodoLetivo.getIdPeriodoLetivo());
+				this.addInfoMessage("Importação XML",
+						"Importação realizada com sucesso! Reservas do calendário criadas!");
 			} catch (Exception e) {
-				addErrorMessage("Processamento XML", "O processamento do XML falhou");
+				addErrorMessage("Processamento XML",
+						"O processamento do XML falhou");
 				addErrorMessage("Processamento XML", e.getMessage());
 				e.printStackTrace();
 			}
@@ -563,7 +624,9 @@ public class ReservaBean extends JavaBean {
 		// RequestContext.getCurrentInstance().openDialog("CancelaReserva",
 		// options, args);
 		// System.out.println("Passo 2");
-		listaReservaVO = ReservaService.listaReservaPorTransacao(Config.getInstance().getCampus(), r.getIdTransacao().getIdTransacao());
+		listaReservaVO = ReservaService
+				.listaReservaPorTransacao(Config.getInstance().getCampus(), r
+						.getIdTransacao().getIdTransacao());
 		this.showTab = 3;
 	}
 
@@ -571,8 +634,10 @@ public class ReservaBean extends JavaBean {
 	 * Exclui todas as reservas marcadas
 	 */
 	public void excluiReservas() {
-		if (this.motivoCancelamento == null || this.motivoCancelamento.trim().length() == 0) {
-			this.addWarnMessage("Cancelamento", "Motivo do cancelamento não preenchido!");
+		if (this.motivoCancelamento == null
+				|| this.motivoCancelamento.trim().length() == 0) {
+			this.addWarnMessage("Cancelamento",
+					"Motivo do cancelamento não preenchido!");
 		} else {
 			if (listaReservaVO != null) {
 				List<Reserva> listExcluir = new ArrayList<Reserva>();
@@ -580,17 +645,24 @@ public class ReservaBean extends JavaBean {
 				for (ReservaVO vo : listaReservaVO) {
 					if (vo.isExcluir()) {
 						try {
-							listExcluir.add(ReservaService.pesquisaReservaPorId(vo.getIdReserva()));
+							listExcluir.add(ReservaService
+									.pesquisaReservaPorId(vo.getIdReserva()));
 						} catch (Exception e) {
-							addErrorMessage("Erro", "Erro ao tentar carregar reserva " + vo.getIdReserva() + " de " + vo.getDataReserva());
+							addErrorMessage(
+									"Erro",
+									"Erro ao tentar carregar reserva "
+											+ vo.getIdReserva() + " de "
+											+ vo.getDataReserva());
 						}
 					}
 				}
 
 				try {
-					ReservaService.enviaEmailCancelamento(listExcluir, motivoCancelamento);
+					ReservaService.enviaEmailCancelamento(listExcluir,
+							motivoCancelamento);
 				} catch (Exception e) {
-					addErrorMessage("Erro", "Erro ao tentar criar e-mail de exclusão de reserva.");
+					addErrorMessage("Erro",
+							"Erro ao tentar criar e-mail de exclusão de reserva.");
 					e.printStackTrace();
 				}
 
@@ -598,7 +670,10 @@ public class ReservaBean extends JavaBean {
 					try {
 						ReservaService.excluir(r);
 					} catch (Exception e) {
-						addErrorMessage("Erro", "Erro ao tentar excluir reserva " + r.getIdReserva());
+						addErrorMessage(
+								"Erro",
+								"Erro ao tentar excluir reserva "
+										+ r.getIdReserva());
 						e.printStackTrace();
 					}
 				}
@@ -674,7 +749,8 @@ public class ReservaBean extends JavaBean {
 		return categoriaItemReserva;
 	}
 
-	public void setCategoriaItemReserva(CategoriaItemReserva categoriaItemReserva) {
+	public void setCategoriaItemReserva(
+			CategoriaItemReserva categoriaItemReserva) {
 		this.categoriaItemReserva = categoriaItemReserva;
 	}
 
@@ -690,7 +766,8 @@ public class ReservaBean extends JavaBean {
 		return listaCategoriaItemReserva;
 	}
 
-	public void setListaCategoriaItemReserva(List<CategoriaItemReserva> listaCategoriaItemReserva) {
+	public void setListaCategoriaItemReserva(
+			List<CategoriaItemReserva> listaCategoriaItemReserva) {
 		this.listaCategoriaItemReserva = listaCategoriaItemReserva;
 	}
 
@@ -708,14 +785,6 @@ public class ReservaBean extends JavaBean {
 
 	public void setListaItemDisponivel(List<ItemReserva> listaItemDisponivel) {
 		this.listaItemDisponivel = listaItemDisponivel;
-	}
-
-	public List<Reserva> getListaReservaDia() {
-		return listaReservaDia;
-	}
-
-	public void setListaReservaDia(List<Reserva> listaReservaDia) {
-		this.listaReservaDia = listaReservaDia;
 	}
 
 	public Pessoa getPessoaLogin() {
@@ -890,7 +959,8 @@ public class ReservaBean extends JavaBean {
 		return repeticaoReservaEnum;
 	}
 
-	public void setRepeticaoReservaEnum(RepeticaoReservaEnum repeticaoReservaEnum) {
+	public void setRepeticaoReservaEnum(
+			RepeticaoReservaEnum repeticaoReservaEnum) {
 		this.repeticaoReservaEnum = repeticaoReservaEnum;
 	}
 
