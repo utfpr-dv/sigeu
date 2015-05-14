@@ -62,7 +62,6 @@ public class LoginService {
 
 			// Caso ocorra falha de senha, uma exceção será
 			// disparada
-			// TODO Remover comentário
 			ldapUtils.authenticate(uid, password);
 
 			// Se chegou aqui é porque a validação ocorreu com sucesso sem

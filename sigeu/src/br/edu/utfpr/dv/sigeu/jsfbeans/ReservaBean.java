@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -36,6 +37,9 @@ import com.adamiworks.utils.StringUtils;
 @ManagedBean(name = "reservaBean")
 @ViewScoped
 public class ReservaBean extends JavaBean {
+
+	@ManagedProperty(value = "#{loginBean}")
+	private LoginBean loginBean;
 
 	private static final long serialVersionUID = 7141232111444710485L;
 
@@ -94,6 +98,12 @@ public class ReservaBean extends JavaBean {
 		super();
 		// System.out.println("----> ReservaBean CONSTRUCTOR");
 		this.limpa(true, true);
+	}
+
+	@PostConstruct
+	public void teste() {
+		// System.out.println("ADMIN = " +
+		// loginBean.getPessoaLogin().getAdmin());
 	}
 
 	public String reservar() {
@@ -271,10 +281,10 @@ public class ReservaBean extends JavaBean {
 					|| campoDataFimRepete.compareTo(campoData) == 0) {
 				addWarnMessage("consulta",
 						"A data limite de repetição deve ser maior que a data da reserva.");
-//				EditableValueHolder evh = (EditableValueHolder) FacesContext
-//						.getCurrentInstance().getViewRoot()
-//						.findComponent(":frmPesquisaReserva:dataRepete");
-//				evh.setValid(false);
+				// EditableValueHolder evh = (EditableValueHolder) FacesContext
+				// .getCurrentInstance().getViewRoot()
+				// .findComponent(":frmPesquisaReserva:dataRepete");
+				// evh.setValid(false);
 				return;
 			}
 		}
@@ -391,9 +401,21 @@ public class ReservaBean extends JavaBean {
 		reserva.setIdPessoa(pessoaLogin);
 		reserva.setIdItemReserva(itemReservaGravacao);
 		reserva.setMotivo(motivo);
-		reserva.setIdUsuario(usuario);
+
+		if (loginBean.getPessoaLogin().getAdmin()) {
+			if (usuario == null) {
+				addWarnMessage("Usuário",
+						"Informe o usuário da reserva (quem irá utilizar).");
+				return;
+			}
+			reserva.setIdUsuario(usuario);
+			reserva.setEmailNotificacao(emailNotificacao);
+		} else {
+			reserva.setIdUsuario(pessoaLogin);
+			reserva.setEmailNotificacao(pessoaLogin.getEmail());
+		}
+
 		reserva.setIdTipoReserva(tipoReserva);
-		reserva.setEmailNotificacao(emailNotificacao);
 		reserva.setRotulo(StringUtils.left(tipoReserva.getDescricao().trim(),
 				32));
 
@@ -402,6 +424,9 @@ public class ReservaBean extends JavaBean {
 		} else if (repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEMANAL)) {
 			gravaReservaSemanal(reserva);
 		}
+
+		// Refaz a pesquisa após a gravação
+		this.pesquisa();
 	}
 
 	/**
@@ -628,6 +653,9 @@ public class ReservaBean extends JavaBean {
 				.listaReservaPorTransacao(Config.getInstance().getCampus(), r
 						.getIdTransacao().getIdTransacao());
 		this.showTab = 3;
+
+		// Refaz pesquisa
+		pesquisa();
 	}
 
 	/**
@@ -657,6 +685,12 @@ public class ReservaBean extends JavaBean {
 					}
 				}
 
+				if (listExcluir.size() == 0) {
+					addWarnMessage("Reserva",
+							"Selecione ao menos uma reserva para cancelar.");
+					return;
+				}
+
 				try {
 					ReservaService.enviaEmailCancelamento(listExcluir,
 							motivoCancelamento);
@@ -680,6 +714,9 @@ public class ReservaBean extends JavaBean {
 
 				this.showTab = 1;
 				this.motivoCancelamento = "";
+
+				// Refaz pesquisa
+				pesquisa();
 			}
 		}
 	}
@@ -978,6 +1015,14 @@ public class ReservaBean extends JavaBean {
 
 	public void setMotivoCancelamento(String motivoCancelamento) {
 		this.motivoCancelamento = motivoCancelamento;
+	}
+
+	public LoginBean getLoginBean() {
+		return loginBean;
+	}
+
+	public void setLoginBean(LoginBean loginBean) {
+		this.loginBean = loginBean;
 	}
 
 }

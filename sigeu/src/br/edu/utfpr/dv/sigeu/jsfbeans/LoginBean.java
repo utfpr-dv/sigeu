@@ -39,7 +39,7 @@ public class LoginBean extends JavaBean {
 		} else {
 
 			try {
-				this.setPessoaLogin(LoginService.autentica(email, password));
+				pessoaLogin = LoginService.autentica(email, password);
 
 				if (pessoaLogin == null) {
 					this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");

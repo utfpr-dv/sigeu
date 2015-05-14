@@ -159,25 +159,33 @@
 						<p:outputLabel value="Tipo" for="tipoReserva" />
 						<p:selectOneMenu id="tipoReserva"
 							value="#{reservaBean.tipoReserva}" required="true"
+							requiredMessage="Informe o tipo de reserva."
 							converter="tipoReservaConverter">
 							<f:selectItem itemLabel="Selecionar" itemValue="" />
 							<f:selectItems value="#{reservaBean.listaTipoReserva}" var="i"
 								itemLabel="#{i.descricao}" itemValue="#{i.descricao}" />
 						</p:selectOneMenu>
-						<p:outputLabel value="Usuário" for="pesquisaUsuario" />
+
+						<p:outputLabel value="Usuário" for="pesquisaUsuario"
+							rendered="#{loginBean.pessoaLogin.admin eq true}" />
 						<p:autoComplete id="pesquisaUsuario" forceSelection="true"
 							value="#{reservaBean.campoUsuario}"
-							completeMethod="#{reservaBean.selecionaUsuario}" required="true"
-							minQueryLength="1" queryDelay="250" size="60">
+							completeMethod="#{reservaBean.selecionaUsuario}"
+							minQueryLength="1" queryDelay="250" size="60"
+							rendered="#{loginBean.pessoaLogin.admin eq true}">
 							<p:ajax event="itemSelect"
 								listener="#{reservaBean.defineUsuario}"
 								update="pesquisaUsuario emailNotificacaoG" />
 						</p:autoComplete>
+
 						<p:outputLabel value="E-mail para notificação"
-							for="emailNotificacaoG" />
+							for="emailNotificacaoG"
+							rendered="#{loginBean.pessoaLogin.admin eq true}" />
 						<p:inputText id="emailNotificacaoG"
 							value="#{reservaBean.emailNotificacao}" size="40" maxlength="200"
-							required="true" />
+							required="#{loginBean.pessoaLogin.admin eq true}"
+							rendered="#{loginBean.pessoaLogin.admin eq true}" />
+
 						<p:outputLabel value="Data da Reserva" for="dataG" />
 						<p:calendar label="Data da Reserva" id="dataG"
 							value="#{reservaBean.campoData}" showOn="button" size="10"

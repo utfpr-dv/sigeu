@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.CacheMode;
 import org.hibernate.Query;
 
 import br.edu.utfpr.dv.sigeu.entities.Campus;
@@ -27,6 +28,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 	public Pessoa encontrePorEmail(String email) throws Exception {
 		String hql = "from Pessoa o where o.email = :email";
 		Query q = session.createQuery(hql);
+		q.setCacheMode(CacheMode.REFRESH);
 		q.setString("email", email);
 		return (Pessoa) q.uniqueResult();
 	}
