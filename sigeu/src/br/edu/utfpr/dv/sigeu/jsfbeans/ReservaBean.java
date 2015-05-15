@@ -320,9 +320,9 @@ public class ReservaBean extends JavaBean {
 									categoriaItemReserva, itemReserva);
 
 					// Preenche lista das minhas reservas
-					this.listaMinhasReservas = ReservaService.pesquisaReservas(
-							pessoaLogin, campoData, categoriaItemReserva,
-							itemReserva);
+					this.listaMinhasReservas = ReservaService
+							.pesquisaReservasEfetivadasDoUsuario(pessoaLogin, campoData,
+									categoriaItemReserva, itemReserva);
 
 					// Rola entre a lista de itens disponíveis para checar se
 					// realmente está disponível com o repeteco
@@ -371,9 +371,10 @@ public class ReservaBean extends JavaBean {
 			} else {
 				// Preenche a lista de todas as reservas conforme filtros
 				try {
-					this.listaTodasReservas = ReservaService.pesquisaReservas(
-							campoData, campoHoraInicial, campoHoraFinal,
-							categoriaItemReserva, itemReserva);
+					this.listaTodasReservas = ReservaService
+							.pesquisaReservasEfetivadas(campoData,
+									campoHoraInicial, campoHoraFinal,
+									categoriaItemReserva, itemReserva);
 				} catch (Exception e) {
 					addErrorMessage("Pesquisa", "A pequisa falhou.");
 					addErrorMessage("Pesquisa", e.getMessage());
@@ -633,7 +634,7 @@ public class ReservaBean extends JavaBean {
 
 	}
 
-	public void excluirReserva(Reserva r) {
+	public void cancelaReserva(Reserva r) {
 		// Map<String, Object> options = new HashMap<String, Object>();
 		// Map<String, List<String>> args = new HashMap<String, List<String>>();
 		// List<String> transCode = new ArrayList<String>();
@@ -656,12 +657,17 @@ public class ReservaBean extends JavaBean {
 
 		// Refaz pesquisa
 		pesquisa();
+
+		addInfoMessage(
+				"Reserva",
+				"Reserva canceladas com sucesso! A confirmação será enviada por e-mail em instantes.");
 	}
 
 	/**
 	 * Exclui todas as reservas marcadas
 	 */
-	public void excluiReservas() {
+	public void cancelaReservas() {
+		// TODO - mudar toda a lógica para não excluir!
 		if (this.motivoCancelamento == null
 				|| this.motivoCancelamento.trim().length() == 0) {
 			this.addWarnMessage("Cancelamento",
@@ -702,7 +708,8 @@ public class ReservaBean extends JavaBean {
 
 				for (Reserva r : listExcluir) {
 					try {
-						ReservaService.excluir(r);
+						// ReservaService.excluir(r);
+						ReservaService.cancelaReserva(r, motivoCancelamento);
 					} catch (Exception e) {
 						addErrorMessage(
 								"Erro",
@@ -717,6 +724,10 @@ public class ReservaBean extends JavaBean {
 
 				// Refaz pesquisa
 				pesquisa();
+
+				addInfoMessage(
+						"Reserva",
+						"Reservas canceladas com sucesso! A confirmação será enviada por e-mail em instantes.");
 			}
 		}
 	}
@@ -724,12 +735,12 @@ public class ReservaBean extends JavaBean {
 	/**
 	 * Exclui todas as reservas selecionadas
 	 */
-	public void excluiReservasTodas() {
+	public void cancelaReservasTodas() {
 		for (ReservaVO vo : listaReservaVO) {
 			vo.setExcluir(true);
 		}
 
-		this.excluiReservas();
+		this.cancelaReservas();
 	}
 
 	/**********************************************************************************/

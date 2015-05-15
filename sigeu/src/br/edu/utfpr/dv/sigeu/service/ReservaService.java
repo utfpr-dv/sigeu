@@ -23,6 +23,7 @@ import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.entities.Transacao;
 import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.RepeticaoReservaEnum;
+import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.exception.DestinatarioInexistenteException;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
@@ -36,7 +37,8 @@ public class ReservaService {
 
 	public static void gravar(Reserva reserva) throws Exception {
 		Transaction trans = new Transaction();
-		Transacao transacao = TransacaoService.criar("Reserva do item " + reserva.getIdItemReserva().getNome());
+		Transacao transacao = TransacaoService.criar("Reserva do item "
+				+ reserva.getIdItemReserva().getNome());
 		reserva.setIdTransacao(transacao);
 
 		try {
@@ -59,7 +61,8 @@ public class ReservaService {
 	 * @param listaReserva
 	 * @throws Exception
 	 */
-	public static void enviaEmailConfirmacao(List<Reserva> listaReserva) throws Exception {
+	public static void enviaEmailConfirmacao(List<Reserva> listaReserva)
+			throws Exception {
 		MensagemEmail email = new MensagemEmail();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
@@ -76,16 +79,20 @@ public class ReservaService {
 
 		String assunto = "SIGEU: Confirmação de Reserva(s)";
 
-		StringBuilder sb = new StringBuilder("Confirmações de Reservas de Recursos feitas pelo SIGEU:\n\n");
+		StringBuilder sb = new StringBuilder(
+				"Confirmações de Reservas de Recursos feitas pelo SIGEU:\n\n");
 
 		try {
 			for (Reserva r : listaReserva) {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(r.getData());
-				String diaDaSemana = DiaEnum.getDiaEnumByDia(cal.get(Calendar.DAY_OF_WEEK)).getNome();
+				String diaDaSemana = DiaEnum.getDiaEnumByDia(
+						cal.get(Calendar.DAY_OF_WEEK)).getNome();
 
 				String data = dateFormat.format(r.getData());
-				String horario = "horário de " + timeFormat.format(r.getHoraInicio()) + " até " + timeFormat.format(r.getHoraFim()) + " hs.";
+				String horario = "horário de "
+						+ timeFormat.format(r.getHoraInicio()) + " até "
+						+ timeFormat.format(r.getHoraFim()) + " hs.";
 				// String assunto = "Reserva " + r.getIdItemReserva().getNome()
 				// + " em " + data + " (" + diaDaSemana + ")";
 
@@ -105,15 +112,24 @@ public class ReservaService {
 				// sb.append("Este é um e-mail automático enviado pelo SIGEU - Sistema de Gestão Universitária");
 
 				sb.append("Reservado para: ");
-				sb.append(r.getIdUsuario().getNomeCompleto().trim().toUpperCase()).append("\n");
-				sb.append(r.getIdItemReserva().getNome()).append(" [").append(r.getIdItemReserva().getIdCategoria().getNome()).append("], ");
-				sb.append(diaDaSemana).append(", dia ").append(data).append(", ").append(horario).append("\n\n");
-				sb.append("Motivo:\n").append(r.getIdTipoReserva().getDescricao()).append(":\n").append(motivo).append("\n");
+				sb.append(
+						r.getIdUsuario().getNomeCompleto().trim().toUpperCase())
+						.append("\n");
+				sb.append(r.getIdItemReserva().getNome())
+						.append(" [")
+						.append(r.getIdItemReserva().getIdCategoria().getNome())
+						.append("], ");
+				sb.append(diaDaSemana).append(", dia ").append(data)
+						.append(", ").append(horario).append("\n\n");
+				sb.append("Motivo:\n")
+						.append(r.getIdTipoReserva().getDescricao())
+						.append(":\n").append(motivo).append("\n");
 				sb.append("---\n\n");
 
 			}
 
-			email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto, sb.toString());
+			email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto,
+					sb.toString());
 			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e1) {
 			e1.printStackTrace();
@@ -143,7 +159,8 @@ public class ReservaService {
 	 * @param motivoCancelamento
 	 * @throws Exception
 	 */
-	public static void enviaEmailCancelamento(List<Reserva> listaReserva, String motivoCancelamento) throws Exception {
+	public static void enviaEmailCancelamento(List<Reserva> listaReserva,
+			String motivoCancelamento) throws Exception {
 		MensagemEmail email = new MensagemEmail();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
@@ -162,16 +179,20 @@ public class ReservaService {
 
 		String assunto = "SIGEU: Cancelamento de Reserva(s)";
 
-		StringBuilder sb = new StringBuilder("Cancelamento de Reservas de Recursos feitas pelo SIGEU:\n\n");
+		StringBuilder sb = new StringBuilder(
+				"Cancelamento de Reservas de Recursos feitas pelo SIGEU:\n\n");
 
 		try {
 			for (Reserva r : listaReserva) {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(r.getData());
-				String diaDaSemana = DiaEnum.getDiaEnumByDia(cal.get(Calendar.DAY_OF_WEEK)).getNome();
+				String diaDaSemana = DiaEnum.getDiaEnumByDia(
+						cal.get(Calendar.DAY_OF_WEEK)).getNome();
 
 				String data = dateFormat.format(r.getData());
-				String horario = "horário de " + timeFormat.format(r.getHoraInicio()) + " até " + timeFormat.format(r.getHoraFim()) + " hs.";
+				String horario = "horário de "
+						+ timeFormat.format(r.getHoraInicio()) + " até "
+						+ timeFormat.format(r.getHoraFim()) + " hs.";
 
 				String motivo = r.getMotivo().replaceAll("\\r?\\n", " ");
 				motivo = motivo.replaceAll("\\r\\n", " ");
@@ -179,21 +200,33 @@ public class ReservaService {
 				motivo = motivo.replaceAll("\\n", " ");
 
 				sb.append("Reservado para: ");
-				sb.append(r.getIdUsuario().getNomeCompleto().trim().toUpperCase()).append("\n");
-				sb.append(r.getIdItemReserva().getNome()).append(" [").append(r.getIdItemReserva().getIdCategoria().getNome()).append("], ");
-				sb.append(diaDaSemana).append(", dia ").append(data).append(", ").append(horario).append("\n\n");
-				sb.append("Motivo:\n").append(r.getIdTipoReserva().getDescricao()).append(":\n").append(motivo).append("\n");
+				sb.append(
+						r.getIdUsuario().getNomeCompleto().trim().toUpperCase())
+						.append("\n");
+				sb.append(r.getIdItemReserva().getNome())
+						.append(" [")
+						.append(r.getIdItemReserva().getIdCategoria().getNome())
+						.append("], ");
+				sb.append(diaDaSemana).append(", dia ").append(data)
+						.append(", ").append(horario).append("\n\n");
+				sb.append("Motivo:\n")
+						.append(r.getIdTipoReserva().getDescricao())
+						.append(":\n").append(motivo).append("\n");
 				sb.append("---\n\n");
 
 			}
 
-			sb.append("Cancelamento feito por: ").append(pessoa.getNomeCompleto().trim().toUpperCase()).append("\n\n");
+			sb.append("Cancelamento feito por: ")
+					.append(pessoa.getNomeCompleto().trim().toUpperCase())
+					.append("\n\n");
 			sb.append("Motivo para cancelamento: ").append(motivoCancelamento);
 
 			// Envia mensagem para o usuário e para quem reservou
-			email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto, sb.toString());
+			email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto,
+					sb.toString());
 			// Envia também um e-mail p/ quem cancelou
-			email.criaMensagemTextoSimples(pessoa.getEmail(), null, assunto, sb.toString());
+			email.criaMensagemTextoSimples(pessoa.getEmail(), null, assunto,
+					sb.toString());
 			// Envia as mensagens por Thread
 			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e1) {
@@ -236,10 +269,13 @@ public class ReservaService {
 	 * @param dataLimite
 	 * @throws Exception
 	 */
-	public static List<Reserva> gravarRecorrente(Reserva reserva, RepeticaoReservaEnum tipoRecorrencia, Date dataLimite) throws Exception {
+	public static List<Reserva> gravarRecorrente(Reserva reserva,
+			RepeticaoReservaEnum tipoRecorrencia, Date dataLimite)
+			throws Exception {
 		if (tipoRecorrencia.equals(RepeticaoReservaEnum.SEMANAL)) {
 			Transaction trans = new Transaction();
-			Transacao transacao = TransacaoService.criar("Reserva do item " + reserva.getIdItemReserva().getNome() + " semanal");
+			Transacao transacao = TransacaoService.criar("Reserva do item "
+					+ reserva.getIdItemReserva().getNome() + " semanal");
 			reserva.setIdTransacao(transacao);
 
 			try {
@@ -272,7 +308,8 @@ public class ReservaService {
 						Reserva r = ReservaService.duplicar(reserva);
 						r.setData(calData.getTime());
 
-						existeConcorrencia = ReservaService.existeConcorrente(r);
+						existeConcorrencia = ReservaService
+								.existeConcorrente(r);
 
 						if (!existeConcorrencia) {
 							listaGravacao.add(r);
@@ -323,8 +360,10 @@ public class ReservaService {
 			trans.begin();
 			ItemReservaDAO dao = new ItemReservaDAO(trans);
 
-			List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(reserva.getIdCampus(), reserva.getData(), reserva.getHoraInicio(),
-					reserva.getHoraFim(), reserva.getIdItemReserva().getIdCategoria(), reserva.getIdItemReserva());
+			List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(reserva
+					.getIdCampus(), reserva.getData(), reserva.getHoraInicio(),
+					reserva.getHoraFim(), reserva.getIdItemReserva()
+							.getIdCategoria(), reserva.getIdItemReserva());
 
 			if (lista != null && lista.size() == 0) {
 				return true;
@@ -349,14 +388,17 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Reserva> pesquisaReservasDoDia(Date data, CategoriaItemReserva categoria, ItemReserva item) throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadasDoDia(Date data,
+			CategoriaItemReserva categoria, ItemReserva item) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReserva(Config.getInstance().getCampus(), data, categoria, item);
+			List<Reserva> lista = dao.pesquisaReserva(Config.getInstance()
+					.getCampus(), StatusReserva.EFETIVADA, data, categoria,
+					item);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -391,15 +433,18 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<ItemReserva> pesquisaItemReservaDisponivel(Date data, Date horaInicial, Date horaFinal, CategoriaItemReserva categoria, ItemReserva item)
-			throws Exception {
+	public static List<ItemReserva> pesquisaItemReservaDisponivel(Date data,
+			Date horaInicial, Date horaFinal, CategoriaItemReserva categoria,
+			ItemReserva item) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ItemReservaDAO dao = new ItemReservaDAO(trans);
 
-			List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(Config.getInstance().getCampus(), data, horaInicial, horaFinal, categoria, item);
+			List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(Config
+					.getInstance().getCampus(), data, horaInicial, horaFinal,
+					categoria, item);
 
 			if (lista != null && lista.size() > 0) {
 				for (ItemReserva i : lista) {
@@ -431,14 +476,18 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Reserva> pesquisaReservas(Pessoa pessoa, Date data, CategoriaItemReserva categoria, ItemReserva item) throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadasDoUsuario(Pessoa pessoa,
+			Date data, CategoriaItemReserva categoria, ItemReserva item)
+			throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReserva(Config.getInstance().getCampus(), pessoa, data, categoria, item);
+			List<Reserva> lista = dao.pesquisaReservaDoUsuario(Config.getInstance()
+					.getCampus(), StatusReserva.EFETIVADA, pessoa, data,
+					categoria, item);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -495,6 +544,47 @@ public class ReservaService {
 	}
 
 	/**
+	 * Altera o stats de uma reserva
+	 * 
+	 * @param r
+	 * @param status
+	 * @throws Exception
+	 */
+	public static void modificaStatus(Reserva r, StatusReserva status)
+			throws Exception {
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+			ReservaDAO dao = new ReservaDAO(trans);
+
+			r.setStatus(status.getStatus());
+			dao.alterar(r);
+
+			trans.commit();
+		} catch (Exception e) {
+			trans.rollback();
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			trans.close();
+		}
+	}
+
+	/**
+	 * Atalho para cancelar reservas
+	 * 
+	 * @param r
+	 * @param motivo
+	 * @throws Exception
+	 */
+	public static void cancelaReserva(Reserva r, String motivo)
+			throws Exception {
+		r.setMotivoCancelamento(motivo);
+		ReservaService.modificaStatus(r, StatusReserva.CANCELADA);
+	}
+
+	/**
 	 * Lista as reservas do Campus conforme filtros
 	 * 
 	 * @param data
@@ -505,15 +595,18 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Reserva> pesquisaReservas(Date data, Date horaInicial, Date horaFinal, CategoriaItemReserva categoria, ItemReserva item)
-			throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadas(Date data,
+			Date horaInicial, Date horaFinal, CategoriaItemReserva categoria,
+			ItemReserva item) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReserva(Config.getInstance().getCampus(), data, horaInicial, horaFinal, categoria, item);
+			List<Reserva> lista = dao.pesquisaReserva(Config.getInstance()
+					.getCampus(), StatusReserva.EFETIVADA, data, horaInicial,
+					horaFinal, categoria, item);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -551,14 +644,16 @@ public class ReservaService {
 		}
 	}
 
-	public static List<Reserva> pesquisaReservas(Date data, TipoReserva tipoReserva) throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadas(Date data,
+			TipoReserva tipoReserva) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReserva(Config.getInstance().getCampus(), data, tipoReserva);
+			List<Reserva> lista = dao.pesquisaReserva(Config.getInstance()
+					.getCampus(), StatusReserva.EFETIVADA, data, tipoReserva);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -591,8 +686,10 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<ItemReserva> removeItensNaoDisponiveisParaReservaRecorrente(Date data, Date horaInicio, Date horaFim,
-			RepeticaoReservaEnum tipoRecorrencia, Date dataLimite, List<ItemReserva> listaItemReserva) throws Exception {
+	public static List<ItemReserva> removeItensNaoDisponiveisParaReservaRecorrente(
+			Date data, Date horaInicio, Date horaFim,
+			RepeticaoReservaEnum tipoRecorrencia, Date dataLimite,
+			List<ItemReserva> listaItemReserva) throws Exception {
 
 		if (!tipoRecorrencia.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
 			// Somente se o tipo de recorrência for diferente de SEM_REPETICAO
@@ -618,8 +715,10 @@ public class ReservaService {
 			int diaDaSemana = calendarAtual.get(Calendar.DAY_OF_WEEK);
 
 			while (true) {
-				long milissecondsCalendarAtual = calendarAtual.getTimeInMillis();
-				long milissecondsCalendarLimite = calendarLimite.getTimeInMillis();
+				long milissecondsCalendarAtual = calendarAtual
+						.getTimeInMillis();
+				long milissecondsCalendarLimite = calendarLimite
+						.getTimeInMillis();
 
 				if (milissecondsCalendarAtual > milissecondsCalendarLimite) {
 					break;
@@ -699,7 +798,9 @@ public class ReservaService {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.listaReservaPorTransacao(Config.getInstance().getCampus(), r.getIdTransacao().getIdTransacao());
+			List<Reserva> lista = dao.listaReservaPorTransacao(Config
+					.getInstance().getCampus(), StatusReserva.EFETIVADA, r
+					.getIdTransacao().getIdTransacao());
 
 			if (lista != null && lista.size() > 0) {
 				return lista.get(lista.size() - 1).getData();
@@ -745,7 +846,8 @@ public class ReservaService {
 			vo.setExcluir(false);
 			vo.setCampus(reserva.getIdCampus());
 			vo.setDataReserva(DateUtils.format(reserva.getData(), "dd/MM/yyyy"));
-			vo.setHoraReserva(DateUtils.format(reserva.getHoraInicio(), "HH:mm") + "-" + DateUtils.format(reserva.getHoraFim(), "HH:mm"));
+			vo.setHoraReserva(DateUtils.format(reserva.getHoraInicio(), "HH:mm")
+					+ "-" + DateUtils.format(reserva.getHoraFim(), "HH:mm"));
 			vo.setIdReserva(reserva.getIdReserva());
 			vo.setMotivoReserva(reserva.getMotivo());
 			vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());
@@ -763,13 +865,16 @@ public class ReservaService {
 	 * @param idTransacao
 	 * @return
 	 */
-	public static List<ReservaVO> listaReservaPorTransacao(Campus campus, Integer idTransacao) {
+	public static List<ReservaVO> listaReservaPorTransacao(Campus campus,
+			Integer idTransacao) {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
-			List<Reserva> list = dao.listaReservaPorTransacao(Config.getInstance().getCampus(), idTransacao);
+			List<Reserva> list = dao.listaReservaPorTransacao(Config
+					.getInstance().getCampus(), StatusReserva.EFETIVADA,
+					idTransacao);
 
 			return ReservaService.listToVO(list);
 		} catch (Exception e) {

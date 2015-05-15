@@ -13,6 +13,7 @@ import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.entities.Transacao;
+import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
@@ -56,16 +57,18 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * Lista todas as reservas do dia
 	 * 
 	 * @param campus
+	 * @param status
 	 * @param data
 	 * @param categoria
 	 * @param item
 	 * @return
 	 */
-	public List<Reserva> pesquisaReserva(Campus campus, Date data, CategoriaItemReserva categoria, ItemReserva item) {
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
+			Date data, CategoriaItemReserva categoria, ItemReserva item) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
-		hql.append("WHERE c.idCampus = :idCampus AND ");
+		hql.append("WHERE c.idCampus = :idCampus AND o.status = :status AND ");
 
 		if (categoria != null) {
 			hql.append("c.idCategoria = :idCategoria AND ");
@@ -79,6 +82,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
+		q.setString("status", status.getStatus());
 		if (categoria != null) {
 			q.setInteger("idCategoria", categoria.getIdCategoria());
 		}
@@ -90,13 +94,15 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		return this.pesquisaObjetos(q, 0);
 	}
 
-	public List<Reserva> pesquisaReserva(Campus campus, Pessoa pessoa, Date data, CategoriaItemReserva categoria, ItemReserva item) {
+	public List<Reserva> pesquisaReservaDoUsuario(Campus campus, StatusReserva status,
+			Pessoa pessoa, Date data, CategoriaItemReserva categoria,
+			ItemReserva item) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
-		hql.append("WHERE c.idCampus = :idCampus AND ");
+		hql.append("WHERE c.idCampus = :idCampus AND o.status = :status AND ");
 		hql.append("c.idCategoria = :idCategoria AND ");
-		hql.append("o.idPessoa.idPessoa = :idPessoa AND ");
+		hql.append("( o.idPessoa.idPessoa = :idPessoa OR o.idUsuario.idPessoa = :idPessoa ) AND ");
 
 		if (item != null) {
 			hql.append("i.idItemReserva = :idItemReserva AND ");
@@ -107,6 +113,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
+		q.setString("status", status.getStatus());
 		q.setInteger("idCategoria", categoria.getIdCategoria());
 		q.setInteger("idPessoa", pessoa.getIdPessoa());
 
@@ -119,11 +126,13 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		return this.pesquisaObjetos(q, 0);
 	}
 
-	public List<Reserva> pesquisaReserva(Campus campus, Date data, Date horaInicio, Date horaFim, CategoriaItemReserva categoria, ItemReserva item) {
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
+			Date data, Date horaInicio, Date horaFim,
+			CategoriaItemReserva categoria, ItemReserva item) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
-		hql.append("WHERE c.idCampus = :idCampus AND ");
+		hql.append("WHERE c.idCampus = :idCampus AND o.status = :status AND ");
 		hql.append("c.idCategoria = :idCategoria AND ");
 		hql.append("o.horaInicio >= :horaInicio AND ");
 		hql.append("o.horaFim <= :horaFim AND ");
@@ -137,6 +146,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
+		q.setString("status", status.getStatus());
 		q.setInteger("idCategoria", categoria.getIdCategoria());
 		q.setDate("data", data);
 		q.setTime("horaInicio", horaInicio);
@@ -164,23 +174,26 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * @param transacao
 	 */
 	public void removeByTransacao(Campus campus, int idTransacao) {
-		Query q = session.createQuery("DELETE FROM Reserva o WHERE o.idCampus.idCampus = :idCampus AND o.idTransacao.idTransacao = :idTransacao");
+		Query q = session
+				.createQuery("DELETE FROM Reserva o WHERE o.idCampus.idCampus = :idCampus AND o.idTransacao.idTransacao = :idTransacao");
 		q.setInteger("idCampus", campus.getIdCampus());
 		q.setInteger("idTransacao", idTransacao);
 		q.executeUpdate();
 	}
 
-	public List<Reserva> pesquisaReserva(Campus campus, Date data, TipoReserva tipoReserva) {
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
+			Date data, TipoReserva tipoReserva) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idTipoReserva tr ");
-		hql.append("WHERE c.idCampus = :idCampus AND ");
+		hql.append("WHERE c.idCampus = :idCampus AND o.status = :status AND ");
 		hql.append("tr.idTipoReserva = :idTipoReserva AND ");
 		hql.append("o.data = :data ");
 		hql.append("ORDER BY i.nome, o.data ASC, o.horaInicio ASC, o.horaFim ASC ");
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
+		q.setString("status", status.getStatus());
 		q.setInteger("idTipoReserva", tipoReserva.getIdTipoReserva());
 		q.setDate("data", data);
 
@@ -194,16 +207,18 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * @param idTransacao
 	 * @return
 	 */
-	public List<Reserva> listaReservaPorTransacao(Campus campus, Integer idTransacao) {
+	public List<Reserva> listaReservaPorTransacao(Campus campus,
+			StatusReserva status, Integer idTransacao) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idTransacao t ");
-		hql.append("WHERE c.idCampus = :idCampus AND ");
+		hql.append("WHERE c.idCampus = :idCampus AND o.status = :status AND ");
 		hql.append("t.idTransacao = :idTransacao ");
 		hql.append("ORDER BY o.data ASC, o.horaInicio ASC, o.horaFim ASC ");
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
+		q.setString("status", status.getStatus());
 		q.setInteger("idTransacao", idTransacao);
 
 		List<Reserva> list = this.pesquisaObjetos(q, 0);

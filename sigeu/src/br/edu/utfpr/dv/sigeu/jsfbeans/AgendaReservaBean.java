@@ -139,7 +139,7 @@ public class AgendaReservaBean extends JavaBean {
 					categoria = itemReserva.getIdCategoria();
 				}
 
-				listaReserva = ReservaService.pesquisaReservasDoDia(data, categoria, itemReserva);
+				listaReserva = ReservaService.pesquisaReservasEfetivadasDoDia(data, categoria, itemReserva);
 
 				if (listaReserva.size() > 0) {
 					reservaParaAgenda();

@@ -93,6 +93,17 @@ public class Reserva implements Serializable {
 	@Column(name = "cor")
 	private String cor = "#BBD2D2";
 
+	@Basic(optional = false)
+	@NotNull
+	@Size(min = 1, max = 1)
+	@Column(name = "status")
+	private String status = "E";
+
+	@Basic(optional = true)
+	@Size(min = 0, max = 4000)
+	@Column(name = "motivo_cancelamento")
+	private String motivoCancelamento;
+
 	public Reserva() {
 	}
 
@@ -100,7 +111,8 @@ public class Reserva implements Serializable {
 		this.idReserva = idReserva;
 	}
 
-	public Reserva(Integer idReserva, Date data, Date horaInicio, Date horaFim, String emailNotificacao, String motivo) {
+	public Reserva(Integer idReserva, Date data, Date horaInicio, Date horaFim,
+			String emailNotificacao, String motivo) {
 		this.idReserva = idReserva;
 		this.data = data;
 		this.horaInicio = horaInicio;
@@ -221,6 +233,22 @@ public class Reserva implements Serializable {
 		this.cor = cor;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getMotivoCancelamento() {
+		return motivoCancelamento;
+	}
+
+	public void setMotivoCancelamento(String motivoCancelamento) {
+		this.motivoCancelamento = motivoCancelamento;
+	}
+
 	@Override
 	public int hashCode() {
 		int hash = 0;
@@ -234,7 +262,9 @@ public class Reserva implements Serializable {
 			return false;
 		}
 		Reserva other = (Reserva) object;
-		if ((this.idReserva == null && other.idReserva != null) || (this.idReserva != null && !this.idReserva.equals(other.idReserva))) {
+		if ((this.idReserva == null && other.idReserva != null)
+				|| (this.idReserva != null && !this.idReserva
+						.equals(other.idReserva))) {
 			return false;
 		}
 		return true;
@@ -242,7 +272,8 @@ public class Reserva implements Serializable {
 
 	@Override
 	public String toString() {
-		return "br.edu.utfpr.dv.sigeu.entities.Reserva[ idReserva=" + idReserva + " ]";
+		return "br.edu.utfpr.dv.sigeu.entities.Reserva[ idReserva=" + idReserva
+				+ " ]";
 	}
 
 }

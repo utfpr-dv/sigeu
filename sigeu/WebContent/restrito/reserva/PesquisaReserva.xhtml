@@ -76,16 +76,13 @@
 								emptyMessage="Nenhum registro encontrado." rows="7"
 								paginator="true" paginatorAlwaysVisible="true"
 								paginatorPosition="bottom">
-								<p:column headerText="Patrimonio"
-									style="text-align: center; width: 80px">
+								<p:column headerText="Patrimonio">
 									<h:outputText value="#{i.patrimonio}" />
 								</p:column>
-								<p:column headerText="Rótulo"
-									style="text-align: center; width: 80px">
+								<p:column headerText="Rótulo">
 									<h:outputText value="#{i.rotulo}" />
 								</p:column>
-								<p:column headerText="Categoria"
-									style="text-align: center; width: 120px">
+								<p:column headerText="Categoria">
 									<h:outputText value="#{i.idCategoria.nome}" />
 								</p:column>
 								<p:column headerText="Nome">
@@ -105,15 +102,13 @@
 								emptyMessage="Nenhum registro encontrado." rows="7"
 								paginator="true" paginatorAlwaysVisible="true"
 								paginatorPosition="bottom">
-								<p:column headerText="Patrimonio"
-									style="text-align: center; width: 80px">
+								<p:column headerText="Patrimonio">
 									<h:outputText value="#{i.idItemReserva.patrimonio}" />
 								</p:column>
-								<p:column headerText="Rótulo"
-									style="text-align: center; width: 80px">
+								<p:column headerText="Rótulo">
 									<h:outputText value="#{i.idItemReserva.rotulo}" />
 								</p:column>
-								<p:column headerText="Categoria" style="width: 80px">
+								<p:column headerText="Categoria">
 									<h:outputText value="#{i.idItemReserva.idCategoria.nome}" />
 								</p:column>
 								<p:column headerText="Nome">
@@ -125,22 +120,19 @@
 								<p:column headerText="Motivo">
 									<h:outputText value="#{i.motivo}" />
 								</p:column>
-								<p:column headerText="Data"
-									style="text-align: center; width: 70px">
+								<p:column headerText="Data">
 									<h:outputText value="#{i.data}" converter="dateConverter" />
 								</p:column>
-								<p:column headerText="Início"
-									style="text-align: center; width: 50px">
+								<p:column headerText="Início">
 									<h:outputText value="#{i.horaInicio}" converter="hourConverter" />
 								</p:column>
-								<p:column headerText="Fim"
-									style="text-align: center; width: 50px">
+								<p:column headerText="Fim">
 									<h:outputText value="#{i.horaFim}" converter="hourConverter" />
 								</p:column>
 								<p:column headerText="Ações"
 									style="text-align: center; width: 100px">
 									<p:commandButton value="Cancelar" icon="ui-icon-trash"
-										action="#{reservaBean.excluirReserva(i)}" update="@form" />
+										action="#{reservaBean.cancelaReserva(i)}" update="@form" />
 								</p:column>
 							</p:dataTable>
 						</p:tab>
@@ -259,11 +251,11 @@
 						requiredMessage="É obrigatório informar o motivo do cancelamento" />
 					<div id="divButtons" style="margin-top: 10px">
 						<p:commandButton id="idb1" value="Excluir" icon="ui-icon-trash"
-							style="width:120px;" action="#{reservaBean.excluiReservas}"
+							style="width:120px;" action="#{reservaBean.cancelaReservas}"
 							update="@form" />
 						<p:commandButton id="idb2" value="Excluir Todas"
 							icon="ui-icon-trash" style="width:120px;"
-							action="#{reservaBean.excluiReservasTodas}" update="@form" />
+							action="#{reservaBean.cancelaReservasTodas}" update="@form" />
 						<p:commandButton id="idb3" value="Cancelar"
 							icon="ui-icon-arrowreturn-1-w" style="width:120px;"
 							action="#{reservaBean.cancela}" update="@form" process="@this"
