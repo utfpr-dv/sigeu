@@ -16,47 +16,34 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "lesson")
+@Table(name = "lesson", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "Lesson.findAll", query = "SELECT l FROM Lesson l")})
 public class Lesson implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_lesson")
     private Integer idLesson;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
     @Column(name = "id")
     private String id;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2000)
     @Column(name = "classids")
     private String classids;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2000)
     @Column(name = "subjectids")
     private String subjectids;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2000)
     @Column(name = "teacherids")
     private String teacherids;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2000)
     @Column(name = "classroomids")
     private String classroomids;
     @JoinColumn(name = "id_timetable", referencedColumnName = "id_timetable")
@@ -144,6 +131,7 @@ public class Lesson implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Lesson)) {
             return false;
         }

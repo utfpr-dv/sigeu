@@ -20,39 +20,30 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "campus")
+@Table(name = "campus", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "Campus.findAll", query = "SELECT c FROM Campus c")})
 public class Campus implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_campus")
     private Integer idCampus;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 10)
     @Column(name = "sigla")
     private String sigla;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 200)
     @Column(name = "nome")
     private String nome;
-    @Size(max = 1024)
     @Column(name = "url_logo")
     private String urlLogo;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ativo")
     private boolean ativo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
@@ -280,6 +271,7 @@ public class Campus implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Campus)) {
             return false;
         }

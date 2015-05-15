@@ -82,7 +82,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
-		q.setString("status", status.getStatus());
+		q.setCharacter("status", status.getStatus());
 		if (categoria != null) {
 			q.setInteger("idCategoria", categoria.getIdCategoria());
 		}
@@ -113,7 +113,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
-		q.setString("status", status.getStatus());
+		q.setCharacter("status", status.getStatus());
 		q.setInteger("idCategoria", categoria.getIdCategoria());
 		q.setInteger("idPessoa", pessoa.getIdPessoa());
 
@@ -146,7 +146,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
-		q.setString("status", status.getStatus());
+		q.setCharacter("status", status.getStatus());
 		q.setInteger("idCategoria", categoria.getIdCategoria());
 		q.setDate("data", data);
 		q.setTime("horaInicio", horaInicio);
@@ -193,7 +193,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
-		q.setString("status", status.getStatus());
+		q.setCharacter("status", status.getStatus());
 		q.setInteger("idTipoReserva", tipoReserva.getIdTipoReserva());
 		q.setDate("data", data);
 
@@ -218,7 +218,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
-		q.setString("status", status.getStatus());
+		q.setCharacter("status", status.getStatus());
 		q.setInteger("idTransacao", idTransacao);
 
 		List<Reserva> list = this.pesquisaObjetos(q, 0);

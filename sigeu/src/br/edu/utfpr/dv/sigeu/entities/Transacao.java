@@ -22,32 +22,26 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "transacao")
+@Table(name = "transacao", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "Transacao.findAll", query = "SELECT t FROM Transacao t")})
 public class Transacao implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_transacao")
     private Integer idTransacao;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "data_hora")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataHora;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 512)
     @Column(name = "descricao")
     private String descricao;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
@@ -139,6 +133,7 @@ public class Transacao implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Transacao)) {
             return false;
         }

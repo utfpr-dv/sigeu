@@ -19,31 +19,25 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "tipo_reserva")
+@Table(name = "tipo_reserva", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "TipoReserva.findAll", query = "SELECT t FROM TipoReserva t")})
 public class TipoReserva implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_tipo_reserva")
     private Integer idTipoReserva;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
     @Column(name = "descricao")
     private String descricao;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ativo")
     private boolean ativo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idTipoReserva", fetch = FetchType.LAZY)
@@ -114,6 +108,7 @@ public class TipoReserva implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TipoReserva)) {
             return false;
         }

@@ -1,19 +1,18 @@
 package br.edu.utfpr.dv.sigeu.enumeration;
 
 public enum StatusReserva {
-	EFETIVADA("E", "Efetivada"), 
-	CANCELADA("C", "Cancelada"), 
-	PENDENTE("P", "Pendente");
+	EFETIVADA('E', "Efetivada"), CANCELADA('C', "Cancelada"), PENDENTE('P',
+			"Pendente");
 
-	private String status;
+	private Character status;
 	private String descricao;
 
-	private StatusReserva(String status, String descricao) {
+	private StatusReserva(Character status, String descricao) {
 		this.status = status;
 		this.descricao = descricao;
 	}
 
-	public String getStatus() {
+	public Character getStatus() {
 		return status;
 	}
 

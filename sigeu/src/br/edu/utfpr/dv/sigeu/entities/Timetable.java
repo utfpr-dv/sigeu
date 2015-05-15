@@ -22,31 +22,25 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "timetable")
+@Table(name = "timetable", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "Timetable.findAll", query = "SELECT t FROM Timetable t")})
 public class Timetable implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_timetable")
     private Integer idTimetable;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 256)
     @Column(name = "nome_arquivo")
     private String nomeArquivo;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "data_carregamento")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataCarregamento;
@@ -178,6 +172,7 @@ public class Timetable implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Timetable)) {
             return false;
         }

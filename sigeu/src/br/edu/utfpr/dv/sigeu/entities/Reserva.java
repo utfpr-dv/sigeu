@@ -7,7 +7,6 @@ package br.edu.utfpr.dv.sigeu.entities;
 
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,260 +19,239 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "reserva")
-@NamedQueries({ @NamedQuery(name = "Reserva.findAll", query = "SELECT r FROM Reserva r") })
+@Table(name = "reserva", catalog = "sigeu", schema = "public")
+@NamedQueries({
+    @NamedQuery(name = "Reserva.findAll", query = "SELECT r FROM Reserva r")})
 public class Reserva implements Serializable {
-	private static final long serialVersionUID = 1L;
-	@Id
-	@Basic(optional = false)
-	@NotNull
-	@Column(name = "id_reserva")
-	private Integer idReserva;
-	@Basic(optional = false)
-	@NotNull
-	@Column(name = "data")
-	@Temporal(TemporalType.DATE)
-	private Date data;
-	@Basic(optional = false)
-	@NotNull
-	@Column(name = "hora_inicio")
-	@Temporal(TemporalType.TIME)
-	private Date horaInicio;
-	@Basic(optional = false)
-	@NotNull
-	@Column(name = "hora_fim")
-	@Temporal(TemporalType.TIME)
-	private Date horaFim;
-	@Basic(optional = false)
-	@NotNull
-	@Size(min = 1, max = 256)
-	@Column(name = "email_notificacao")
-	private String emailNotificacao;
-	@Basic(optional = false)
-	@NotNull
-	@Size(min = 1, max = 4000)
-	@Column(name = "motivo")
-	private String motivo;
-	@JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private Campus idCampus;
-	@JoinColumn(name = "id_item_reserva", referencedColumnName = "id_item_reserva")
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private ItemReserva idItemReserva;
-	@JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa")
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private Pessoa idPessoa;
-	@JoinColumn(name = "id_usuario", referencedColumnName = "id_pessoa")
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private Pessoa idUsuario;
-	@JoinColumn(name = "id_tipo_reserva", referencedColumnName = "id_tipo_reserva")
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private TipoReserva idTipoReserva;
-	@JoinColumn(name = "id_transacao", referencedColumnName = "id_transacao")
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	private Transacao idTransacao;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id_reserva")
+    private Integer idReserva;
+    @Basic(optional = false)
+    @Column(name = "data")
+    @Temporal(TemporalType.DATE)
+    private Date data;
+    @Basic(optional = false)
+    @Column(name = "hora_inicio")
+    @Temporal(TemporalType.TIME)
+    private Date horaInicio;
+    @Basic(optional = false)
+    @Column(name = "hora_fim")
+    @Temporal(TemporalType.TIME)
+    private Date horaFim;
+    @Basic(optional = false)
+    @Column(name = "email_notificacao")
+    private String emailNotificacao;
+    @Basic(optional = false)
+    @Column(name = "motivo")
+    private String motivo;
+    @Basic(optional = false)
+    @Column(name = "rotulo")
+    private String rotulo;
+    @Basic(optional = false)
+    @Column(name = "cor")
+    private String cor;
+    @Basic(optional = false)
+    @Column(name = "status")
+    private Character status;
+    @Column(name = "motivo_cancelamento")
+    private String motivoCancelamento;
+    @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Campus idCampus;
+    @JoinColumn(name = "id_item_reserva", referencedColumnName = "id_item_reserva")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private ItemReserva idItemReserva;
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Pessoa idPessoa;
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id_pessoa")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Pessoa idUsuario;
+    @JoinColumn(name = "id_tipo_reserva", referencedColumnName = "id_tipo_reserva")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private TipoReserva idTipoReserva;
+    @JoinColumn(name = "id_transacao", referencedColumnName = "id_transacao")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Transacao idTransacao;
 
-	@Basic(optional = false)
-	@NotNull
-	@Size(min = 1, max = 32)
-	@Column(name = "rotulo")
-	private String rotulo;
+    public Reserva() {
+    }
 
-	@Basic(optional = false)
-	@NotNull
-	@Size(min = 1, max = 12)
-	@Column(name = "cor")
-	private String cor = "#BBD2D2";
+    public Reserva(Integer idReserva) {
+        this.idReserva = idReserva;
+    }
 
-	@Basic(optional = false)
-	@NotNull
-	@Size(min = 1, max = 1)
-	@Column(name = "status")
-	private String status = "E";
+    public Reserva(Integer idReserva, Date data, Date horaInicio, Date horaFim, String emailNotificacao, String motivo, String rotulo, String cor, Character status) {
+        this.idReserva = idReserva;
+        this.data = data;
+        this.horaInicio = horaInicio;
+        this.horaFim = horaFim;
+        this.emailNotificacao = emailNotificacao;
+        this.motivo = motivo;
+        this.rotulo = rotulo;
+        this.cor = cor;
+        this.status = status;
+    }
 
-	@Basic(optional = true)
-	@Size(min = 0, max = 4000)
-	@Column(name = "motivo_cancelamento")
-	private String motivoCancelamento;
+    public Integer getIdReserva() {
+        return idReserva;
+    }
 
-	public Reserva() {
-	}
+    public void setIdReserva(Integer idReserva) {
+        this.idReserva = idReserva;
+    }
 
-	public Reserva(Integer idReserva) {
-		this.idReserva = idReserva;
-	}
+    public Date getData() {
+        return data;
+    }
 
-	public Reserva(Integer idReserva, Date data, Date horaInicio, Date horaFim,
-			String emailNotificacao, String motivo) {
-		this.idReserva = idReserva;
-		this.data = data;
-		this.horaInicio = horaInicio;
-		this.horaFim = horaFim;
-		this.emailNotificacao = emailNotificacao;
-		this.motivo = motivo;
-	}
+    public void setData(Date data) {
+        this.data = data;
+    }
 
-	public Integer getIdReserva() {
-		return idReserva;
-	}
+    public Date getHoraInicio() {
+        return horaInicio;
+    }
 
-	public void setIdReserva(Integer idReserva) {
-		this.idReserva = idReserva;
-	}
+    public void setHoraInicio(Date horaInicio) {
+        this.horaInicio = horaInicio;
+    }
 
-	public Date getData() {
-		return data;
-	}
+    public Date getHoraFim() {
+        return horaFim;
+    }
 
-	public void setData(Date data) {
-		this.data = data;
-	}
+    public void setHoraFim(Date horaFim) {
+        this.horaFim = horaFim;
+    }
 
-	public Date getHoraInicio() {
-		return horaInicio;
-	}
+    public String getEmailNotificacao() {
+        return emailNotificacao;
+    }
 
-	public void setHoraInicio(Date horaInicio) {
-		this.horaInicio = horaInicio;
-	}
+    public void setEmailNotificacao(String emailNotificacao) {
+        this.emailNotificacao = emailNotificacao;
+    }
 
-	public Date getHoraFim() {
-		return horaFim;
-	}
+    public String getMotivo() {
+        return motivo;
+    }
 
-	public void setHoraFim(Date horaFim) {
-		this.horaFim = horaFim;
-	}
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
+    }
 
-	public String getEmailNotificacao() {
-		return emailNotificacao;
-	}
+    public String getRotulo() {
+        return rotulo;
+    }
 
-	public void setEmailNotificacao(String emailNotificacao) {
-		this.emailNotificacao = emailNotificacao;
-	}
+    public void setRotulo(String rotulo) {
+        this.rotulo = rotulo;
+    }
 
-	public String getMotivo() {
-		return motivo;
-	}
+    public String getCor() {
+        return cor;
+    }
 
-	public void setMotivo(String motivo) {
-		this.motivo = motivo;
-	}
+    public void setCor(String cor) {
+        this.cor = cor;
+    }
 
-	public Campus getIdCampus() {
-		return idCampus;
-	}
+    public Character getStatus() {
+        return status;
+    }
 
-	public void setIdCampus(Campus idCampus) {
-		this.idCampus = idCampus;
-	}
+    public void setStatus(Character status) {
+        this.status = status;
+    }
 
-	public ItemReserva getIdItemReserva() {
-		return idItemReserva;
-	}
+    public String getMotivoCancelamento() {
+        return motivoCancelamento;
+    }
 
-	public void setIdItemReserva(ItemReserva idItemReserva) {
-		this.idItemReserva = idItemReserva;
-	}
+    public void setMotivoCancelamento(String motivoCancelamento) {
+        this.motivoCancelamento = motivoCancelamento;
+    }
 
-	public Pessoa getIdPessoa() {
-		return idPessoa;
-	}
+    public Campus getIdCampus() {
+        return idCampus;
+    }
 
-	public void setIdPessoa(Pessoa idPessoa) {
-		this.idPessoa = idPessoa;
-	}
+    public void setIdCampus(Campus idCampus) {
+        this.idCampus = idCampus;
+    }
 
-	public Pessoa getIdUsuario() {
-		return idUsuario;
-	}
+    public ItemReserva getIdItemReserva() {
+        return idItemReserva;
+    }
 
-	public void setIdUsuario(Pessoa idUsuario) {
-		this.idUsuario = idUsuario;
-	}
+    public void setIdItemReserva(ItemReserva idItemReserva) {
+        this.idItemReserva = idItemReserva;
+    }
 
-	public TipoReserva getIdTipoReserva() {
-		return idTipoReserva;
-	}
+    public Pessoa getIdPessoa() {
+        return idPessoa;
+    }
 
-	public void setIdTipoReserva(TipoReserva idTipoReserva) {
-		this.idTipoReserva = idTipoReserva;
-	}
+    public void setIdPessoa(Pessoa idPessoa) {
+        this.idPessoa = idPessoa;
+    }
 
-	public Transacao getIdTransacao() {
-		return idTransacao;
-	}
+    public Pessoa getIdUsuario() {
+        return idUsuario;
+    }
 
-	public void setIdTransacao(Transacao idTransacao) {
-		this.idTransacao = idTransacao;
-	}
+    public void setIdUsuario(Pessoa idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 
-	public String getRotulo() {
-		return rotulo;
-	}
+    public TipoReserva getIdTipoReserva() {
+        return idTipoReserva;
+    }
 
-	public void setRotulo(String rotulo) {
-		this.rotulo = rotulo;
-	}
+    public void setIdTipoReserva(TipoReserva idTipoReserva) {
+        this.idTipoReserva = idTipoReserva;
+    }
 
-	public String getCor() {
-		return cor;
-	}
+    public Transacao getIdTransacao() {
+        return idTransacao;
+    }
 
-	public void setCor(String cor) {
-		this.cor = cor;
-	}
+    public void setIdTransacao(Transacao idTransacao) {
+        this.idTransacao = idTransacao;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (idReserva != null ? idReserva.hashCode() : 0);
+        return hash;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Reserva)) {
+            return false;
+        }
+        Reserva other = (Reserva) object;
+        if ((this.idReserva == null && other.idReserva != null) || (this.idReserva != null && !this.idReserva.equals(other.idReserva))) {
+            return false;
+        }
+        return true;
+    }
 
-	public String getMotivoCancelamento() {
-		return motivoCancelamento;
-	}
-
-	public void setMotivoCancelamento(String motivoCancelamento) {
-		this.motivoCancelamento = motivoCancelamento;
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 0;
-		hash += (idReserva != null ? idReserva.hashCode() : 0);
-		return hash;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (!(object instanceof Reserva)) {
-			return false;
-		}
-		Reserva other = (Reserva) object;
-		if ((this.idReserva == null && other.idReserva != null)
-				|| (this.idReserva != null && !this.idReserva
-						.equals(other.idReserva))) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "br.edu.utfpr.dv.sigeu.entities.Reserva[ idReserva=" + idReserva
-				+ " ]";
-	}
-
+    @Override
+    public String toString() {
+        return "br.edu.utfpr.dv.sigeu.entities.Reserva[ idReserva=" + idReserva + " ]";
+    }
+    
 }

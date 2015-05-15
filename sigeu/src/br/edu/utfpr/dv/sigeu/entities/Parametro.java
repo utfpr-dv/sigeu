@@ -13,28 +13,22 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "parametro")
+@Table(name = "parametro", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "Parametro.findAll", query = "SELECT p FROM Parametro p")})
 public class Parametro implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
     @Column(name = "codigo")
     private String codigo;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2147483647)
     @Column(name = "valor")
     private String valor;
 
@@ -75,6 +69,7 @@ public class Parametro implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Parametro)) {
             return false;
         }

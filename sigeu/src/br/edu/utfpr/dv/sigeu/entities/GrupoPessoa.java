@@ -19,27 +19,22 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "grupo_pessoa")
+@Table(name = "grupo_pessoa", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "GrupoPessoa.findAll", query = "SELECT g FROM GrupoPessoa g")})
 public class GrupoPessoa implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_grupo_pessoa")
     private Integer idGrupoPessoa;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 200)
     @Column(name = "nome")
     private String nome;
     @JoinTable(name = "pessoa_grupo_pessoa", joinColumns = {
@@ -104,6 +99,7 @@ public class GrupoPessoa implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof GrupoPessoa)) {
             return false;
         }

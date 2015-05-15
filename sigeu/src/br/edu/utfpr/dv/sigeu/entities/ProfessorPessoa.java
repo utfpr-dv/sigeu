@@ -17,21 +17,19 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "professor_pessoa")
+@Table(name = "professor_pessoa", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "ProfessorPessoa.findAll", query = "SELECT p FROM ProfessorPessoa p")})
 public class ProfessorPessoa implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_professor")
     private Integer idProfessor;
     @JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa")
@@ -81,6 +79,7 @@ public class ProfessorPessoa implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ProfessorPessoa)) {
             return false;
         }

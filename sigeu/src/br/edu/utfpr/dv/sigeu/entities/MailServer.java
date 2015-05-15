@@ -16,62 +16,46 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "mail_server")
+@Table(name = "mail_server", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "MailServer.findAll", query = "SELECT m FROM MailServer m")})
 public class MailServer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_campus")
     private Integer idCampus;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "authentication_required")
     private boolean authenticationRequired;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "starttls")
     private boolean starttls;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ssl")
     private boolean ssl;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "plain_text_over_tls")
     private boolean plainTextOverTls;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
     @Column(name = "host")
     private String host;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "port")
     private int port;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
     @Column(name = "from_email")
     private String fromEmail;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
     @Column(name = "user_name")
     private String userName;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2000)
     @Column(name = "password")
     private String password;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus", insertable = false, updatable = false)
@@ -195,6 +179,7 @@ public class MailServer implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof MailServer)) {
             return false;
         }

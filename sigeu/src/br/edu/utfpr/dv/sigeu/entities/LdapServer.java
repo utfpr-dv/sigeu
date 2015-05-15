@@ -16,69 +16,50 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "ldap_server")
+@Table(name = "ldap_server", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "LdapServer.findAll", query = "SELECT l FROM LdapServer l")})
 public class LdapServer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_server")
     private Integer idServer;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 256)
     @Column(name = "host")
     private String host;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "port")
     private int port;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ssl")
     private boolean ssl;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2000)
     @Column(name = "basedn")
     private String basedn;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 256)
     @Column(name = "sufixo_email")
     private String sufixoEmail;
-    @Size(max = 32)
     @Column(name = "var_ldap_nome_completo")
     private String varLdapNomeCompleto;
-    @Size(max = 32)
     @Column(name = "var_ldap_email")
     private String varLdapEmail;
-    @Size(max = 32)
     @Column(name = "var_ldap_cnpj_cpf")
     private String varLdapCnpjCpf;
-    @Size(max = 32)
     @Column(name = "var_ldap_matricula")
     private String varLdapMatricula;
-    @Size(max = 32)
     @Column(name = "var_ldap_uid")
     private String varLdapUid;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
     @Column(name = "var_ldap_campus")
     private String varLdapCampus;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ativo")
     private boolean ativo;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
@@ -224,6 +205,7 @@ public class LdapServer implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof LdapServer)) {
             return false;
         }

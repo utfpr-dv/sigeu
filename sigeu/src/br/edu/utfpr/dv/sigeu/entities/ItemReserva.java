@@ -14,52 +14,48 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "item_reserva")
+@Table(name = "item_reserva", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "ItemReserva.findAll", query = "SELECT i FROM ItemReserva i")})
 public class ItemReserva implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_item_reserva")
     private Integer idItemReserva;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
     @Column(name = "nome")
     private String nome;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
     @Column(name = "rotulo")
     private String rotulo;
-    @Size(max = 32)
     @Column(name = "patrimonio")
     private String patrimonio;
-    @Size(max = 2147483647)
     @Column(name = "detalhes")
     private String detalhes;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ativo")
     private boolean ativo;
-    @Size(max = 32)
     @Column(name = "codigo")
     private String codigo;
+    @JoinTable(name = "autorizacao_item_reserva", joinColumns = {
+        @JoinColumn(name = "id_item_reserva", referencedColumnName = "id_item_reserva")}, inverseJoinColumns = {
+        @JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa")})
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Pessoa> pessoaList;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Campus idCampus;
@@ -139,6 +135,14 @@ public class ItemReserva implements Serializable {
         this.codigo = codigo;
     }
 
+    public List<Pessoa> getPessoaList() {
+        return pessoaList;
+    }
+
+    public void setPessoaList(List<Pessoa> pessoaList) {
+        this.pessoaList = pessoaList;
+    }
+
     public Campus getIdCampus() {
         return idCampus;
     }
@@ -172,6 +176,7 @@ public class ItemReserva implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ItemReserva)) {
             return false;
         }

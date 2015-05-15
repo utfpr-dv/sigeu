@@ -13,27 +13,22 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "sequencia")
+@Table(name = "sequencia", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "Sequencia.findAll", query = "SELECT s FROM Sequencia s")})
 public class Sequencia implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
     @Column(name = "nome")
     private String nome;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "valor")
     private long valor;
 
@@ -74,6 +69,7 @@ public class Sequencia implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Sequencia)) {
             return false;
         }

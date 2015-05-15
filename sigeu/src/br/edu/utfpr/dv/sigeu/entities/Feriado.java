@@ -19,36 +19,29 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "feriado")
+@Table(name = "feriado", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "Feriado.findAll", query = "SELECT f FROM Feriado f")})
 public class Feriado implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_feriado")
     private Integer idFeriado;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "data")
     @Temporal(TemporalType.DATE)
     private Date data;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "tipo")
     private Character tipo;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 128)
     @Column(name = "descricao")
     private String descricao;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
@@ -118,6 +111,7 @@ public class Feriado implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Feriado)) {
             return false;
         }

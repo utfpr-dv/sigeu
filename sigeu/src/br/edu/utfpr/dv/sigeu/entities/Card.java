@@ -16,42 +16,31 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "card")
+@Table(name = "card", catalog = "sigeu", schema = "public")
 @NamedQueries({
     @NamedQuery(name = "Card.findAll", query = "SELECT c FROM Card c")})
 public class Card implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_card")
     private Integer idCard;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
     @Column(name = "lessonid")
     private String lessonid;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2000)
     @Column(name = "classroomids")
     private String classroomids;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
     @Column(name = "period")
     private String period;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
     @Column(name = "days")
     private String days;
     @JoinColumn(name = "id_timetable", referencedColumnName = "id_timetable")
@@ -130,6 +119,7 @@ public class Card implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Card)) {
             return false;
         }
