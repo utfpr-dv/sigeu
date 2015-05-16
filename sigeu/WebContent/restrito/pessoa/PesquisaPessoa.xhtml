@@ -4,7 +4,7 @@
 	<ui:define name="titulo">SIGEU: Pessoa</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmPesquisaPessoa" prependId="false">
+		<h:form id="frmPesquisaPessoa" prependId="false" rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Pesquisa Pessoa</h2>
 
 			<table style="border: 10px; spacing: 0px; width: 100%">

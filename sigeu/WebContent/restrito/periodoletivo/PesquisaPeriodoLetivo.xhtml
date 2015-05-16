@@ -4,7 +4,7 @@
 	<ui:define name="titulo">SIGEU: Período Letivo</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmPesquisaPeriodoLetivo" prependId="false">
+		<h:form id="frmPesquisaPeriodoLetivo" prependId="false" rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Período Letivo</h2>
 
 			<table style="border: 10px; spacing: 0px; width: 100%">

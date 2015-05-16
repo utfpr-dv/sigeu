@@ -4,7 +4,7 @@
 	<ui:define name="titulo">SIGEU: Tipo de Reserva</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmTipoReserva" prependId="false">
+		<h:form id="frmTipoReserva" prependId="false" rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Tipo de Reserva</h2>
 
 			<p:panelGrid columns="2" id="painel" style="margin-top: 5px; width: 100%">

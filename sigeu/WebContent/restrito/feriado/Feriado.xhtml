@@ -4,7 +4,7 @@
 	<ui:define name="titulo">SIGEU: Feriado</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmFeriado" prependId="false">
+		<h:form id="frmFeriado" prependId="false" rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Feriados e Recessos</h2>
 
 			<p:panelGrid columns="2" id="painel" style="margin-top: 5px; width: 100%">

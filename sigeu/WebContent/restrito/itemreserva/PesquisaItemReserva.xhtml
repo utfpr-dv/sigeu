@@ -1,51 +1,146 @@
-<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/WEB-INF/template/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="titulo">SIGEU: Itens de Reserva</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmPesquisaItemReserva" prependId="false">
+		<h:form id="frmPesquisaItemReserva" prependId="false"
+			rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Pesquisa de Item de Reserva</h2>
 
-			<table style="border: 10px; spacing: 0px; width: 100%">
-				<tr>
-					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" /> <p:inputText id="textoPesquisa" size="64"
-							value="#{pesquisaItemReservaBean.textoPesquisa}" /> <p:commandButton value="Pesquisar" icon="ui-icon-search" style="width:100px"
-							action="#{pesquisaItemReservaBean.pesquisa}" update="@form" /></td>
-					<td align="right"><p:button value="Novo" outcome="/restrito/itemreserva/ItemReserva.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
-				</tr>
-			</table>
+			<p:panel id="listaItem" header="Item de Reserva" toggleable="false"
+				closable="false" toggleSpeed="500" closeSpeed="500"
+				widgetVar="panel" style="margin-bottom:20px"
+				rendered="#{pesquisaItemReservaBean.status eq 1}">
 
-			<p:dataTable id="ItemReservaTable" value="#{pesquisaItemReservaBean.lista}" var="i" style="margin-top: 20px" emptyMessage="Nenhum registro encontrado."
-				rows="7" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+				<table style="border: 10px; spacing: 0px; width: 100%">
+					<tr>
+						<td><p:outputLabel value="Pesquisar " for="textoPesquisa" />
+							<p:inputText id="textoPesquisa" size="64"
+								value="#{pesquisaItemReservaBean.textoPesquisa}" /> <p:commandButton
+								value="Pesquisar" icon="ui-icon-search" style="width:100px"
+								action="#{pesquisaItemReservaBean.pesquisa}" update="@form" /></td>
+						<td align="right"><p:button value="Novo"
+								outcome="/restrito/itemreserva/ItemReserva.xhtml"
+								icon="ui-icon-circle-plus" style="width:100px" /></td>
+					</tr>
+				</table>
 
-				<p:column headerText="ID" style="text-align: center; width: 80px">
-					<h:outputText value="#{i.idItemReserva}" />
-				</p:column>
+				<p:dataTable id="ItemReservaTable"
+					value="#{pesquisaItemReservaBean.lista}" var="i"
+					style="margin-top: 20px" emptyMessage="Nenhum registro encontrado."
+					rows="7" paginator="true" paginatorAlwaysVisible="true"
+					paginatorPosition="bottom">
 
-				<p:column headerText="Categoria">
-					<h:outputText value="#{i.idCategoria.nome}" />
-				</p:column>
+					<p:column headerText="ID" style="text-align: center; width: 80px">
+						<h:outputText value="#{i.idItemReserva}" />
+					</p:column>
 
-				<p:column headerText="Descrição">
-					<h:outputText value="#{i.nome}" />
-				</p:column>
+					<p:column headerText="Categoria">
+						<h:outputText value="#{i.idCategoria.nome}" />
+					</p:column>
 
-				<p:column headerText="Patrimônio">
-					<h:outputText value="#{i.patrimonio}" />
-				</p:column>
+					<p:column headerText="Descrição">
+						<h:outputText value="#{i.nome}" />
+					</p:column>
 
-				<p:column headerText="Ativo" style="text-align: center; width: 80px">
-					<p:selectBooleanCheckbox value="#{i.ativo}" disabled="true" />
-				</p:column>
+					<p:column headerText="Patrimônio">
+						<h:outputText value="#{i.patrimonio}" />
+					</p:column>
 
-				<p:column style="width: 104px; text-align: center">
-					<p:button value="Editar" outcome="/restrito/itemreserva/ItemReserva.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
-						<f:param name="editarId" value="#{i.idItemReserva}" />
-					</p:button>
-				</p:column>
+					<p:column headerText="Ativo"
+						style="text-align: center; width: 80px">
+						<p:selectBooleanCheckbox value="#{i.ativo}" disabled="true" />
+					</p:column>
 
-			</p:dataTable>
+					<p:column style="width: 110px; text-align: center">
+						<p:commandButton id="autorizadores"
+							action="#{pesquisaItemReservaBean.editaAutorizadores(i)}"
+							value="Autorizadores" icon="ui-icon-person" title="Autorizadores"
+							style="width: 108px" update="@form" />
+					</p:column>
+
+					<p:column style="width: 104px; text-align: center">
+						<p:button value="Editar"
+							outcome="/restrito/itemreserva/ItemReserva.xhtml"
+							icon="ui-icon-pencil" title="Editar" style="width: 100px">
+							<f:param name="editarId" value="#{i.idItemReserva}" />
+						</p:button>
+					</p:column>
+
+				</p:dataTable>
+
+			</p:panel>
+
+			<p:panel id="autorizaItem" header="Autorizadores de Reserva do Item"
+				toggleable="false" closable="false" toggleSpeed="500"
+				closeSpeed="500" widgetVar="panel" style="margin-bottom:20px"
+				rendered="#{pesquisaItemReservaBean.status eq 2}">
+
+				<p:panelGrid columns="2" id="painel"
+					style="margin-top: 5px; width: 100%">
+
+					<p:outputLabel value="Categoria" />
+					<p:outputLabel
+						value="#{pesquisaItemReservaBean.itemReserva.idCategoria.nome}" />
+
+					<p:outputLabel value="Nome" />
+					<p:outputLabel label="Nome"
+						value="#{pesquisaItemReservaBean.itemReserva.nome}" />
+
+				</p:panelGrid>
+
+				<p:dataTable id="pessoaListTable"
+					value="#{pesquisaItemReservaBean.itemReserva.pessoaList}" var="i"
+					style="margin-top: 10px" emptyMessage="Nenhum registro encontrado."
+					rows="7" paginator="true" paginatorAlwaysVisible="true"
+					paginatorPosition="bottom">
+
+					<p:column headerText="Nome">
+						<h:outputText value="#{i.nomeCompleto}" />
+					</p:column>
+
+					<p:column headerText="E-mail">
+						<h:outputText value="#{i.email}" />
+					</p:column>
+
+
+					<p:column style="width: 104px; text-align: center">
+						<p:commandButton id="Excluir"
+							action="#{pesquisaItemReservaBean.excluiAutorizador(i)}"
+							value="Excluir" icon="ui-icon-trash" title="Excluir"
+							style="width: 100px" update="@form" />
+					</p:column>
+
+				</p:dataTable>
+
+				<p:panelGrid columns="4" id="painel3"
+					style="margin-top: 20px; width: 100%">
+
+					<p:outputLabel value="Usuário" for="pesquisaPessoa" />
+					<p:autoComplete id="pesquisaPessoa" forceSelection="true"
+						value="#{pesquisaItemReservaBean.campoPessoa}"
+						completeMethod="#{pesquisaItemReservaBean.selecionaPessoa}"
+						minQueryLength="1" queryDelay="250" size="60">
+						<p:ajax event="itemSelect"
+							listener="#{pesquisaItemReservaBean.definePessoa}" update="@form" />
+					</p:autoComplete>
+
+					<p:commandButton id="Adicionar"
+						action="#{pesquisaItemReservaBean.adicionarAutorizador}"
+						value="Adicionar" icon="ui-icon-circle-plus" title="Adicionar"
+						style="width: 100px" update="@form" />
+						
+					<p:commandButton id="CancelarAdd"
+						action="#{pesquisaItemReservaBean.cancelaAdicionarAutorizador}"
+						value="Cancelar" icon="ui-icon-circle-plus" title="Cancelar"
+						style="width: 100px" update="@form" />
+				</p:panelGrid>
+			</p:panel>
 		</h:form>
 	</ui:define>
 

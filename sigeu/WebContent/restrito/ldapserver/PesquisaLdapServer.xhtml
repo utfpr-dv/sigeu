@@ -4,7 +4,7 @@
 	<ui:define name="titulo">SIGEU: LdapServer</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmPesquisaLdapServer" prependId="false">
+		<h:form id="frmPesquisaLdapServer" prependId="false" rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Pesquisa LdapServer</h2>
 
 			<table style="border: 10px; spacing: 0px; width: 100%">

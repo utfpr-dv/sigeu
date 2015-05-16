@@ -4,7 +4,7 @@
 	<ui:define name="titulo">SIGEU: Feriados</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmPesquisaFeriado" prependId="false">
+		<h:form id="frmPesquisaFeriado" prependId="false" rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Feriados</h2>
 
 			<table style="border: 10px; spacing: 0px; width: 100%">

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 
 import com.adamiworks.utils.FileUtils;
@@ -28,7 +29,12 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		String hql = "from ItemReserva o where o.id = :id";
 		Query q = session.createQuery(hql);
 		q.setInteger("id", id);
-		return (ItemReserva) q.uniqueResult();
+
+		ItemReserva i = (ItemReserva) q.uniqueResult();
+
+		Hibernate.initialize(i.getPessoaList());
+
+		return i;
 	}
 
 	public ItemReserva encontrePorDescricao(Campus campus, String descricao) {
@@ -39,7 +45,8 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return (ItemReserva) q.uniqueResult();
 	}
 
-	public ItemReserva encontrePorDescricaoECategoria(Campus campus, CategoriaItemReserva categoria, String descricao) {
+	public ItemReserva encontrePorDescricaoECategoria(Campus campus,
+			CategoriaItemReserva categoria, String descricao) {
 		String hql = "from ItemReserva o where upper(o.nome) = upper(:des) AND o.idCampus.idCampus = :idCampus AND ";
 		hql += "o.idCategoria.idCategoria = :idCategoria";
 		Query q = session.createQuery(hql);
@@ -49,7 +56,8 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return (ItemReserva) q.uniqueResult();
 	}
 
-	public ItemReserva encontrePorDescricaoECategoria(Campus campus, Integer categoria, String descricao) {
+	public ItemReserva encontrePorDescricaoECategoria(Campus campus,
+			Integer categoria, String descricao) {
 		String hql = "from ItemReserva o where upper(o.nome) = upper(:des) AND o.idCampus.idCampus = :idCampus AND ";
 		hql += "o.idCategoria.idCategoria = :idCategoria";
 		Query q = session.createQuery(hql);
@@ -70,7 +78,9 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return "item_reserva";
 	}
 
-	public List<ItemReserva> pesquisa(Campus campus, CategoriaItemReserva categoria, String textoPesquisa, Boolean ativo, int limit) {
+	public List<ItemReserva> pesquisa(Campus campus,
+			CategoriaItemReserva categoria, String textoPesquisa,
+			Boolean ativo, int limit) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM ItemReserva o ");
@@ -109,10 +119,12 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return this.pesquisaObjetos(q, limit);
 	}
 
-	public List<ItemReserva> pesquisaItemReservaDisponivel(Campus campus, Date data, Date horaInicial, Date horaFinal, CategoriaItemReserva categoria,
-			ItemReserva item) {
+	public List<ItemReserva> pesquisaItemReservaDisponivel(Campus campus,
+			Date data, Date horaInicial, Date horaFinal,
+			CategoriaItemReserva categoria, ItemReserva item) {
 
-		String sql = FileUtils.readTextFile("/br/edu/utfpr/dv/sigeu/sqlquery/Query001.sql");
+		String sql = FileUtils
+				.readTextFile("/br/edu/utfpr/dv/sigeu/sqlquery/Query001.sql");
 		Query query = session.createSQLQuery(sql).addEntity(ItemReserva.class);
 
 		query.setInteger("idCampus", campus.getIdCampus());
@@ -138,11 +150,13 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return lista;
 	}
 
-	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa, Boolean ativo, int limit) {
+	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa,
+			Boolean ativo, int limit) {
 		return this.pesquisa(campus, null, textoPesquisa, ativo, limit);
 	}
 
-	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa, int limit) {
+	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa,
+			int limit) {
 		return this.pesquisa(campus, textoPesquisa, null, limit);
 	}
 

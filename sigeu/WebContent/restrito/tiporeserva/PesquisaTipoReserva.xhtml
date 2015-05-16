@@ -4,7 +4,7 @@
 	<ui:define name="titulo">SIGEU: Tipo de Reserva</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmPesquisaTipoReserva" prependId="false">
+		<h:form id="frmPesquisaTipoReserva" prependId="false" rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Pesquisa Tipo de Reserva</h2>
 
 			<table style="border: 10px; spacing: 0px; width: 100%">

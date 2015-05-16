@@ -30,7 +30,8 @@ public class ItemReservaBean extends JavaBean {
 		itemReserva = new ItemReserva();
 		itemReserva.setAtivo(true);
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest req = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
 
 		try {
 			this.editarId = Integer.valueOf(req.getParameter("editarId"));
@@ -44,9 +45,11 @@ public class ItemReservaBean extends JavaBean {
 
 				if (itemReserva == null) {
 					itemReserva = new ItemReserva();
-					this.addInfoMessage("Carregar", " " + this.editarId + " inexistente.");
+					this.addInfoMessage("Carregar", " " + this.editarId
+							+ " inexistente.");
 				} else {
-					this.pesquisaCategoria = itemReserva.getIdCategoria().getNome();
+					this.pesquisaCategoria = itemReserva.getIdCategoria()
+							.getNome();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -64,10 +67,11 @@ public class ItemReservaBean extends JavaBean {
 
 		try {
 			ItemReservaService.persistir(itemReserva);
-			String msg = "Item " + itemReserva.getIdItemReserva() + "-" + itemReserva.getNome() + " gravado com sucesso!";
+			String msg = "Item " + itemReserva.getIdItemReserva() + "-"
+					+ itemReserva.getNome() + " gravado com sucesso!";
 			itemReserva = new ItemReserva();
 			itemReserva.setAtivo(true);
-			
+
 			this.pesquisaCategoria = "";
 			this.listaCategoria = null;
 
@@ -88,15 +92,18 @@ public class ItemReservaBean extends JavaBean {
 	 */
 	public void excluir() {
 		if (itemReserva.getIdItemReserva() == null) {
-			addInfoMessage("Excluir", " ainda não foi incluída no banco de dados.");
+			addInfoMessage("Excluir",
+					" ainda não foi incluída no banco de dados.");
 		} else {
 			try {
 				String old = itemReserva.getNome();
 				ItemReservaService.remover(itemReserva);
 				itemReserva = new ItemReserva();
-				this.addInfoMessage("Excluir", "Item " + old + " excluío com sucesso!");
+				this.addInfoMessage("Excluir", "Item " + old
+						+ " excluío com sucesso!");
 			} catch (EntidadePossuiRelacionamentoException e) {
-				this.addWarnMessage("Excluir", "Item já possui relacionamentos. Solicite exclusão ao admin.");
+				this.addWarnMessage("Excluir",
+						"Item já possui relacionamentos. Solicite exclusão ao admin.");
 			} catch (Exception e) {
 				this.addErrorMessage("Excluir", "Erro ao tentar excluir .");
 			}
@@ -122,7 +129,8 @@ public class ItemReservaBean extends JavaBean {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.addErrorMessage("Selecionar", "Erro na pesquisa de siglas de categorias");
+			this.addErrorMessage("Selecionar",
+					"Erro na pesquisa de siglas de categorias");
 			return list;
 		}
 
@@ -136,7 +144,8 @@ public class ItemReservaBean extends JavaBean {
 		for (CategoriaItemReserva i : listaCategoria) {
 			if (pesquisaCategoria.equals(i.getNome())) {
 				itemReserva.setIdCategoria(i);
-				addInfoMessage("Selecionar", "Instituição selecionada: " + i.getNome());
+				addInfoMessage("Selecionar",
+						"Instituição selecionada: " + i.getNome());
 				this.pesquisaCategoria = i.getNome();
 				break;
 			}
