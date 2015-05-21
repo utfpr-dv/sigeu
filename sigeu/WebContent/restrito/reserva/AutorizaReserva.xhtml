@@ -1,0 +1,83 @@
+<ui:composition template="/WEB-INF/template/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://openfaces.org/">
+
+	<ui:define name="titulo">SIGEU: Autorização de Reservas</ui:define>
+
+	<ui:define name="corpo">
+		<h2>Autorização de Reservas</h2>
+
+		<h:form id="frmAutorizaReserva" prependId="false">
+
+			<p:dataTable value="#{autorizaReservaBean.listaReservaVO}" var="vo"
+				paginator="true" rows="20"
+				emptyMessage="Nenhuma reserva encontrada com autorização pendente">
+
+				<p:column headerText="Autorizar"
+					style="text-align: center; width: 60px">
+					<p:selectBooleanCheckbox value="#{vo.autorizar}">
+						<p:ajax update="@form"
+							listener="#{autorizaReservaBean.marcaParaAutorizar(vo)}" />
+					</p:selectBooleanCheckbox>
+				</p:column>
+
+				<p:column headerText="Cancelar (Não-Autorizar)"
+					style="text-align: center; width: 80px">
+					<p:selectBooleanCheckbox value="#{vo.excluir}">
+						<p:ajax update="@form"
+							listener="#{autorizaReservaBean.marcaParaExcluir(vo)}" />
+					</p:selectBooleanCheckbox>
+				</p:column>
+
+				<p:column headerText="Item"
+					style="text-align: center;width: 100px; ">
+					<h:outputText value="#{vo.nomeItemReserva}" />
+				</p:column>
+
+				<p:column headerText="Data" style="text-align: center;width: 60px; ">
+					<h:outputText value="#{vo.dataReserva}" />
+				</p:column>
+
+				<p:column headerText="Hora" style="text-align: center;width: 60px; ">
+					<h:outputText value="#{vo.horaReserva}" />
+				</p:column>
+
+				<p:column headerText="Usuário">
+					<h:outputText value="#{vo.usuarioReserva}" />
+				</p:column>
+
+				<p:column headerText="Tipo" style="text-align: center;width: 60px; ">
+					<h:outputText value="#{vo.tipoReserva}" />
+				</p:column>
+
+				<p:column headerText="Motivo">
+					<h:outputText value="#{vo.motivoReserva}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<div id="divButtons" style="margin-top: 10px">
+				<p:commandButton id="idb1" value="Autorizar" icon="ui-icon-disk"
+					style="width:100px;"
+					action="#{autorizaReservaBean.gravaAutorizacoes}" update="@form" />
+				<p:commandButton id="idb2" value="Cancelar" icon="ui-icon-trash"
+					style="width:100px;"
+					action="#{autorizaReservaBean.cancelaAutorizacoes}" update="@form" />
+				<p:commandButton id="idb3" value="Atualizar" icon="ui-icon-refresh"
+					style="width:100px;" action="#{autorizaReservaBean.atualizaLista}"
+					update="@form" />
+			</div>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

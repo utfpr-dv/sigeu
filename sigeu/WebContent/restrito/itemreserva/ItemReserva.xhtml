@@ -31,7 +31,7 @@
 					counterTemplate="{0} caracteres restantes." autoResize="false" />
 
 				<p:outputLabel value="Ativo" for="ativo" />
-				<p:selectBooleanCheckbox id="ativo" value="#{itemReservaBean.itemReserva.ativo}" onLabel="Ativo" offLabel="Inativo" onIcon="ui-icon-check"
+				<p:selectBooleanCheckbox id="ativo" value="#{itemReservaBean.itemReserva.ativo}" onLabel="Ativo" offLabel="Inativo" onIcon="ui-icon-close"
 					offIcon="ui-icon-close" style="width:80px" />
 
 			</p:panelGrid>
@@ -42,7 +42,7 @@
 					style="width:100px">
 					<p:confirm header="Excluir" message="Confirma exclusão?" icon="ui-icon-alert" />
 				</p:commandButton>
-				<p:commandButton value="Cancelar" id="botaoCancelar" onclick="history.go(-1)" icon="ui-icon-arrowreturn-1-w" style="width:100px" process="@this" />
+				<p:commandButton value="Cancelar" id="botaoCancelar" onclick="history.go(-1)" icon="ui-icon-close" style="width:100px" process="@this" />
 			</div>
 
 			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">

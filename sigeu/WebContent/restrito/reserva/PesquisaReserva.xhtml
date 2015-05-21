@@ -37,6 +37,7 @@
 							value="#{reservaBean.campoCategoria}" required="true" var="i"
 							style="width: 140px">
 							<f:selectItems value="#{reservaBean.categorias}" />
+							<f:ajax listener="#{reservaBean.defineCategoria}" />
 						</p:selectOneMenu>
 
 						<p:outputLabel value="Recurso (opcional)" for="item" />
@@ -45,7 +46,7 @@
 							completeMethod="#{reservaBean.selecionaItem}" required="false"
 							minQueryLength="2" queryDelay="250" size="16">
 							<p:ajax event="itemSelect" listener="#{reservaBean.defineItem}"
-								update="item" />
+								update="item" process="@this categoria" />
 						</p:autoComplete>
 
 						<p:outputLabel value="Repete" for="repete" />
@@ -211,7 +212,7 @@
 						<p:commandButton value="Salvar" id="botaoSalvar"
 							action="#{reservaBean.gravaReserva}" icon="ui-icon-disk"
 							style="width:100px"
-							process="dataG inicioG finalG motivoG tipoReserva @this"
+							process="dataG inicioG finalG motivoG tipoReserva emailNotificacaoG @this"
 							update="@form" />
 						<p:commandButton value="Cancelar" id="botaoCancelar"
 							action="#{reservaBean.cancela}" icon="ui-icon-arrowreturn-1-w"

@@ -10,6 +10,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.exception.DatabaseConfigException;
 
 public class HibernateUtil {
@@ -36,13 +37,20 @@ public class HibernateUtil {
 		int poolMax = 1;
 		int poolInc = 1;
 
-		driver = DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_DRIVER);
-		url = DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_URL);
-		user = DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_USER);
-		password = DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_PASSWORD);
-		poolMin = Integer.valueOf(DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_POOL_MIN));
-		poolMax = Integer.valueOf(DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_POOL_MAX));
-		poolInc = Integer.valueOf(DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_POOL_INCREMENT));
+		driver = DatabaseConfig.getInstance().getProperty(
+				DatabaseParameter.DATABASE_DRIVER);
+		url = DatabaseConfig.getInstance().getProperty(
+				DatabaseParameter.DATABASE_URL);
+		user = DatabaseConfig.getInstance().getProperty(
+				DatabaseParameter.DATABASE_USER);
+		password = DatabaseConfig.getInstance().getProperty(
+				DatabaseParameter.DATABASE_PASSWORD);
+		poolMin = Integer.valueOf(DatabaseConfig.getInstance().getProperty(
+				DatabaseParameter.DATABASE_POOL_MIN));
+		poolMax = Integer.valueOf(DatabaseConfig.getInstance().getProperty(
+				DatabaseParameter.DATABASE_POOL_MAX));
+		poolInc = Integer.valueOf(DatabaseConfig.getInstance().getProperty(
+				DatabaseParameter.DATABASE_POOL_INCREMENT));
 
 		Configuration configuration = new Configuration();
 
@@ -51,23 +59,30 @@ public class HibernateUtil {
 		configuration.setProperty("hibernate.connection.username", user);
 		configuration.setProperty("hibernate.connection.password", password);
 		configuration.setProperty("hibernate.connection.autocommit", "false");
-		configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-		configuration.setProperty("hibernate.show_sql", "false");
+		configuration.setProperty("hibernate.dialect",
+				"org.hibernate.dialect.PostgreSQLDialect");
+		configuration.setProperty("hibernate.show_sql",
+				String.valueOf(Config.getInstance().isDebugMode()));
 		configuration.setProperty("hibernate.order_updates", "true");
 		configuration.setProperty("hibernate.default_schema", "public");
-		configuration.setProperty("hibernate.c3p0.acquire_increment", String.valueOf(poolInc));
+		configuration.setProperty("hibernate.c3p0.acquire_increment",
+				String.valueOf(poolInc));
 		configuration.setProperty("hibernate.c3p0.idle_test_period", "1200");
 		configuration.setProperty("hibernate.c3p0.max_statements", "50");
-		configuration.setProperty("hibernate.c3p0.min_size", String.valueOf(poolMin));
-		configuration.setProperty("hibernate.c3p0.max_size", String.valueOf(poolMax));
-		//configuration.setProperty("hibernate.c3p0.unreturnedConnectionTimeout", "10");
+		configuration.setProperty("hibernate.c3p0.min_size",
+				String.valueOf(poolMin));
+		configuration.setProperty("hibernate.c3p0.max_size",
+				String.valueOf(poolMax));
+		// configuration.setProperty("hibernate.c3p0.unreturnedConnectionTimeout",
+		// "10");
 
 		// configuration.configure();
 
 		// Add Classes
 		HibernateClassMappings.addClasses(configuration);
 
-		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(
+				configuration.getProperties()).build();
 
 		sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 

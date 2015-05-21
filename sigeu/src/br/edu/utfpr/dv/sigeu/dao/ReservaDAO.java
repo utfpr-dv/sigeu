@@ -203,8 +203,6 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	/**
 	 * Lista todas as reservas de uma transação
 	 * 
-	 * @param campus
-	 * @param idTransacao
 	 * @return
 	 */
 	public List<Reserva> listaReservaPorTransacao(Campus campus,
@@ -220,6 +218,41 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		q.setInteger("idCampus", campus.getIdCampus());
 		q.setCharacter("status", status.getStatus());
 		q.setInteger("idTransacao", idTransacao);
+
+		List<Reserva> list = this.pesquisaObjetos(q, 0);
+
+		for (Reserva r : list) {
+			Hibernate.initialize(r.getIdItemReserva());
+			Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+			Hibernate.initialize(r.getIdPessoa());
+			Hibernate.initialize(r.getIdTransacao());
+			Hibernate.initialize(r.getIdTipoReserva());
+			Hibernate.initialize(r.getIdCampus());
+			Hibernate.initialize(r.getIdUsuario());
+		}
+
+		return list;
+	}
+	
+	/**
+	 * Lista todas as reservas pendentes de autorização para uma Pessoa.
+	 * 
+	 * @return
+	 */
+	public List<Reserva> listaReservasPendentes(Campus campus,
+			Pessoa autorizador) {
+		StringBuilder hql = new StringBuilder();
+		hql.append("SELECT o ");
+		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.pessoaList p ");
+		hql.append("WHERE c.idCampus = :idCampus ");
+		hql.append("AND o.status = :status ");
+		hql.append("AND p.idPessoa = :idPessoa ");
+		hql.append("ORDER BY i.nome ASC, o.data ASC, o.horaInicio ASC, o.horaFim ASC ");
+
+		Query q = session.createQuery(hql.toString());
+		q.setInteger("idCampus", campus.getIdCampus());
+		q.setCharacter("status", StatusReserva.PENDENTE.getStatus());
+		q.setInteger("idPessoa", autorizador.getIdPessoa());
 
 		List<Reserva> list = this.pesquisaObjetos(q, 0);
 

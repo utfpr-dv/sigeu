@@ -84,13 +84,7 @@
 				<p:panelGrid columns="2" id="painel"
 					style="margin-top: 5px; width: 100%">
 
-					<p:outputLabel value="Categoria" />
-					<p:outputLabel
-						value="#{pesquisaItemReservaBean.itemReserva.idCategoria.nome}" />
-
-					<p:outputLabel value="Nome" />
-					<p:outputLabel label="Nome"
-						value="#{pesquisaItemReservaBean.itemReserva.nome}" />
+					<p:outputLabel value="#{pesquisaItemReservaBean.itemReserva.idCategoria.nome}: #{pesquisaItemReservaBean.itemReserva.nome}" />
 
 				</p:panelGrid>
 
@@ -137,7 +131,7 @@
 						
 					<p:commandButton id="CancelarAdd"
 						action="#{pesquisaItemReservaBean.cancelaAdicionarAutorizador}"
-						value="Cancelar" icon="ui-icon-circle-plus" title="Cancelar"
+						value="Cancelar" icon="ui-icon-close" title="Cancelar"
 						style="width: 100px" update="@form" />
 				</p:panelGrid>
 			</p:panel>

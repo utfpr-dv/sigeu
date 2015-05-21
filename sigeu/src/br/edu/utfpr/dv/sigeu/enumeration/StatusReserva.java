@@ -20,4 +20,18 @@ public enum StatusReserva {
 		return descricao;
 	}
 
+	public static StatusReserva getFromStatus(Character status) {
+		switch (status) {
+		case 'E':
+			return EFETIVADA;
+
+		case 'C':
+			return CANCELADA;
+
+		case 'P':
+			return PENDENTE;
+		}
+		return null;
+	}
+
 }

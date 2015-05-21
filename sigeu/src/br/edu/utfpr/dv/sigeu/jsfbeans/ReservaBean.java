@@ -22,6 +22,7 @@ import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.enumeration.RepeticaoReservaEnum;
+import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.service.CategoriaItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.IntegrationService;
@@ -151,13 +152,14 @@ public class ReservaBean extends JavaBean {
 	 * @return
 	 */
 	public List<String> selecionaItem(String query) {
+		List<String> list = new ArrayList<String>();
+		listaItemReserva = null;
+
 		if (this.categoriaItemReserva == null) {
 			this.addWarnMessage("Selecionar",
 					"Selecione uma categoria antes de pesquisar o item de reserva.");
+			return list;
 		}
-
-		List<String> list = new ArrayList<String>();
-		listaItemReserva = null;
 
 		try {
 			listaItemReserva = ItemReservaService.pesquisar(
@@ -321,8 +323,9 @@ public class ReservaBean extends JavaBean {
 
 					// Preenche lista das minhas reservas
 					this.listaMinhasReservas = ReservaService
-							.pesquisaReservasEfetivadasDoUsuario(pessoaLogin, campoData,
-									categoriaItemReserva, itemReserva);
+							.pesquisaReservasEfetivadasDoUsuario(pessoaLogin,
+									campoData, categoriaItemReserva,
+									itemReserva);
 
 					// Rola entre a lista de itens disponíveis para checar se
 					// realmente está disponível com o repeteco
@@ -403,6 +406,7 @@ public class ReservaBean extends JavaBean {
 		reserva.setIdItemReserva(itemReservaGravacao);
 		reserva.setMotivo(motivo);
 
+		// if (Config.getInstance().getPessoaLogin().getAdmin()) {
 		if (loginBean.getPessoaLogin().getAdmin()) {
 			if (usuario == null) {
 				addWarnMessage("Usuário",
@@ -410,6 +414,14 @@ public class ReservaBean extends JavaBean {
 				return;
 			}
 			reserva.setIdUsuario(usuario);
+
+			if (emailNotificacao == null
+					|| emailNotificacao.trim().length() <= 0
+					|| emailNotificacao.indexOf("@") <= 0) {
+				addWarnMessage("Email",
+						"Informe um endereço de e-mail válido para notificação.");
+				return;
+			}
 			reserva.setEmailNotificacao(emailNotificacao);
 		} else {
 			reserva.setIdUsuario(pessoaLogin);
@@ -446,12 +458,38 @@ public class ReservaBean extends JavaBean {
 				try {
 					ReservaService.gravar(reserva);
 
-					// Envia e-mail de confirmação
-					ReservaService.enviaEmailConfirmacao(reserva);
+					StatusReserva statusReserva = null;
 
-					addInfoMessage("Reserva", "Reserva de "
-							+ itemReservaGravacao.getNome()
-							+ " realizada com sucesso!");
+					// Verifica se o status da reserva foi alterado durante a
+					// gravação
+					statusReserva = StatusReserva.getFromStatus(reserva
+							.getStatus());
+
+					switch (statusReserva) {
+					case PENDENTE:
+						addWarnMessage(
+								"Reserva",
+								"Pré-Reserva de "
+										+ itemReservaGravacao.getNome()
+										+ " gravada com sucesso. Aguarde a confirmação da reserva por e-mail que será feita pelo responsável.");
+						break;
+
+					case EFETIVADA:
+						// Envia e-mail de confirmação
+						ReservaService.enviaEmailConfirmacao(reserva);
+
+						addInfoMessage("Reserva", "Reserva de "
+								+ itemReservaGravacao.getNome()
+								+ " realizada com sucesso!");
+						break;
+
+					case CANCELADA:
+						addErrorMessage("Reserva",
+								"A reserva foi cancelada! Informe o administrador do sistema!");
+						break;
+					default:
+						break;
+					}
 
 					// Limpa todos os campos de listas
 					this.limpa(true, false);
@@ -481,12 +519,37 @@ public class ReservaBean extends JavaBean {
 			List<Reserva> lista = ReservaService.gravarRecorrente(reserva,
 					repeticaoReservaEnum, campoDataFimRepete);
 
-			// Envia e-mails das reservas
-			ReservaService.enviaEmailConfirmacao(lista);
+			StatusReserva statusReserva = null;
 
-			addInfoMessage("Reserva",
-					"Reserva de " + itemReservaGravacao.getNome()
-							+ " realizada com sucesso!");
+			// Verifica se o status da reserva foi alterado durante a
+			// gravação
+			statusReserva = StatusReserva.getFromStatus(reserva.getStatus());
+
+			switch (statusReserva) {
+			case PENDENTE:
+				addWarnMessage(
+						"Reserva",
+						"Pré-Reserva de "
+								+ itemReservaGravacao.getNome()
+								+ " gravada com sucesso. Aguarde a confirmação da reserva por e-mail que será feita pelo responsável.");
+				break;
+			case EFETIVADA:
+				// Envia e-mail de confirmação das reservas
+				ReservaService.enviaEmailConfirmacao(lista);
+
+				addInfoMessage("Reserva",
+						"Reserva de " + itemReservaGravacao.getNome()
+								+ " realizada com sucesso!");
+				break;
+
+			case CANCELADA:
+				addErrorMessage("Reserva",
+						"A reserva foi cancelada! Informe o administrador do sistema!");
+				break;
+
+			default:
+				break;
+			}
 
 			// Limpa todos os campos de listas
 			this.limpa(true, false);
@@ -667,7 +730,6 @@ public class ReservaBean extends JavaBean {
 	 * Exclui todas as reservas marcadas
 	 */
 	public void cancelaReservas() {
-		// TODO - mudar toda a lógica para não excluir!
 		if (this.motivoCancelamento == null
 				|| this.motivoCancelamento.trim().length() == 0) {
 			this.addWarnMessage("Cancelamento",

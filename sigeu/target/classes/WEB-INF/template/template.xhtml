@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<meta charset="UTF-8" />
 	<h:outputStylesheet library="css" name="default.css" />
@@ -32,8 +35,10 @@
 								</h:link>
 							</div></td>
 						<td valign="bottom" align="right"><div class="headerInfo">
-								<p:outputLabel value="#{loginBean.nomeUsuario}" style="font-weight: bold; font-size: small" />
-								<input id="LogoffButton" type="button" value="Logoff" onclick="doLogoff();" />
+								<p:outputLabel value="#{loginBean.nomeUsuario}"
+									style="font-weight: bold; font-size: small" />
+								<input id="LogoffButton" type="button" value="Logoff"
+									onclick="doLogoff();" />
 							</div></td>
 					</tr>
 				</table>
@@ -42,28 +47,43 @@
 
 				<h:form>
 					<p:menubar autoDisplay="false">
-						<p:submenu label="Administração" rendered="#{loginBean.pessoaLogin.admin eq true}">
-							<p:menuitem value="Instituição" outcome="/restrito/instituicao/PesquisaInstituicao.xhtml" />
-							<p:menuitem value="Campus" outcome="/restrito/campus/PesquisaCampus.xhtml" />
+						<p:submenu label="Administração"
+							rendered="#{loginBean.pessoaLogin.admin eq true}">
+							<p:menuitem value="Instituição"
+								outcome="/restrito/instituicao/PesquisaInstituicao.xhtml" />
+							<p:menuitem value="Campus"
+								outcome="/restrito/campus/PesquisaCampus.xhtml" />
 							<p:separator />
-							<p:menuitem value="Servidor LDAP" outcome="/restrito/ldapserver/PesquisaLdapServer.xhtml" />
+							<p:menuitem value="Servidor LDAP"
+								outcome="/restrito/ldapserver/PesquisaLdapServer.xhtml" />
 							<p:separator />
-							<p:menuitem value="Pessoa" outcome="/restrito/pessoa/PesquisaPessoa.xhtml" />
+							<p:menuitem value="Pessoa"
+								outcome="/restrito/pessoa/PesquisaPessoa.xhtml" />
 							<p:separator />
-							<p:menuitem value="Categoria de Item de Reserva" outcome="/restrito/categoriaitemreserva/PesquisaCategoriaItemReserva.xhtml" />
-							<p:menuitem value="Item de Reserva" outcome="/restrito/itemreserva/PesquisaItemReserva.xhtml" />
-							<p:menuitem value="Tipo de Reserva" outcome="/restrito/tiporeserva/PesquisaTipoReserva.xhtml" />
+							<p:menuitem value="Categoria de Item de Reserva"
+								outcome="/restrito/categoriaitemreserva/PesquisaCategoriaItemReserva.xhtml" />
+							<p:menuitem value="Item de Reserva"
+								outcome="/restrito/itemreserva/PesquisaItemReserva.xhtml" />
+							<p:menuitem value="Tipo de Reserva"
+								outcome="/restrito/tiporeserva/PesquisaTipoReserva.xhtml" />
 							<p:separator />
-							<p:menuitem value="Feriados" outcome="/restrito/feriado/PesquisaFeriado.xhtml" />
+							<p:menuitem value="Feriados"
+								outcome="/restrito/feriado/PesquisaFeriado.xhtml" />
 							<p:separator />
-							<p:menuitem value="Período Letivo" outcome="/restrito/periodoletivo/PesquisaPeriodoLetivo.xhtml" />
+							<p:menuitem value="Período Letivo"
+								outcome="/restrito/periodoletivo/PesquisaPeriodoLetivo.xhtml" />
 							<p:separator />
-							<p:menuitem value="Reservas" outcome="/restrito/reserva/ReservaAdmin.xhtml" />
+							<p:menuitem value="Reservas"
+								outcome="/restrito/reserva/ReservaAdmin.xhtml" />
 							<p:separator />
 						</p:submenu>
 						<p:submenu label="Reservas" style="width: 120px">
-							<p:menuitem value="Reservar Item ou Ambiente" outcome="/restrito/reserva/PesquisaReserva.xhtml" />
-							<p:menuitem value="Agenda de Reservas" outcome="/restrito/reserva/AgendaReserva.xhtml" />
+							<p:menuitem value="Reservar Item ou Ambiente"
+								outcome="/restrito/reserva/PesquisaReserva.xhtml" />
+							<p:menuitem value="Agenda"
+								outcome="/restrito/reserva/AgendaReserva.xhtml" />
+							<p:menuitem value="Autorizações"
+								outcome="/restrito/reserva/AutorizaReserva.xhtml" />
 						</p:submenu>
 					</p:menubar>
 				</h:form>
@@ -76,7 +96,9 @@
 			<p:separator style="margin-top: 20px" />
 
 			<footer>
-				Desenvolvido na Universidade Tecnológica Federal do Paraná - <a href="http://www.utfpr.edu.br/doisvizinhos" target="_blank">Campus Dois Vizinhos</a>
+				Desenvolvido na Universidade Tecnológica Federal do Paraná - <a
+					href="http://www.utfpr.edu.br/doisvizinhos" target="_blank">Campus
+					Dois Vizinhos</a>
 			</footer>
 		</div>
 
@@ -94,7 +116,8 @@
 			});
 
 			function getContextPath() {
-				return window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+				return window.location.pathname.substring(0,
+						window.location.pathname.indexOf("/", 2));
 			}
 
 			var ctx = getContextPath();
@@ -108,10 +131,15 @@
 				prevText : 'Anterior',
 				nextText : 'Próximo',
 				currentText : 'Começo',
-				monthNames : [ 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro' ],
-				monthNamesShort : [ 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez' ],
-				dayNames : [ 'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado' ],
-				dayNamesShort : [ 'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb' ],
+				monthNames : [ 'Janeiro', 'Fevereiro', 'Março', 'Abril',
+						'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro',
+						'Outubro', 'Novembro', 'Dezembro' ],
+				monthNamesShort : [ 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+						'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez' ],
+				dayNames : [ 'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta',
+						'Sexta', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex',
+						'Sáb' ],
 				dayNamesMin : [ 'D', 'S', 'T', 'Q', 'Q', 'S', 'S' ],
 				weekHeader : 'Semana',
 				firstDay : 0,

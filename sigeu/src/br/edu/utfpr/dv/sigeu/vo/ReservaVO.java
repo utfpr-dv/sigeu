@@ -1,19 +1,23 @@
 package br.edu.utfpr.dv.sigeu.vo;
 
 import br.edu.utfpr.dv.sigeu.entities.Campus;
+import br.edu.utfpr.dv.sigeu.entities.Reserva;
 
 public class ReservaVO {
 	// Campos visuais (são exibidos)
+	private boolean autorizar;
 	private boolean excluir;
 	private String nomeItemReserva;
 	private String dataReserva;
 	private String horaReserva;
+	private String tipoReserva;
 	private String motivoReserva;
 	private String usuarioReserva;
 	//
 	// Campos de controle (ocultos)
 	private Campus campus;
 	private Integer idReserva;
+	private Reserva reserva;
 
 	public boolean isExcluir() {
 		return excluir;
@@ -77,6 +81,30 @@ public class ReservaVO {
 
 	public void setIdReserva(Integer idReserva) {
 		this.idReserva = idReserva;
+	}
+
+	public boolean isAutorizar() {
+		return autorizar;
+	}
+
+	public void setAutorizar(boolean autorizar) {
+		this.autorizar = autorizar;
+	}
+
+	public Reserva getReserva() {
+		return reserva;
+	}
+
+	public void setReserva(Reserva reserva) {
+		this.reserva = reserva;
+	}
+
+	public String getTipoReserva() {
+		return tipoReserva;
+	}
+
+	public void setTipoReserva(String tipoReserva) {
+		this.tipoReserva = tipoReserva;
 	}
 
 }

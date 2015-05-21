@@ -35,7 +35,27 @@ import com.adamiworks.utils.DateUtils;
 
 public class ReservaService {
 
+	public static Reserva encontrePorId(Integer idReserva) {
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+			ReservaDAO dao = new ReservaDAO(trans);
+			Reserva r = dao.encontrePorId(idReserva);
+			return r;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			trans.close();
+		}
+	}
+
 	public static void gravar(Reserva reserva) throws Exception {
+		if (reserva.getCor() == null) {
+			reserva.setCor("#BBD2D2");
+		}
+
 		Transaction trans = new Transaction();
 		Transacao transacao = TransacaoService.criar("Reserva do item "
 				+ reserva.getIdItemReserva().getNome());
@@ -44,7 +64,79 @@ public class ReservaService {
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
+			ItemReservaDAO itemDAO = new ItemReservaDAO(trans);
+
+			ItemReserva ir = itemDAO.encontrePorId(reserva.getIdItemReserva()
+					.getIdItemReserva());
+
+			reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
+
+			// A lista de pessoas refere-se à lista de autorizadores
+			if (ir.getPessoaList() != null && ir.getPessoaList().size() > 0) {
+				// Ops! Tem pelo menos um autorizador. Se o usuário não for um
+				// deles, grava como pendente
+				boolean usuarioLoginAutorizador = false;
+				Pessoa usuarioLogin = Config.getInstance().getPessoaLogin();
+
+				for (Pessoa p : ir.getPessoaList()) {
+					if (usuarioLogin.getIdPessoa() == p.getIdPessoa()) {
+						usuarioLoginAutorizador = true;
+						break;
+					}
+				}
+
+				if (!usuarioLoginAutorizador) {
+					reserva.setStatus(StatusReserva.PENDENTE.getStatus());
+				}
+			}
+
 			dao.criar(reserva);
+
+			trans.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			trans.close();
+		}
+	}
+
+	/**
+	 * Altera uma lista de reservas
+	 * 
+	 * @param listaReserva
+	 * @param motivoTransacao
+	 * @throws Exception
+	 */
+	public static void alterar(List<Reserva> listaReserva,
+			String motivoTransacao) throws Exception {
+		Transaction trans = new Transaction();
+		Transacao transacao = TransacaoService.criar(motivoTransacao);
+
+		try {
+			trans.begin();
+
+			for (Reserva reserva : listaReserva) {
+				StatusReserva statusReserva = StatusReserva
+						.getFromStatus(reserva.getStatus());
+
+				switch (statusReserva) {
+				case EFETIVADA:
+					if (ReservaService.existeConcorrente(reserva)) {
+						trans.rollback();
+						throw new ExisteReservaConcorrenteException(reserva);
+					}
+					break;
+
+				default:
+					break;
+				}
+
+				reserva.setIdTransacao(transacao);
+				ReservaDAO dao = new ReservaDAO(trans);
+				dao.alterar(reserva);
+			}
+
 			trans.commit();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -257,6 +349,8 @@ public class ReservaService {
 		r.setIdUsuario(reserva.getIdUsuario());
 		r.setMotivo(reserva.getMotivo());
 		r.setRotulo(reserva.getRotulo());
+		r.setStatus(reserva.getStatus());
+		r.setMotivoCancelamento(reserva.getMotivoCancelamento());
 
 		return r;
 	}
@@ -272,6 +366,11 @@ public class ReservaService {
 	public static List<Reserva> gravarRecorrente(Reserva reserva,
 			RepeticaoReservaEnum tipoRecorrencia, Date dataLimite)
 			throws Exception {
+
+		if (reserva.getCor() == null) {
+			reserva.setCor("#BBD2D2");
+		}
+
 		if (tipoRecorrencia.equals(RepeticaoReservaEnum.SEMANAL)) {
 			Transaction trans = new Transaction();
 			Transacao transacao = TransacaoService.criar("Reserva do item "
@@ -282,6 +381,32 @@ public class ReservaService {
 				trans.begin();
 
 				ReservaDAO dao = new ReservaDAO(trans);
+				ItemReservaDAO itemDAO = new ItemReservaDAO(trans);
+
+				ItemReserva ir = itemDAO.encontrePorId(reserva
+						.getIdItemReserva().getIdItemReserva());
+
+				reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
+
+				// A lista de pessoas refere-se à lista de autorizadores
+				if (ir.getPessoaList() != null && ir.getPessoaList().size() > 0) {
+					// Ops! Tem pelo menos um autorizador. Se o usuário não for
+					// um
+					// deles, grava como pendente
+					boolean usuarioLoginAutorizador = false;
+					Pessoa usuarioLogin = Config.getInstance().getPessoaLogin();
+
+					for (Pessoa p : ir.getPessoaList()) {
+						if (usuarioLogin.getIdPessoa() == p.getIdPessoa()) {
+							usuarioLoginAutorizador = true;
+							break;
+						}
+					}
+
+					if (!usuarioLoginAutorizador) {
+						reserva.setStatus(StatusReserva.PENDENTE.getStatus());
+					}
+				}
 
 				Calendar calLimite = Calendar.getInstance();
 				calLimite.setTime(dataLimite);
@@ -476,18 +601,18 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Reserva> pesquisaReservasEfetivadasDoUsuario(Pessoa pessoa,
-			Date data, CategoriaItemReserva categoria, ItemReserva item)
-			throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadasDoUsuario(
+			Pessoa pessoa, Date data, CategoriaItemReserva categoria,
+			ItemReserva item) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReservaDoUsuario(Config.getInstance()
-					.getCampus(), StatusReserva.EFETIVADA, pessoa, data,
-					categoria, item);
+			List<Reserva> lista = dao.pesquisaReservaDoUsuario(Config
+					.getInstance().getCampus(), StatusReserva.EFETIVADA,
+					pessoa, data, categoria, item);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -843,6 +968,7 @@ public class ReservaService {
 
 		for (Reserva reserva : list) {
 			ReservaVO vo = new ReservaVO();
+			vo.setAutorizar(false);
 			vo.setExcluir(false);
 			vo.setCampus(reserva.getIdCampus());
 			vo.setDataReserva(DateUtils.format(reserva.getData(), "dd/MM/yyyy"));
@@ -852,6 +978,9 @@ public class ReservaService {
 			vo.setMotivoReserva(reserva.getMotivo());
 			vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());
 			vo.setUsuarioReserva(reserva.getIdUsuario().getNomeCompleto());
+			vo.setReserva(reserva);
+			vo.setTipoReserva(reserva.getIdTipoReserva().getDescricao());
+
 			listVO.add(vo);
 		}
 
@@ -875,6 +1004,30 @@ public class ReservaService {
 			List<Reserva> list = dao.listaReservaPorTransacao(Config
 					.getInstance().getCampus(), StatusReserva.EFETIVADA,
 					idTransacao);
+
+			return ReservaService.listToVO(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			trans.close();
+		}
+	}
+
+	/**
+	 * Lista reservas pendentes de autorização para a Pessoa designada.
+	 * 
+	 * @param autorizador
+	 * @return
+	 */
+	public static List<ReservaVO> listaReservasPendentes(Pessoa autorizador) {
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+			ReservaDAO dao = new ReservaDAO(trans);
+			List<Reserva> list = dao.listaReservasPendentes(Config
+					.getInstance().getCampus(), autorizador);
 
 			return ReservaService.listToVO(list);
 		} catch (Exception e) {

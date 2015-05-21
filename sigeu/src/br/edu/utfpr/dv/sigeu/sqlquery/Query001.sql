@@ -25,6 +25,7 @@ WHERE
                 categoria2.id_campus = campus2.id_campus
         WHERE
                reserva2.data = :data
+           AND reserva2.status = 'E'
            AND reserva2.id_campus = campus.id_campus
            AND reserva2.id_item_reserva = item.id_item_reserva
             AND (

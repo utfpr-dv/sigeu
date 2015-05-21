@@ -162,8 +162,8 @@ public class AgendaReservaBean extends JavaBean {
 
 		for (Reserva r : listaReserva) {
 			PeriodoReservaVO vo = new PeriodoReservaVO();
-			Calendar horaInicio = DateUtils.getCalendarMergingDates(r.getData(), r.getHoraInicio());
-			Calendar horaFim = DateUtils.getCalendarMergingDates(r.getData(), r.getHoraFim());
+			Calendar horaInicio = DateUtils.getCalendarFromDates(r.getData(), r.getHoraInicio());
+			Calendar horaFim = DateUtils.getCalendarFromDates(r.getData(), r.getHoraFim());
 
 			boolean found = false;
 			for (PeriodoReservaVO prVO : listaPeriodoReservaVO) {
@@ -185,8 +185,8 @@ public class AgendaReservaBean extends JavaBean {
 				motivo.append(r.getIdUsuario().getNomeCompleto());
 				motivo.append(" \n");
 				motivo.append(r.getMotivo());
-				Calendar perInicio = DateUtils.getCalendarMergingDates(r.getData(), p.getStarttime());
-				Calendar perFim = DateUtils.getCalendarMergingDates(r.getData(), p.getEndtime());
+				Calendar perInicio = DateUtils.getCalendarFromDates(r.getData(), p.getStarttime());
+				Calendar perFim = DateUtils.getCalendarFromDates(r.getData(), p.getEndtime());
 
 				boolean conflicts = DateUtils.conflicts(horaInicio, horaFim, perInicio, perFim);
 
