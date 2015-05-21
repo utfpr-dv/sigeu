@@ -5,17 +5,17 @@ h2 {
 }
 
 .ui-widget {
-	font-size: 8pt !important;
+	font-size: 9pt !important;
 	font-family: Arial, Helvetica, Sans-serif !important;
 }
 
 .ui-widget .ui-widget {
-	font-size: 8pt !important;
+	font-size: 9pt !important;
 	font-family: Arial, Helvetica, Sans-serif !important;
 }
 
 .ui-helper-reset {
-	font-size: 8pt !important;
+	font-size: 9pt !important;
 	font-family: Arial, Helvetica, Sans-serif !important;
 }
 
@@ -109,11 +109,20 @@ h2 {
 }
 
 .gridLabel {
-	/*width: 120px;*/
-	text-align: right;
+	width: 70px;
+	text-align: left;
 }
 
 .gridColumn {
+	margin: 0 px;
+}
+
+.gridFormLabel {
+	width: 200px;
+	text-align: left;
+}
+
+.gridFormColumn {
 	margin: 0 px;
 }
 

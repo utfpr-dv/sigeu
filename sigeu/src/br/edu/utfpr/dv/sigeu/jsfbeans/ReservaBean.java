@@ -316,10 +316,16 @@ public class ReservaBean extends JavaBean {
 					// categoriaItemReserva, itemReserva);
 
 					// Preenche a lista de itens disponíveis
-					this.listaItemDisponivel = ReservaService
+					listaItemDisponivel = ReservaService
 							.pesquisaItemReservaDisponivel(campoData,
 									campoHoraInicial, campoHoraFinal,
 									categoriaItemReserva, itemReserva);
+
+					if (listaItemDisponivel == null
+							|| listaItemDisponivel.size() == 0) {
+						this.addWarnMessage("Item Disponível",
+								"Nenhum item disponível para a data e horário informados.");
+					}
 
 					// Preenche lista das minhas reservas
 					this.listaMinhasReservas = ReservaService
@@ -456,7 +462,7 @@ public class ReservaBean extends JavaBean {
 						"Já foi feita uma reserva para este recurso na data informada que conflita com o horário desejado. Verifique!");
 			} else {
 				try {
-					ReservaService.gravar(reserva);
+					ReservaService.criar(reserva);
 
 					StatusReserva statusReserva = null;
 
@@ -516,7 +522,7 @@ public class ReservaBean extends JavaBean {
 	 */
 	private void gravaReservaSemanal(Reserva reserva) {
 		try {
-			List<Reserva> lista = ReservaService.gravarRecorrente(reserva,
+			List<Reserva> lista = ReservaService.criarRecorrente(reserva,
 					repeticaoReservaEnum, campoDataFimRepete);
 
 			StatusReserva statusReserva = null;

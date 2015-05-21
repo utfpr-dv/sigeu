@@ -25,7 +25,7 @@ import javax.persistence.TemporalType;
  * @author Tiago
  */
 @Entity
-@Table(name = "reserva", catalog = "sigeu", schema = "public")
+@Table(name = "reserva")
 @NamedQueries({
     @NamedQuery(name = "Reserva.findAll", query = "SELECT r FROM Reserva r")})
 public class Reserva implements Serializable {
@@ -63,6 +63,14 @@ public class Reserva implements Serializable {
     private Character status;
     @Column(name = "motivo_cancelamento")
     private String motivoCancelamento;
+    @Basic(optional = false)
+    @Column(name = "data_gravacao")
+    @Temporal(TemporalType.DATE)
+    private Date dataGravacao;
+    @Basic(optional = false)
+    @Column(name = "hora_gravacao")
+    @Temporal(TemporalType.TIME)
+    private Date horaGravacao;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Campus idCampus;
@@ -72,6 +80,9 @@ public class Reserva implements Serializable {
     @JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Pessoa idPessoa;
+    @JoinColumn(name = "id_autorizador", referencedColumnName = "id_pessoa")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Pessoa idAutorizador;
     @JoinColumn(name = "id_usuario", referencedColumnName = "id_pessoa")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Pessoa idUsuario;
@@ -89,7 +100,7 @@ public class Reserva implements Serializable {
         this.idReserva = idReserva;
     }
 
-    public Reserva(Integer idReserva, Date data, Date horaInicio, Date horaFim, String emailNotificacao, String motivo, String rotulo, String cor, Character status) {
+    public Reserva(Integer idReserva, Date data, Date horaInicio, Date horaFim, String emailNotificacao, String motivo, String rotulo, String cor, Character status, Date dataGravacao, Date horaGravacao) {
         this.idReserva = idReserva;
         this.data = data;
         this.horaInicio = horaInicio;
@@ -99,6 +110,8 @@ public class Reserva implements Serializable {
         this.rotulo = rotulo;
         this.cor = cor;
         this.status = status;
+        this.dataGravacao = dataGravacao;
+        this.horaGravacao = horaGravacao;
     }
 
     public Integer getIdReserva() {
@@ -181,6 +194,22 @@ public class Reserva implements Serializable {
         this.motivoCancelamento = motivoCancelamento;
     }
 
+    public Date getDataGravacao() {
+        return dataGravacao;
+    }
+
+    public void setDataGravacao(Date dataGravacao) {
+        this.dataGravacao = dataGravacao;
+    }
+
+    public Date getHoraGravacao() {
+        return horaGravacao;
+    }
+
+    public void setHoraGravacao(Date horaGravacao) {
+        this.horaGravacao = horaGravacao;
+    }
+
     public Campus getIdCampus() {
         return idCampus;
     }
@@ -203,6 +232,14 @@ public class Reserva implements Serializable {
 
     public void setIdPessoa(Pessoa idPessoa) {
         this.idPessoa = idPessoa;
+    }
+
+    public Pessoa getIdAutorizador() {
+        return idAutorizador;
+    }
+
+    public void setIdAutorizador(Pessoa idAutorizador) {
+        this.idAutorizador = idAutorizador;
     }
 
     public Pessoa getIdUsuario() {

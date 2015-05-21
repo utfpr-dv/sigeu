@@ -10,7 +10,7 @@
 			<p:tabView styleClass="tabCentered">
 				<p:tab id="tabPesquisa" title="Agendamento de Reservas"
 					rendered="#{reservaBean.showTab eq 1}">
-					<p:panelGrid columns="8">
+					<p:panelGrid columns="8" columnClasses="gridLabel, gridColumn, gridLabel, gridColumn, gridLabel, gridColumn, gridLabel, gridColumn">
 						<p:outputLabel value="Data" for="data" />
 						<p:calendar label="Data da Reserva" id="data"
 							value="#{reservaBean.campoData}" showOn="button" size="10"
@@ -143,7 +143,7 @@
 					rendered="#{reservaBean.showTab eq 2}">
 					<p:panelGrid columns="2" id="painel"
 						style="margin-top: 5px; width: 100%"
-						columnClasses="gridLabel gridColumn">
+						columnClasses="gridFormLabel gridFormColumn">
 						<p:outputLabel value="Categoria" />
 						<p:outputLabel
 							value="#{reservaBean.itemReservaGravacao.idCategoria.nome}" />

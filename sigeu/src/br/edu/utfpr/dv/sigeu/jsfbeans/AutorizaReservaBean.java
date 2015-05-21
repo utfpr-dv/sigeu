@@ -7,8 +7,6 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import com.adamiworks.utils.DateUtils;
-
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
@@ -16,6 +14,8 @@ import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
+
+import com.adamiworks.utils.DateUtils;
 
 @ManagedBean(name = "autorizaReservaBean")
 @ViewScoped
@@ -46,26 +46,27 @@ public class AutorizaReservaBean extends JavaBean {
 	 * Grava autorizações
 	 */
 	public void gravaAutorizacoes() {
-		List<Reserva> listReservas = new ArrayList<Reserva>();
+		List<Reserva> listaReservas = new ArrayList<Reserva>();
 
 		for (ReservaVO vo : listaReservaVO) {
 			Reserva r = ReservaService.encontrePorId(vo.getIdReserva());
 
 			if (vo.isAutorizar()) {
 				r.setStatus(StatusReserva.EFETIVADA.getStatus());
-				r.setIdPessoa(autorizador);
+				r.setIdAutorizador(autorizador);
 			} else {
 				r.setStatus(StatusReserva.CANCELADA.getStatus());
 			}
 
 			if (vo.isAutorizar() || vo.isExcluir()) {
-				listReservas.add(r);
+				listaReservas.add(r);
 			}
 		}
 
-		if (listReservas.size() > 0) {
+		if (listaReservas.size() > 0) {
 			try {
-				ReservaService.alterar(listReservas, "Autorização de reservas");
+				ReservaService
+						.alterar(listaReservas, "Autorização de reservas");
 
 				addInfoMessage("Autorização",
 						"Todas as autorizações e cancelamentos foram gravas com sucesso!");
@@ -79,7 +80,29 @@ public class AutorizaReservaBean extends JavaBean {
 		} else {
 			addWarnMessage("Autorização", "Nada a autorizar.");
 		}
-		
+
+		// Se chegou até aqui, manda o e-mail de confirmação
+		try {
+			ReservaService.enviaEmailConfirmacao(listaReservas);
+		} catch (Exception e) {
+			addErrorMessage("Email", "Erro ao mandar e-mails de confirmação.");
+			addErrorMessage("Email", e.getMessage());
+		}
+
+		// Se chegou até aqui, manda o e-mail de cancelamento das reservas
+		// canceladas
+		try {
+			ReservaService.enviaEmailCancelamento(listaReservas,
+					"Reserva não autorizada. Entre em contato com "
+							+ Config.getInstance().getPessoaLogin()
+									.getNomeCompleto() + " ("
+							+ Config.getInstance().getPessoaLogin().getEmail()
+							+ ")");
+		} catch (Exception e) {
+			addErrorMessage("Email", "Erro ao mandar e-mails de Cancelamento.");
+			addErrorMessage("Email", e.getMessage());
+		}
+
 		atualizaLista();
 	}
 

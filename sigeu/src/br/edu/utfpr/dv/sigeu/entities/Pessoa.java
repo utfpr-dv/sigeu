@@ -26,7 +26,7 @@ import javax.persistence.Table;
  * @author Tiago
  */
 @Entity
-@Table(name = "pessoa", catalog = "sigeu", schema = "public")
+@Table(name = "pessoa")
 @NamedQueries({
     @NamedQuery(name = "Pessoa.findAll", query = "SELECT p FROM Pessoa p")})
 public class Pessoa implements Serializable {
@@ -70,8 +70,10 @@ public class Pessoa implements Serializable {
     private List<ProfessorPessoa> professorPessoaList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
     private List<Reserva> reservaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAutorizador", fetch = FetchType.LAZY)
     private List<Reserva> reservaList1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario", fetch = FetchType.LAZY)
+    private List<Reserva> reservaList2;
 
     public Pessoa() {
     }
@@ -216,6 +218,14 @@ public class Pessoa implements Serializable {
 
     public void setReservaList1(List<Reserva> reservaList1) {
         this.reservaList1 = reservaList1;
+    }
+
+    public List<Reserva> getReservaList2() {
+        return reservaList2;
+    }
+
+    public void setReservaList2(List<Reserva> reservaList2) {
+        this.reservaList2 = reservaList2;
     }
 
     @Override
