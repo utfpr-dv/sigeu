@@ -14,6 +14,7 @@ import org.primefaces.context.RequestContext;
 
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
+import br.edu.utfpr.dv.sigeu.service.EmailService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
@@ -29,7 +30,8 @@ public class CancelaReservaBean extends JavaBean {
 	public CancelaReservaBean() {
 		super();
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest req = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
 		String trans = null;
 		try {
 			trans = req.getParameter("trans");
@@ -59,7 +61,8 @@ public class CancelaReservaBean extends JavaBean {
 	 * @param idTransacao
 	 */
 	private void carregaLista(Integer idTransacao) {
-		listaReservaVO = ReservaService.listaReservaPorTransacao(Config.getInstance().getCampus(), idTransacao);
+		listaReservaVO = ReservaService.listaReservaPorTransacao(Config
+				.getInstance().getCampus(), idTransacao);
 		// System.out.println(">>> Carregou " + listaReservaVO.size() +
 		// " reservas");
 	}
@@ -77,17 +80,24 @@ public class CancelaReservaBean extends JavaBean {
 			for (ReservaVO vo : listaReservaVO) {
 				if (vo.isExcluir()) {
 					try {
-						listExcluir.add(ReservaService.pesquisaReservaPorId(vo.getIdReserva()));
+						listExcluir.add(ReservaService.pesquisaReservaPorId(vo
+								.getIdReserva()));
 					} catch (Exception e) {
-						addErrorMessage("Erro", "Erro ao tentar carregar reserva " + vo.getIdReserva() + " de " + vo.getDataReserva());
+						addErrorMessage(
+								"Erro",
+								"Erro ao tentar carregar reserva "
+										+ vo.getIdReserva() + " de "
+										+ vo.getDataReserva());
 					}
 				}
 			}
 
 			try {
-				ReservaService.enviaEmailCancelamento(listExcluir, motivoCancelamento);
+				EmailService.enviaEmailCancelamento(listExcluir,
+						motivoCancelamento);
 			} catch (Exception e) {
-				addErrorMessage("Erro", "Erro ao tentar criar e-mail de exclusão de reserva.");
+				addErrorMessage("Erro",
+						"Erro ao tentar criar e-mail de exclusão de reserva.");
 				e.printStackTrace();
 			}
 
@@ -95,7 +105,8 @@ public class CancelaReservaBean extends JavaBean {
 				try {
 					ReservaService.excluir(r);
 				} catch (Exception e) {
-					addErrorMessage("Erro", "Erro ao tentar excluir reserva " + r.getIdReserva());
+					addErrorMessage("Erro", "Erro ao tentar excluir reserva "
+							+ r.getIdReserva());
 					e.printStackTrace();
 				}
 			}
@@ -114,7 +125,8 @@ public class CancelaReservaBean extends JavaBean {
 		options.put("resizable", false);
 		options.put("contentHeight", 500);
 		options.put("contentWidth", 900);
-		RequestContext.getCurrentInstance().openDialog("CancelaReserva", options, args);
+		RequestContext.getCurrentInstance().openDialog("CancelaReserva",
+				options, args);
 	}
 
 	/**

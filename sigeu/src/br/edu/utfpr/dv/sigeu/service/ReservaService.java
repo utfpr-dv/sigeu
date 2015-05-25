@@ -1,9 +1,7 @@
 package br.edu.utfpr.dv.sigeu.service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -21,14 +19,10 @@ import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.entities.Transacao;
-import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.RepeticaoReservaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
-import br.edu.utfpr.dv.sigeu.exception.DestinatarioInexistenteException;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
-import br.edu.utfpr.dv.sigeu.sort.ReservaDataComparator;
-import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.DateUtils;
@@ -108,7 +102,7 @@ public class ReservaService {
 						.getPessoaList();
 
 				for (Pessoa a : autorizadores) {
-					enviaEmailAutorizador(a, reserva.getIdItemReserva());
+					EmailService.enviaEmailAutorizador(a, reserva.getIdItemReserva());
 				}
 			}
 		} catch (Exception e) {
@@ -161,262 +155,6 @@ public class ReservaService {
 			throw e;
 		} finally {
 			trans.close();
-		}
-	}
-
-	/**
-	 * Envia e-mail de confirmação de reserva .
-	 * 
-	 * @param reserva
-	 * @throws Exception
-	 */
-	public static void enviaEmailConfirmacao(Reserva reserva) throws Exception {
-		MensagemEmail email = new MensagemEmail();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-
-		// Collections.sort(listaReserva, new ReservaDataComparator());
-
-		String emailUsuario = reserva.getIdUsuario().getEmail();
-		String emailReserva = reserva.getIdPessoa().getEmail();
-		String emailAutorizador = reserva.getIdAutorizador().getEmail();
-
-		if (Config.getInstance().isDebugMode()) {
-			emailUsuario = "tiagoadami@utfpr.edu.br";
-			emailReserva = "tiagoadami@utfpr.edu.br";
-			emailAutorizador = "tiagoadami@utfpr.edu.br";
-		}
-
-		String assunto = "SIGEU: Confirmação de Reserva(s)";
-
-		StringBuilder sb = new StringBuilder(
-				"Confirmações de Reservas de Recursos feitas pelo SIGEU:\n\n");
-
-		try {
-			// for (Reserva r : listaReserva) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(reserva.getData());
-			String diaDaSemana = DiaEnum.getDiaEnumByDia(
-					cal.get(Calendar.DAY_OF_WEEK)).getNome();
-
-			String data = dateFormat.format(reserva.getData());
-			String horario = "horário de "
-					+ timeFormat.format(reserva.getHoraInicio()) + " até "
-					+ timeFormat.format(reserva.getHoraFim()) + " hs.";
-			// String assunto = "Reserva " + r.getIdItemReserva().getNome()
-			// + " em " + data + " (" + diaDaSemana + ")";
-
-			String motivo = reserva.getMotivo().replaceAll("\\r?\\n", " ");
-			motivo = motivo.replaceAll("\\r\\n", " ");
-			motivo = motivo.replaceAll("\\r", " ");
-			motivo = motivo.replaceAll("\\n", " ");
-
-			// StringBuilder sb = new
-			// StringBuilder("CONFIRMAÇÃO DE RESERVA PARA: ").append(r.getIdUsuario().getNomeCompleto().trim().toUpperCase());
-			// sb.append(" (").append(r.getIdTipoReserva().getDescricao()).append(")\n\n");
-			// sb.append(r.getIdItemReserva().getNome()).append("\n");
-			// sb.append(diaDaSemana).append(", ").append(data).append(" ").append(horario).append("\n\n");
-			// sb.append("Motivo:\n").append(motivo).append("\n\n\n");
-			// sb.append("Reserva ").append("#").append(r.getIdReserva()).append(" feita por ");
-			// sb.append(r.getIdPessoa().getNomeCompleto().trim().toUpperCase()).append("\n\n");
-			// sb.append("Este é um e-mail automático enviado pelo SIGEU - Sistema de Gestão Universitária");
-
-			sb.append("Reservado para: ");
-			sb.append(
-					reserva.getIdUsuario().getNomeCompleto().trim()
-							.toUpperCase()).append("\n");
-			sb.append(reserva.getIdItemReserva().getNome())
-					.append(" [")
-					.append(reserva.getIdItemReserva().getIdCategoria()
-							.getNome()).append("], ");
-			sb.append(diaDaSemana).append(", dia ").append(data).append(", ")
-					.append(horario).append("\n\n");
-			sb.append("Motivo:\n")
-					.append(reserva.getIdTipoReserva().getDescricao())
-					.append(":\n").append(motivo).append("\n");
-			sb.append("---\n\n");
-
-			// }
-
-			String ls_to[] = { emailUsuario };
-			String ls_cc[] = { emailReserva, emailAutorizador };
-			email.criaMensagem(ls_to, ls_cc, null, assunto, sb.toString(),
-					false, null);
-			// email.criaMensagemTextoSimples(emailUsuario, emailReserva,
-			// assunto, sb.toString());
-
-			email.enviaMensagens();
-		} catch (DestinatarioInexistenteException e1) {
-			e1.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Cria o e-mail de confirmação da reserva, retornando o objeto para enviar
-	 * os e-mails.
-	 * 
-	 * @param listaReservas
-	 * @throws Exception
-	 */
-	public static void enviaEmailConfirmacao(List<Reserva> listaReservas)
-			throws Exception {
-		Collections.sort(listaReservas, new ReservaDataComparator());
-
-		for (Reserva reserva2 : listaReservas) {
-			if (reserva2.getStatus()
-					.equals(StatusReserva.EFETIVADA.getStatus())) {
-				ReservaService.enviaEmailConfirmacao(reserva2);
-			}
-		}
-	}
-
-	/**
-	 * Envia e-mail informando o cancelamento das reservas
-	 * 
-	 * @param reserva
-	 * @param motivoCancelamento
-	 * @throws Exception
-	 */
-	public static void enviaEmailCancelamento(Reserva reserva,
-			String motivoCancelamento) throws Exception {
-		MensagemEmail email = new MensagemEmail();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-
-		Pessoa pessoa = Config.getInstance().getPessoaLogin();
-
-		// Collections.sort(reserva, new ReservaDataComparator());
-
-		String emailUsuario = reserva.getIdUsuario().getEmail();
-		String emailReserva = reserva.getIdPessoa().getEmail();
-
-		if (Config.getInstance().isDebugMode()) {
-			emailUsuario = "tiagoadami@utfpr.edu.br";
-			emailReserva = "tiagoadami@utfpr.edu.br";
-		}
-
-		String assunto = "SIGEU: Cancelamento de Reserva(s)";
-
-		StringBuilder sb = new StringBuilder(
-				"Cancelamento de Reservas de Recursos feitas pelo SIGEU:\n\n");
-
-		try {
-			// for (Reserva r : reserva) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(reserva.getData());
-			String diaDaSemana = DiaEnum.getDiaEnumByDia(
-					cal.get(Calendar.DAY_OF_WEEK)).getNome();
-
-			String data = dateFormat.format(reserva.getData());
-			String horario = "horário de "
-					+ timeFormat.format(reserva.getHoraInicio()) + " até "
-					+ timeFormat.format(reserva.getHoraFim()) + " hs.";
-
-			String motivo = reserva.getMotivo().replaceAll("\\r?\\n", " ");
-			motivo = motivo.replaceAll("\\r\\n", " ");
-			motivo = motivo.replaceAll("\\r", " ");
-			motivo = motivo.replaceAll("\\n", " ");
-
-			sb.append("Reservado para: ");
-			sb.append(
-					reserva.getIdUsuario().getNomeCompleto().trim()
-							.toUpperCase()).append("\n");
-			sb.append(reserva.getIdItemReserva().getNome())
-					.append(" [")
-					.append(reserva.getIdItemReserva().getIdCategoria()
-							.getNome()).append("], ");
-			sb.append(diaDaSemana).append(", dia ").append(data).append(", ")
-					.append(horario).append("\n\n");
-			sb.append("Motivo:\n")
-					.append(reserva.getIdTipoReserva().getDescricao())
-					.append(":\n").append(motivo).append("\n");
-			sb.append("---\n\n");
-
-			// }
-
-			sb.append("Cancelamento feito por: ")
-					.append(pessoa.getNomeCompleto().trim().toUpperCase())
-					.append("\n\n");
-			sb.append("Motivo para cancelamento: ").append(motivoCancelamento);
-
-			// Envia mensagem para o usuário e para quem reservou
-			email.criaMensagemTextoSimples(emailUsuario, emailReserva, assunto,
-					sb.toString());
-			// Envia também um e-mail p/ quem cancelou
-			email.criaMensagemTextoSimples(pessoa.getEmail(), null, assunto,
-					sb.toString());
-			// Envia as mensagens por Thread
-			email.enviaMensagens();
-		} catch (DestinatarioInexistenteException e1) {
-			e1.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Envia e-mail informando o cancelamento das reservas
-	 * 
-	 * @param listaReservas
-	 * @param motivoCancelamento
-	 * @throws Exception
-	 */
-	public static void enviaEmailCancelamento(List<Reserva> listaReservas,
-			String motivoCancelamento) throws Exception {
-		Collections.sort(listaReservas, new ReservaDataComparator());
-
-		for (Reserva reserva2 : listaReservas) {
-			if (reserva2.getStatus()
-					.equals(StatusReserva.CANCELADA.getStatus())) {
-				ReservaService.enviaEmailCancelamento(reserva2,
-						motivoCancelamento);
-			}
-		}
-	}
-
-	/**
-	 * Envia e-mail solicitando intervenção do autorizador.
-	 * 
-	 * @param autorizador
-	 * @param itemReserva
-	 */
-	public static void enviaEmailAutorizador(Pessoa autorizador,
-			ItemReserva itemReserva) {
-		try {
-			String emailAutorizador = null;
-
-			if (Config.getInstance().isDebugMode()) {
-				emailAutorizador = "tiagoadami@utfpr.edu.br";
-			} else {
-				emailAutorizador = autorizador.getEmail();
-			}
-
-			String assunto = "SIGEU: Autorizações pendentes";
-
-			StringBuilder sb = new StringBuilder("Prezado servidor:\n\n");
-			sb.append("Existem reservas pendentes do item \"");
-			sb.append(itemReserva.getIdCategoria().getNome());
-			sb.append(": ");
-			sb.append(itemReserva.getNome());
-			sb.append("\" que requisitam sua atenção.\n\n");
-			sb.append("Por gentileza, acesse o sistema SIGEU pelo endereço https://sigeu.dv.utfpr.edu.br:8080/sigeu e ");
-			sb.append("acesse o menu \"Reservas\", \"Autorizações\" para obter uma lista dos itens pendentes.\n\n\n\n\n");
-			sb.append("Você recebeu este e-mail porque está cadastrado como responsável pelas reservas do item supracitado.\n\n");
-			sb.append("Caso haja algum engano, por gentileza entre em contato com o administrador do sistema.");
-
-			MensagemEmail email = new MensagemEmail();
-
-			// Envia mensagem para o autorizador
-			email.criaMensagemTextoSimples(emailAutorizador, null, assunto,
-					sb.toString());
-
-			// Envia as mensagens por Thread
-			email.enviaMensagens();
-		} catch (DestinatarioInexistenteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -569,7 +307,7 @@ public class ReservaService {
 							.getPessoaList();
 
 					for (Pessoa a : autorizadores) {
-						enviaEmailAutorizador(a, reserva.getIdItemReserva());
+						EmailService.enviaEmailAutorizador(a, reserva.getIdItemReserva());
 					}
 				}
 

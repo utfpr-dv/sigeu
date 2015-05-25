@@ -25,6 +25,7 @@ import br.edu.utfpr.dv.sigeu.enumeration.RepeticaoReservaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.service.CategoriaItemReservaService;
+import br.edu.utfpr.dv.sigeu.service.EmailService;
 import br.edu.utfpr.dv.sigeu.service.IntegrationService;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
@@ -39,8 +40,8 @@ import com.adamiworks.utils.StringUtils;
 @ViewScoped
 public class ReservaBean extends JavaBean {
 
-	@ManagedProperty(value = "#{loginBean}")
-	private LoginBean loginBean;
+	// @ManagedProperty(value = "#{loginBean}")
+	// private LoginBean loginBean;
 
 	private static final long serialVersionUID = 7141232111444710485L;
 
@@ -412,8 +413,8 @@ public class ReservaBean extends JavaBean {
 		reserva.setIdItemReserva(itemReservaGravacao);
 		reserva.setMotivo(motivo);
 
-		// if (Config.getInstance().getPessoaLogin().getAdmin()) {
-		if (loginBean.getPessoaLogin().getAdmin()) {
+		if (Config.getInstance().getPessoaLogin().getAdmin()) {
+			// if (loginBean.getPessoaLogin().getAdmin()) {
 			if (usuario == null) {
 				addWarnMessage("Usuário",
 						"Informe o usuário da reserva (quem irá utilizar).");
@@ -482,7 +483,7 @@ public class ReservaBean extends JavaBean {
 
 					case EFETIVADA:
 						// Envia e-mail de confirmação
-						ReservaService.enviaEmailConfirmacao(reserva);
+						EmailService.enviaEmailConfirmacao(reserva);
 
 						addInfoMessage("Reserva", "Reserva de "
 								+ itemReservaGravacao.getNome()
@@ -541,7 +542,7 @@ public class ReservaBean extends JavaBean {
 				break;
 			case EFETIVADA:
 				// Envia e-mail de confirmação das reservas
-				ReservaService.enviaEmailConfirmacao(lista);
+				EmailService.enviaEmailConfirmacao(lista);
 
 				addInfoMessage("Reserva",
 						"Reserva de " + itemReservaGravacao.getNome()
@@ -577,7 +578,7 @@ public class ReservaBean extends JavaBean {
 	/**
 	 * Cancela a gravação de reserva e volta à tela de pesquisa
 	 */
-	public void cancela() {
+	public void cancelaUi() {
 		this.showTab = 1;
 		this.limpa(false, false);
 	}
@@ -723,13 +724,6 @@ public class ReservaBean extends JavaBean {
 				.listaReservaPorTransacao(Config.getInstance().getCampus(), r
 						.getIdTransacao().getIdTransacao());
 		this.showTab = 3;
-
-		// Refaz pesquisa
-		pesquisa();
-
-		addInfoMessage(
-				"Reserva",
-				"Reserva canceladas com sucesso! A confirmação será enviada por e-mail em instantes.");
 	}
 
 	/**
@@ -747,8 +741,10 @@ public class ReservaBean extends JavaBean {
 				for (ReservaVO vo : listaReservaVO) {
 					if (vo.isExcluir()) {
 						try {
-							listExcluir.add(ReservaService
-									.pesquisaReservaPorId(vo.getIdReserva()));
+							Reserva r = ReservaService.pesquisaReservaPorId(vo
+									.getIdReserva());
+							r.setStatus(StatusReserva.CANCELADA.getStatus());
+							listExcluir.add(r);
 						} catch (Exception e) {
 							addErrorMessage(
 									"Erro",
@@ -766,7 +762,7 @@ public class ReservaBean extends JavaBean {
 				}
 
 				try {
-					ReservaService.enviaEmailCancelamento(listExcluir,
+					EmailService.enviaEmailCancelamento(listExcluir,
 							motivoCancelamento);
 				} catch (Exception e) {
 					addErrorMessage("Erro",
@@ -1096,12 +1092,12 @@ public class ReservaBean extends JavaBean {
 		this.motivoCancelamento = motivoCancelamento;
 	}
 
-	public LoginBean getLoginBean() {
-		return loginBean;
-	}
-
-	public void setLoginBean(LoginBean loginBean) {
-		this.loginBean = loginBean;
-	}
+	// public LoginBean getLoginBean() {
+	// return loginBean;
+	// }
+	//
+	// public void setLoginBean(LoginBean loginBean) {
+	// this.loginBean = loginBean;
+	// }
 
 }

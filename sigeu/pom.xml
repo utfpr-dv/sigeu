@@ -158,11 +158,11 @@
 			<artifactId>cdi-api</artifactId>
 			<version>1.2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.jboss.weld.servlet</groupId>
-			<artifactId>weld-servlet</artifactId>
-			<version>2.2.11.Final</version>
-		</dependency>
+		<!-- <de pendency>
+			<group Id>org.jboss.weld.servlet</groupId>
+			<artifa ctId>weld-servlet</artifactId>
+			<version >2.2.11.Final</version>
+		</dep endency>  -->
 		<dependency>
 			<groupId>com.adamiworks</groupId>
 			<artifactId>utils</artifactId>

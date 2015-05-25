@@ -10,7 +10,8 @@
 			<p:tabView styleClass="tabCentered">
 				<p:tab id="tabPesquisa" title="Agendamento de Reservas"
 					rendered="#{reservaBean.showTab eq 1}">
-					<p:panelGrid columns="8" columnClasses="gridLabel, gridColumn, gridLabel, gridColumn, gridLabel, gridColumn, gridLabel, gridColumn">
+					<p:panelGrid columns="8"
+						columnClasses="gridLabel, gridColumn, gridLabel, gridColumn, gridLabel, gridColumn, gridLabel, gridColumn">
 						<p:outputLabel value="Data" for="data" />
 						<p:calendar label="Data da Reserva" id="data"
 							value="#{reservaBean.campoData}" showOn="button" size="10"
@@ -215,7 +216,7 @@
 							process="dataG inicioG finalG motivoG tipoReserva emailNotificacaoG @this"
 							update="@form" />
 						<p:commandButton value="Cancelar" id="botaoCancelar"
-							action="#{reservaBean.cancela}" icon="ui-icon-arrowreturn-1-w"
+							action="#{reservaBean.cancelaUi}" icon="ui-icon-arrowreturn-1-w"
 							style="width:100px" process="@this" update="@form" />
 					</div>
 				</p:tab>
@@ -259,7 +260,7 @@
 							action="#{reservaBean.cancelaReservasTodas}" update="@form" />
 						<p:commandButton id="idb3" value="Cancelar"
 							icon="ui-icon-arrowreturn-1-w" style="width:120px;"
-							action="#{reservaBean.cancela}" update="@form" process="@this"
+							action="#{reservaBean.cancelaUi}" update="@form" process="@this"
 							immediate="true" />
 					</div>
 				</p:tab>

@@ -12,6 +12,7 @@ import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
+import br.edu.utfpr.dv.sigeu.service.EmailService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
@@ -69,7 +70,7 @@ public class AutorizaReservaBean extends JavaBean {
 						.alterar(listaReservas, "Autorização de reservas");
 
 				addInfoMessage("Autorização",
-						"Todas as autorizações e cancelamentos foram gravas com sucesso!");
+						"Todas as autorizações e cancelamentos foram gravadas com sucesso!");
 			} catch (ExisteReservaConcorrenteException e) {
 				addErrorMessage("Autorização",
 						"Gravação de autorizações não permitida.");
@@ -83,7 +84,7 @@ public class AutorizaReservaBean extends JavaBean {
 
 		// Se chegou até aqui, manda o e-mail de confirmação
 		try {
-			ReservaService.enviaEmailConfirmacao(listaReservas);
+			EmailService.enviaEmailConfirmacao(listaReservas);
 		} catch (Exception e) {
 			addErrorMessage("Email", "Erro ao mandar e-mails de confirmação.");
 			addErrorMessage("Email", e.getMessage());
@@ -92,7 +93,7 @@ public class AutorizaReservaBean extends JavaBean {
 		// Se chegou até aqui, manda o e-mail de cancelamento das reservas
 		// canceladas
 		try {
-			ReservaService.enviaEmailCancelamento(listaReservas,
+			EmailService.enviaEmailCancelamento(listaReservas,
 					"Reserva não autorizada. Entre em contato com "
 							+ Config.getInstance().getPessoaLogin()
 									.getNomeCompleto() + " ("

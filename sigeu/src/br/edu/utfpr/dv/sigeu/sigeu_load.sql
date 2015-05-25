@@ -66,6 +66,9 @@ INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo )
 INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 6, 100, 'Evento Interno', true );
 INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 7, 100, 'Evento Externo', true );
 INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 8, 100, 'Planejamento', true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 9, 100, 'Monitoria', true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 10, 100, 'Concurso Público', true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 11, 100, 'Processo Seletivo', true );
 
 -- Insere categorias de item de reserva padrão UTFPR
 INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 1, 100, 'Sala de Aula', true );
