@@ -10,14 +10,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
-import org.apache.commons.io.IOUtils;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
-
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
-import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
@@ -26,9 +21,7 @@ import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.service.CategoriaItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.EmailService;
-import br.edu.utfpr.dv.sigeu.service.IntegrationService;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
-import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
@@ -63,12 +56,6 @@ public class ReservaBean extends JavaBean {
 	private Integer campoHoraF;
 	private Integer campoMinutoF;
 	//
-
-	//
-	// Campos da importação do XML
-	private List<PeriodoLetivo> listaPeriodoLetivo;
-	private PeriodoLetivo periodoLetivo;
-	private String xmlFileName;
 
 	//
 	// Objetos de controle da regra de negócio
@@ -625,8 +612,6 @@ public class ReservaBean extends JavaBean {
 				listaCategoriaItemReserva = CategoriaItemReservaService
 						.pesquisar(null, true);
 				listaTipoReserva = TipoReservaService.pesquisar(null, true);
-				listaPeriodoLetivo = PeriodoLetivoService.pesquisar(Config
-						.getInstance().getCampus());
 
 				// System.out.println("Lista de Período Letivo: " +
 				// listaPeriodoLetivo.size());
@@ -640,68 +625,6 @@ public class ReservaBean extends JavaBean {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	/**
-	 * Recebe o arquivo XML para importação de dados
-	 * 
-	 * @param event
-	 */
-	public void uploadXMLAscTables(FileUploadEvent event) {
-		try {
-			UploadedFile xmlFile = event.getFile();
-			this.xmlFileName = null;
-
-			if (xmlFile == null) {
-				addErrorMessage("XML", "Arquivo não foi importado!");
-			} else {
-				String fileName = xmlFile.getFileName();
-				// byte[] data = event.getFile().getContents();
-				byte[] data = IOUtils.toByteArray(xmlFile.getInputstream());
-
-				if (data == null) {
-					this.addErrorMessage(fileName,
-							"Arquivo importado não contem dados!");
-				} else {
-					IntegrationService.writeUploadFile(fileName, data);
-					this.xmlFileName = fileName;
-					this.addInfoMessage(
-							"XML",
-							"Arquivo importado com sucesso! Pronto para criar calendário de aulas. Clique no botão Processar para continuar.");
-				}
-			}
-		} catch (Exception e) {
-			addErrorMessage("Upload XML", "O upload do arquivo XML falhou.");
-			addErrorMessage("Upload XML", e.getMessage());
-		}
-	}
-
-	/**
-	 * Processa o arquivo de XML recém importado
-	 * 
-	 */
-	public void processaXmlAscTables() {
-		this.clearMessages();
-		Integer timetable_id = 0;
-		try {
-			timetable_id = IntegrationService.importXml(xmlFileName);
-			try {
-				IntegrationService.criaCalendarioAula(timetable_id,
-						periodoLetivo.getIdPeriodoLetivo());
-				this.addInfoMessage("Importação XML",
-						"Importação realizada com sucesso! Reservas do calendário criadas!");
-			} catch (Exception e) {
-				addErrorMessage("Processamento XML",
-						"O processamento do XML falhou");
-				addErrorMessage("Processamento XML", e.getMessage());
-				e.printStackTrace();
-			}
-		} catch (Exception e) {
-			addErrorMessage("Importação XML", "A importação do XML falhou");
-			addErrorMessage("Importação XML", e.getMessage());
-			e.printStackTrace();
-		}
-
 	}
 
 	public void cancelaReserva(Reserva r) {
@@ -947,14 +870,6 @@ public class ReservaBean extends JavaBean {
 		this.listaMinhasReservas = listaMinhasReservas;
 	}
 
-	public String getXmlFileName() {
-		return xmlFileName;
-	}
-
-	public void setXmlFileName(String xmlFileName) {
-		this.xmlFileName = xmlFileName;
-	}
-
 	public String getCampoUsuario() {
 		return campoUsuario;
 	}
@@ -993,22 +908,6 @@ public class ReservaBean extends JavaBean {
 
 	public void setListaTipoReserva(List<TipoReserva> listaTipoReserva) {
 		this.listaTipoReserva = listaTipoReserva;
-	}
-
-	public List<PeriodoLetivo> getListaPeriodoLetivo() {
-		return listaPeriodoLetivo;
-	}
-
-	public void setListaPeriodoLetivo(List<PeriodoLetivo> listaPeriodoLetivo) {
-		this.listaPeriodoLetivo = listaPeriodoLetivo;
-	}
-
-	public PeriodoLetivo getPeriodoLetivo() {
-		return periodoLetivo;
-	}
-
-	public void setPeriodoLetivo(PeriodoLetivo periodoLetivo) {
-		this.periodoLetivo = periodoLetivo;
 	}
 
 	public String getEmailNotificacao() {

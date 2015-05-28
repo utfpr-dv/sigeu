@@ -5,7 +5,6 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 
@@ -41,16 +40,6 @@ public class PesquisaPessoaBean extends JavaBean {
 		}
 	}
 
-	public void atualizarCadastrosDoLdap() throws Exception {
-		try {
-			PessoaService.atualizaPessoasLdap(Config.getInstance().getPessoaLogin().getEmail());
-		} catch (Exception e) {
-			this.addErrorMessage("Atualização cadastral", "Houve um erro durante a atualização de cadastros. Informe ao Admin.");
-			e.printStackTrace();
-			throw e;
-		}
-		this.addInfoMessage("Atualização cadastral", "Atualização cadastral concluída!");
-	}
 
 	public List<Pessoa> getLista() {
 		return lista;

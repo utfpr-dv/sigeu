@@ -46,4 +46,7 @@
 	</context-param>
 	<!-- <cont ext-param> <para m-name>primefaces.THEME</param-name> <pa ram-value>sam</param-value> 
 		</co ntext-param> -->
+	<session-config>
+		<session-timeout>120</session-timeout>
+	</session-config>
 </web-app>

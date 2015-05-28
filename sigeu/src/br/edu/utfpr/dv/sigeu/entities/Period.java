@@ -41,9 +41,6 @@ public class Period implements Serializable {
     @Column(name = "shortname")
     private String shortname;
     @Basic(optional = false)
-    @Column(name = "period")
-    private String period;
-    @Basic(optional = false)
     @Column(name = "starttime")
     @Temporal(TemporalType.TIME)
     private Date starttime;
@@ -65,11 +62,10 @@ public class Period implements Serializable {
         this.idPeriod = idPeriod;
     }
 
-    public Period(Integer idPeriod, String name, String shortname, String period, Date starttime, Date endtime, int ordem) {
+    public Period(Integer idPeriod, String name, String shortname, Date starttime, Date endtime, int ordem) {
         this.idPeriod = idPeriod;
         this.name = name;
         this.shortname = shortname;
-        this.period = period;
         this.starttime = starttime;
         this.endtime = endtime;
         this.ordem = ordem;
@@ -97,14 +93,6 @@ public class Period implements Serializable {
 
     public void setShortname(String shortname) {
         this.shortname = shortname;
-    }
-
-    public String getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(String period) {
-        this.period = period;
     }
 
     public Date getStarttime() {

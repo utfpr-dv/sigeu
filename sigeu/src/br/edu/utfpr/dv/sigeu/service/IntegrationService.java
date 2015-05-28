@@ -57,6 +57,7 @@ import br.edu.utfpr.dv.sigeu.entities.Timetable;
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.entities.Transacao;
 import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
+import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 import com.adamiworks.utils.StringUtils;
@@ -87,8 +88,10 @@ public class IntegrationService {
 	 * @return
 	 * @throws IOException
 	 */
-	public static void writeUploadFile(String fileName, byte[] data) throws IOException {
-		String pathUpload = Config.getInstance().getConfig(Config.CONFIG_PATH_UPLOAD);
+	public static void writeUploadFile(String fileName, byte[] data)
+			throws IOException {
+		String pathUpload = Config.getInstance().getConfig(
+				Config.CONFIG_PATH_UPLOAD);
 		fileName = pathUpload + File.separator + fileName;
 
 		File file = new File(fileName);
@@ -112,7 +115,9 @@ public class IntegrationService {
 		// Remove todas as importações anteriores
 		IntegrationService.deleteAllPreviousTimetables();
 
-		String fileName = Config.getInstance().getConfig(Config.CONFIG_PATH_UPLOAD) + File.separator + xmlFileName;
+		String fileName = Config.getInstance().getConfig(
+				Config.CONFIG_PATH_UPLOAD)
+				+ File.separator + xmlFileName;
 
 		System.out.println("Importando arquivo XML: " + fileName);
 
@@ -148,9 +153,11 @@ public class IntegrationService {
 
 				String id = e.getAttribute("id").trim();
 				String name = e.getAttribute("name").trim();
-				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short")
+						.trim(), 32);
 
-				if (name.length() == 0 || id.length() == 0 || shortname.length() == 0) {
+				if (name.length() == 0 || id.length() == 0
+						|| shortname.length() == 0) {
 					continue;
 				}
 
@@ -178,9 +185,11 @@ public class IntegrationService {
 
 				String id = e.getAttribute("id").trim();
 				String name = e.getAttribute("name").trim();
-				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short")
+						.trim(), 32);
 
-				if (name.length() == 0 || id.length() == 0 || shortname.length() == 0) {
+				if (name.length() == 0 || id.length() == 0
+						|| shortname.length() == 0) {
 					continue;
 				}
 
@@ -207,9 +216,11 @@ public class IntegrationService {
 
 				String id = e.getAttribute("id").trim();
 				String name = e.getAttribute("name").trim();
-				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short")
+						.trim(), 32);
 
-				if (name.length() == 0 || id.length() == 0 || shortname.length() == 0) {
+				if (name.length() == 0 || id.length() == 0
+						|| shortname.length() == 0) {
 					continue;
 				}
 
@@ -236,9 +247,11 @@ public class IntegrationService {
 
 				String id = e.getAttribute("id").trim();
 				String name = e.getAttribute("name").trim();
-				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short")
+						.trim(), 32);
 
-				if (name.length() == 0 || id.length() == 0 || shortname.length() == 0) {
+				if (name.length() == 0 || id.length() == 0
+						|| shortname.length() == 0) {
 					continue;
 				}
 
@@ -265,12 +278,15 @@ public class IntegrationService {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element e = (Element) nNode;
 
-				Integer period = Integer.valueOf(e.getAttribute("period").trim());
+				Integer period = Integer.valueOf(e.getAttribute("period")
+						.trim());
 				// String name = e.getAttribute("name").trim();
 				String name = period.toString();
-				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short")
+						.trim(), 32);
 
-				if (period == null || name.length() == 0 || shortname.length() == 0) {
+				if (period == null || name.length() == 0
+						|| shortname.length() == 0) {
 					continue;
 				}
 
@@ -288,6 +304,7 @@ public class IntegrationService {
 				}
 
 				Period c = new Period();
+				c.setIdPeriod(period);
 				c.setName(name);
 				c.setShortname(shortname);
 				c.setOrdem(Integer.valueOf(period));
@@ -340,7 +357,10 @@ public class IntegrationService {
 				String classroomids = e.getAttribute("classroomids").trim();
 				String teacherids = e.getAttribute("teacherids").trim();
 
-				if (id.length() == 0 || classids.length() == 0 || subjectids.length() == 0 || classroomids.length() == 0 || teacherids.length() == 0) {
+				if (id.length() == 0 || classids.length() == 0
+						|| subjectids.length() == 0
+						|| classroomids.length() == 0
+						|| teacherids.length() == 0) {
 					continue;
 				}
 
@@ -372,7 +392,8 @@ public class IntegrationService {
 				String period = e.getAttribute("period").trim();
 				String days = e.getAttribute("days").trim();
 
-				if (lessonid.length() == 0 || classroomids.length() == 0 || period.length() == 0 || days.length() == 0) {
+				if (lessonid.length() == 0 || classroomids.length() == 0
+						|| period.length() == 0 || days.length() == 0) {
 					continue;
 				}
 
@@ -459,7 +480,8 @@ public class IntegrationService {
 	 *            Código do Periodo letivo selecionado na importação do XML
 	 * @throws Exception
 	 */
-	public static void criaCalendarioAula(Integer idTimeTable, Integer idPeriodoLetivo) throws Exception {
+	public static void criaCalendarioAula(Integer idTimeTable,
+			Integer idPeriodoLetivo) throws Exception {
 		Campus campus = Config.getInstance().getCampus();
 		Transaction trans = null;
 
@@ -470,7 +492,8 @@ public class IntegrationService {
 			ReservaDAO reservaDAO = new ReservaDAO(trans);
 			PeriodoLetivoDAO periodoLetivoDAO = new PeriodoLetivoDAO(trans);
 
-			PeriodoLetivo periodoLetivo = periodoLetivoDAO.encontrePorId(idPeriodoLetivo);
+			PeriodoLetivo periodoLetivo = periodoLetivoDAO
+					.encontrePorId(idPeriodoLetivo);
 
 			// Antes de começar, elimina todas as reservas feitas com a
 			// transação anterior, se houver.
@@ -496,10 +519,11 @@ public class IntegrationService {
 			LessonDAO lessonDAO = new LessonDAO(trans);
 			PeriodDAO periodDAO = new PeriodDAO(trans);
 			ItemReservaDAO itemReservaDAO = new ItemReservaDAO(trans);
-			CategoriaItemReservaDAO categoriaItemReservaDAO = new CategoriaItemReservaDAO(trans);
+			CategoriaItemReservaDAO categoriaItemReservaDAO = new CategoriaItemReservaDAO(
+					trans);
 			TipoReservaDAO tipoReservaDAO = new TipoReservaDAO(trans);
 			// periodoLetivoDAO = new PeriodoLetivoDAO(trans);
-			PessoaDAO pessoaDAO = new PessoaDAO(trans);
+			// PessoaDAO pessoaDAO = new PessoaDAO(trans);
 
 			// Cria nova transação
 			transacao = TransacaoService.criar("Importação XML ASC TimeTables");
@@ -511,16 +535,20 @@ public class IntegrationService {
 			trans.begin();
 
 			// Recupera categoria de sala de aula
-			CategoriaItemReserva salaDeAula = categoriaItemReservaDAO.encontrePorDescricao(campus, "Sala de Aula");
+			CategoriaItemReserva salaDeAula = categoriaItemReservaDAO
+					.encontrePorDescricao(campus, "Sala de Aula");
 
 			// Recupera categoria de laboratório
-			CategoriaItemReserva laboratorio = categoriaItemReservaDAO.encontrePorDescricao(campus, "Laboratório");
+			CategoriaItemReserva laboratorio = categoriaItemReservaDAO
+					.encontrePorDescricao(campus, "Laboratório");
 
 			// Recupera tipo de reserva "Aula Regular"
-			TipoReserva tipoReserva = tipoReservaDAO.encontrePorDescricao(campus, "Aula Regular");
+			TipoReserva tipoReserva = tipoReservaDAO.encontrePorDescricao(
+					campus, "Aula Regular");
 
-			// Recupera Pessoa Admin
-			Pessoa usuarioAdmin = pessoaDAO.encontrePorId(1);
+			// Responsável pelas reservas
+			// Pessoa usuarioAdmin = pessoaDAO.encontrePorId(1);
+			Pessoa usuarioAdmin = Config.getInstance().getPessoaLogin();
 
 			if (salaDeAula == null) {
 				throw new Exception("Categoria 'Sala de Aula' não localizada");
@@ -531,7 +559,8 @@ public class IntegrationService {
 			}
 
 			if (tipoReserva == null) {
-				throw new Exception("Tipo de Reserva 'Aula Regular' não localizada");
+				throw new Exception(
+						"Tipo de Reserva 'Aula Regular' não localizada");
 			}
 
 			if (usuarioAdmin == null) {
@@ -546,7 +575,18 @@ public class IntegrationService {
 			List<ItemReserva> listSala = new ArrayList<ItemReserva>();
 
 			for (Classroom c : listClassroom) {
-				ItemReserva sala = itemReservaDAO.encontrePorDescricaoECategoria(campus, salaDeAula.getIdCategoria(), c.getName());
+				CategoriaItemReserva categoria = null;
+
+				if (c.getName().trim().toLowerCase().substring(0, 3)
+						.equals("lab")) {
+					categoria = laboratorio;
+				} else {
+					categoria = salaDeAula;
+				}
+
+				ItemReserva sala = itemReservaDAO
+						.encontrePorDescricaoECategoria(campus, categoria,
+								c.getName());
 
 				if (sala == null) {
 					sala = new ItemReserva();
@@ -555,13 +595,7 @@ public class IntegrationService {
 				sala.setAtivo(true);
 				sala.setDetalhes("Importado por aSc TimeTables");
 				sala.setIdCampus(campus);
-
-				if (c.getName().trim().toLowerCase().substring(0, 3).equals("lab")) {
-					sala.setIdCategoria(laboratorio);
-				} else {
-					sala.setIdCategoria(salaDeAula);
-				}
-
+				sala.setIdCategoria(categoria);
 				sala.setNome(c.getName());
 				sala.setCodigo(c.getId());
 				sala.setPatrimonio("N/A");
@@ -609,7 +643,8 @@ public class IntegrationService {
 			List<Disciplina> listDisciplina = new ArrayList<Disciplina>();
 
 			for (Subject s : listSubject) {
-				Disciplina d = disciplinaDAO.encontrePorCodigo(campus, s.getId());
+				Disciplina d = disciplinaDAO.encontrePorCodigo(campus,
+						s.getId());
 
 				if (d == null) {
 					d = new Disciplina();
@@ -678,7 +713,8 @@ public class IntegrationService {
 
 			for (Card card : listCard) {
 				// Recupera o Lesson
-				Lesson lesson = lessonDAO.encontrePorId(idTimeTable, card.getLessonid());
+				Lesson lesson = lessonDAO.encontrePorId(idTimeTable,
+						card.getLessonid());
 
 				String classes = "";
 
@@ -723,11 +759,14 @@ public class IntegrationService {
 					}
 
 					if (sala == null) {
-						throw new Exception("Sala não encontrada [Lesson:" + lesson.getId() + "][Classroomid:" + classroomid + "]");
+						throw new Exception("Sala não encontrada [Lesson:"
+								+ lesson.getId() + "][Classroomid:"
+								+ classroomid + "]");
 					}
 
 					// Periodo
-					Period period = periodDAO.encontrePorNome(idTimeTable, card.getPeriod());
+					Period period = periodDAO.encontrePorNome(idTimeTable,
+							card.getPeriod());
 
 					// Disciplina
 					Disciplina disciplina = null;
@@ -739,7 +778,9 @@ public class IntegrationService {
 					}
 
 					if (disciplina == null) {
-						throw new Exception("Disciplina não encontrada [Lesson:" + lesson.getId() + "]");
+						throw new Exception(
+								"Disciplina não encontrada [Lesson:"
+										+ lesson.getId() + "]");
 					}
 
 					// ====================================================================================================
@@ -755,9 +796,14 @@ public class IntegrationService {
 
 					while (true) {
 						// Somente se o dia da semana for compatível
-						if (dia.get(Calendar.DAY_OF_WEEK) == DiaEnum.getDiaEnumById(card.getDays()).getDia()) {
+						if (dia.get(Calendar.DAY_OF_WEEK) == DiaEnum
+								.getDiaEnumById(card.getDays()).getDia()) {
 							Reserva reserva = new Reserva();
 							reserva.setIdTransacao(transacao);
+							reserva.setHoraGravacao(Calendar.getInstance()
+									.getTime());
+							reserva.setDataGravacao(Calendar.getInstance()
+									.getTime());
 							reserva.setData(dia.getTime());
 							reserva.setHoraFim(period.getEndtime());
 							reserva.setHoraInicio(period.getStarttime());
@@ -767,12 +813,18 @@ public class IntegrationService {
 							reserva.setIdTransacao(transacao);
 							reserva.setIdUsuario(usuarioAdmin);
 							reserva.setIdPessoa(usuarioAdmin);
+							reserva.setIdAutorizador(usuarioAdmin);
 							reserva.setEmailNotificacao(usuarioAdmin.getEmail());
-							reserva.setRotulo(StringUtils.left(classes.trim(), 32));
+							reserva.setRotulo(StringUtils.left(classes.trim(),
+									32));
+							reserva.setCor("#BBD2D2");
+							reserva.setStatus(StatusReserva.EFETIVADA
+									.getStatus());
 
 							StringBuilder motivo = new StringBuilder();
 							// motivo.append(disciplina.getRotulo()).append("-").append(disciplina.getNome()).append("\n");
-							motivo.append(disciplina.getRotulo()).append("-").append(disciplina.getNome()).append("\n ");
+							motivo.append(disciplina.getRotulo()).append("-")
+									.append(disciplina.getNome()).append("\n ");
 
 							for (Classe c : listClasseCal) {
 								// motivo.append(c.getRotulo()).append("-").append(c.getNome()).append("\n");
@@ -781,11 +833,17 @@ public class IntegrationService {
 
 							reserva.setMotivo(motivo.toString());
 
-							SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-							SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
+							SimpleDateFormat sdf = new SimpleDateFormat(
+									"dd/MM/yyyy");
+							SimpleDateFormat sdf2 = new SimpleDateFormat(
+									"HH:mm");
 
-							System.out.println("--> Reserva: [" + sdf.format(reserva.getData()) + " " + sdf2.format(reserva.getHoraInicio()) + " "
-									+ reserva.getIdItemReserva().getNome() + "]");
+							System.out.println("--> Reserva: ["
+									+ sdf.format(reserva.getData()) + " "
+									+ sdf2.format(reserva.getHoraInicio())
+									+ " "
+									+ reserva.getIdItemReserva().getNome()
+									+ "]");
 							reservaDAO.criar(reserva);
 
 							count++;
@@ -835,18 +893,25 @@ public class IntegrationService {
 
 			ProfessorDAO professorDAO = new ProfessorDAO(trans);
 			PessoaDAO pessoaDAO = new PessoaDAO(trans);
-			ProfessorPessoaDAO professorPessoaDAO = new ProfessorPessoaDAO(trans);
+			ProfessorPessoaDAO professorPessoaDAO = new ProfessorPessoaDAO(
+					trans);
 
-			List<Pessoa> listPessoa = pessoaDAO.pesquisa(Config.getInstance().getCampus(), null, 0);
+			List<Pessoa> listPessoa = pessoaDAO.pesquisa(Config.getInstance()
+					.getCampus(), null, 0);
 			List<Professor> listProfessor = professorDAO.pesquisaTodos(campus);
 
 			for (Professor prof : listProfessor) {
 				for (Pessoa pessoa : listPessoa) {
-					if (prof.getName().trim().toUpperCase().equals(pessoa.getNomeCompleto().trim().toUpperCase())) {
+					if (prof.getName()
+							.trim()
+							.toUpperCase()
+							.equals(pessoa.getNomeCompleto().trim()
+									.toUpperCase())) {
 						boolean exists = true;
 
 						ProfessorPessoa pp = null;
-						pp = professorPessoaDAO.encontrePorId(prof.getIdProfessor());
+						pp = professorPessoaDAO.encontrePorId(prof
+								.getIdProfessor());
 
 						if (pp == null) {
 							exists = false;

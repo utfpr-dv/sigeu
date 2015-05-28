@@ -39,8 +39,9 @@ public class PeriodDAO extends HibernateDAO<Period> {
 
 	@Override
 	public void defineId(Period o) {
-		Long id = this.gerarNovoId();
-		o.setIdPeriod(id.intValue());
+		// Deve vir preenchido.
+		//Long id = this.gerarNovoId();
+		//o.setIdPeriod(id.intValue());
 	}
 
 	public List<Period> getAll(Campus campus) {

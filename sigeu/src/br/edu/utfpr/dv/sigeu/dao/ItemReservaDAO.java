@@ -32,7 +32,9 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 
 		ItemReserva i = (ItemReserva) q.uniqueResult();
 
-		Hibernate.initialize(i.getPessoaList());
+		if (i != null) {
+			Hibernate.initialize(i.getPessoaList());
+		}
 
 		return i;
 	}
