@@ -70,9 +70,9 @@ public class Pessoa implements Serializable {
     private List<ProfessorPessoa> professorPessoaList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
     private List<Reserva> reservaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAutorizador", fetch = FetchType.LAZY)
-    private List<Reserva> reservaList1;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario", fetch = FetchType.LAZY)
+    private List<Reserva> reservaList1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAutorizador", fetch = FetchType.LAZY)
     private List<Reserva> reservaList2;
 
     public Pessoa() {

@@ -27,7 +27,7 @@ import javax.persistence.Table;
  * @author Tiago
  */
 @Entity
-@Table(name = "item_reserva", catalog = "sigeu", schema = "public")
+@Table(name = "item_reserva")
 @NamedQueries({
     @NamedQuery(name = "ItemReserva.findAll", query = "SELECT i FROM ItemReserva i")})
 public class ItemReserva implements Serializable {

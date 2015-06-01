@@ -35,6 +35,14 @@ public class Reserva implements Serializable {
     @Column(name = "id_reserva")
     private Integer idReserva;
     @Basic(optional = false)
+    @Column(name = "data_gravacao")
+    @Temporal(TemporalType.DATE)
+    private Date dataGravacao;
+    @Basic(optional = false)
+    @Column(name = "hora_gravacao")
+    @Temporal(TemporalType.TIME)
+    private Date horaGravacao;
+    @Basic(optional = false)
     @Column(name = "data")
     @Temporal(TemporalType.DATE)
     private Date data;
@@ -64,13 +72,8 @@ public class Reserva implements Serializable {
     @Column(name = "motivo_cancelamento")
     private String motivoCancelamento;
     @Basic(optional = false)
-    @Column(name = "data_gravacao")
-    @Temporal(TemporalType.DATE)
-    private Date dataGravacao;
-    @Basic(optional = false)
-    @Column(name = "hora_gravacao")
-    @Temporal(TemporalType.TIME)
-    private Date horaGravacao;
+    @Column(name = "nome_usuario")
+    private String nomeUsuario;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Campus idCampus;
@@ -80,12 +83,12 @@ public class Reserva implements Serializable {
     @JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Pessoa idPessoa;
-    @JoinColumn(name = "id_autorizador", referencedColumnName = "id_pessoa")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Pessoa idAutorizador;
     @JoinColumn(name = "id_usuario", referencedColumnName = "id_pessoa")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Pessoa idUsuario;
+    @JoinColumn(name = "id_autorizador", referencedColumnName = "id_pessoa")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Pessoa idAutorizador;
     @JoinColumn(name = "id_tipo_reserva", referencedColumnName = "id_tipo_reserva")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private TipoReserva idTipoReserva;
@@ -100,8 +103,10 @@ public class Reserva implements Serializable {
         this.idReserva = idReserva;
     }
 
-    public Reserva(Integer idReserva, Date data, Date horaInicio, Date horaFim, String emailNotificacao, String motivo, String rotulo, String cor, Character status, Date dataGravacao, Date horaGravacao) {
+    public Reserva(Integer idReserva, Date dataGravacao, Date horaGravacao, Date data, Date horaInicio, Date horaFim, String emailNotificacao, String motivo, String rotulo, String cor, Character status, String nomeUsuario) {
         this.idReserva = idReserva;
+        this.dataGravacao = dataGravacao;
+        this.horaGravacao = horaGravacao;
         this.data = data;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
@@ -110,8 +115,7 @@ public class Reserva implements Serializable {
         this.rotulo = rotulo;
         this.cor = cor;
         this.status = status;
-        this.dataGravacao = dataGravacao;
-        this.horaGravacao = horaGravacao;
+        this.nomeUsuario = nomeUsuario;
     }
 
     public Integer getIdReserva() {
@@ -120,6 +124,22 @@ public class Reserva implements Serializable {
 
     public void setIdReserva(Integer idReserva) {
         this.idReserva = idReserva;
+    }
+
+    public Date getDataGravacao() {
+        return dataGravacao;
+    }
+
+    public void setDataGravacao(Date dataGravacao) {
+        this.dataGravacao = dataGravacao;
+    }
+
+    public Date getHoraGravacao() {
+        return horaGravacao;
+    }
+
+    public void setHoraGravacao(Date horaGravacao) {
+        this.horaGravacao = horaGravacao;
     }
 
     public Date getData() {
@@ -194,20 +214,12 @@ public class Reserva implements Serializable {
         this.motivoCancelamento = motivoCancelamento;
     }
 
-    public Date getDataGravacao() {
-        return dataGravacao;
+    public String getNomeUsuario() {
+        return nomeUsuario;
     }
 
-    public void setDataGravacao(Date dataGravacao) {
-        this.dataGravacao = dataGravacao;
-    }
-
-    public Date getHoraGravacao() {
-        return horaGravacao;
-    }
-
-    public void setHoraGravacao(Date horaGravacao) {
-        this.horaGravacao = horaGravacao;
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
     }
 
     public Campus getIdCampus() {
@@ -234,20 +246,20 @@ public class Reserva implements Serializable {
         this.idPessoa = idPessoa;
     }
 
-    public Pessoa getIdAutorizador() {
-        return idAutorizador;
-    }
-
-    public void setIdAutorizador(Pessoa idAutorizador) {
-        this.idAutorizador = idAutorizador;
-    }
-
     public Pessoa getIdUsuario() {
         return idUsuario;
     }
 
     public void setIdUsuario(Pessoa idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public Pessoa getIdAutorizador() {
+        return idAutorizador;
+    }
+
+    public void setIdAutorizador(Pessoa idAutorizador) {
+        this.idAutorizador = idAutorizador;
     }
 
     public TipoReserva getIdTipoReserva() {

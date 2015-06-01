@@ -80,6 +80,17 @@ INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo
 INSERT INTO public.mail_server(id_campus, authentication_required, starttls, ssl, plain_text_over_tls, host, port, from_email, user_name, password )
 VALUES( 100, true, true, true, true, 'mail.utfpr.edu.br', 465, 'derdi-dv@utfpr.edu.br', 'derdi-dv', 'hfk1kzBRVEYiIjO6+z5pp9bMlJGfkWo1' );
 
+-- View para pesquisa de reservas por nome de usuário
+CREATE OR REPLACE VIEW public.VW_USUARIO_RESERVA AS
+SELECT DISTINCT 
+	id_campus, 
+	nome_usuario 
+FROM 
+	public.reserva 
+ORDER BY 
+	id_campus, 
+	nome_usuario;
+	
 -- TRIGGER FUNCTION PARA EVITAR RESERVAS DUPLICADAS
 CREATE OR REPLACE FUNCTION tf_reserva_concorrente() 
 RETURNS TRIGGER AS

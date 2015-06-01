@@ -102,7 +102,8 @@ public class ReservaService {
 						.getPessoaList();
 
 				for (Pessoa a : autorizadores) {
-					EmailService.enviaEmailAutorizador(a, reserva.getIdItemReserva());
+					EmailService.enviaEmailAutorizador(a,
+							reserva.getIdItemReserva());
 				}
 			}
 		} catch (Exception e) {
@@ -177,6 +178,7 @@ public class ReservaService {
 		r.setIdTipoReserva(reserva.getIdTipoReserva());
 		r.setIdTransacao(reserva.getIdTransacao());
 		r.setIdUsuario(reserva.getIdUsuario());
+		r.setNomeUsuario(reserva.getNomeUsuario());
 		r.setMotivo(reserva.getMotivo());
 		r.setRotulo(reserva.getRotulo());
 		r.setStatus(reserva.getStatus());
@@ -307,7 +309,8 @@ public class ReservaService {
 							.getPessoaList();
 
 					for (Pessoa a : autorizadores) {
-						EmailService.enviaEmailAutorizador(a, reserva.getIdItemReserva());
+						EmailService.enviaEmailAutorizador(a,
+								reserva.getIdItemReserva());
 					}
 				}
 

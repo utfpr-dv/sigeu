@@ -408,6 +408,7 @@ public class ReservaBean extends JavaBean {
 				return;
 			}
 			reserva.setIdUsuario(usuario);
+			reserva.setNomeUsuario(usuario.getNomeCompleto());
 
 			if (emailNotificacao == null
 					|| emailNotificacao.trim().length() <= 0
@@ -419,6 +420,7 @@ public class ReservaBean extends JavaBean {
 			reserva.setEmailNotificacao(emailNotificacao);
 		} else {
 			reserva.setIdUsuario(pessoaLogin);
+			reserva.setNomeUsuario(pessoaLogin.getNomeCompleto());
 			reserva.setEmailNotificacao(pessoaLogin.getEmail());
 		}
 

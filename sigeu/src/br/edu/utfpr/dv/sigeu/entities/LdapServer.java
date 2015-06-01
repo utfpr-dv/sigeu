@@ -22,7 +22,7 @@ import javax.persistence.Table;
  * @author Tiago
  */
 @Entity
-@Table(name = "ldap_server", catalog = "sigeu", schema = "public")
+@Table(name = "ldap_server")
 @NamedQueries({
     @NamedQuery(name = "LdapServer.findAll", query = "SELECT l FROM LdapServer l")})
 public class LdapServer implements Serializable {

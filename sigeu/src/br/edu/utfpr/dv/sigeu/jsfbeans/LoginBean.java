@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.exception.GenericJDBCException;
 
+import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
@@ -35,44 +36,66 @@ public class LoginBean extends JavaBean {
 		int posAt = this.email.indexOf("@");
 
 		if (posAt < 0 || posAt == 0 || posAt == email.length() - 1) {
-			this.addErrorMessage("E-Mail", "[" + email + "] não é um endereço de e-mail válido.");
+			this.addErrorMessage("E-Mail", "[" + email
+					+ "] não é um endereço de e-mail válido.");
 		} else {
 
 			try {
 				pessoaLogin = LoginService.autentica(email, password);
 
 				if (pessoaLogin == null) {
-					this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");
+					this.addErrorMessage("Login",
+							"E-mail não cadastrado ou senha inválida!");
 				} else {
 					if (!pessoaLogin.getAtivo()) {
-						this.addErrorMessage("Login", "Acesso inativado. Informe ao administrador do sistema.");
+						this.addErrorMessage("Login",
+								"Acesso inativado. Informe ao administrador do sistema.");
 					} else {
 						this.setNomeUsuario(pessoaLogin.getNomeCompleto());
 
-						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-						request.getSession().setAttribute(LoginFilter.SESSION_USUARIO_AUTENTICADO, email);
+						HttpServletRequest request = (HttpServletRequest) FacesContext
+								.getCurrentInstance().getExternalContext()
+								.getRequest();
+						request.getSession().setAttribute(
+								LoginFilter.SESSION_USUARIO_AUTENTICADO, email);
 
 						// FacesContext.getCurrentInstance().getExternalContext().redirect("/restrito/Home.xhtml");
 					}
 				}
 			} catch (CommunicationException e) {
 				ok = false;
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.", null));
+				FacesContext
+						.getCurrentInstance()
+						.addMessage(
+								null,
+								new FacesMessage(
+										FacesMessage.SEVERITY_ERROR,
+										"Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.",
+										null));
 				e.printStackTrace();
 			} catch (NamingException e) {
 				ok = false;
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Usuário ou senha inválidos. Tente novamente.", null));
+				FacesContext.getCurrentInstance().addMessage(
+						null,
+						new FacesMessage(FacesMessage.SEVERITY_ERROR,
+								"Usuário ou senha inválidos. Tente novamente.",
+								null));
 				e.printStackTrace();
 			} catch (ServidorLdapNaoCadastradoException e) {
 				ok = false;
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Servidor de autenticação não cadastrado para o endereço de e-mail especificado.", null));
+				FacesContext
+						.getCurrentInstance()
+						.addMessage(
+								null,
+								new FacesMessage(
+										FacesMessage.SEVERITY_ERROR,
+										"Servidor de autenticação não cadastrado para o endereço de e-mail especificado.",
+										null));
 				e.printStackTrace();
 			} catch (UsuarioDesativadoException e) {
 				ok = false;
-				this.addWarnMessage("Login", "Usuário não autorizado. Entre em contato com o Administrador do sistema.");
+				this.addWarnMessage("Login",
+						"Usuário não autorizado. Entre em contato com o Administrador do sistema.");
 				e.printStackTrace();
 			} catch (GenericJDBCException e) {
 				ok = false;
@@ -87,7 +110,9 @@ public class LoginBean extends JavaBean {
 				e.printStackTrace();
 			}
 			if (ok) {
-				this.addWarnMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
+				if (Config.getInstance().isDebugMode()) {
+					this.addWarnMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
+				}
 				return "/restrito/Home.xhtml";
 			}
 		}
@@ -96,16 +121,19 @@ public class LoginBean extends JavaBean {
 	}
 
 	public String logoff() {
-		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest request = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
 
-		request.getSession().removeAttribute(LoginFilter.SESSION_USUARIO_AUTENTICADO);
+		request.getSession().removeAttribute(
+				LoginFilter.SESSION_USUARIO_AUTENTICADO);
 
 		return "/Logoff";
 	}
 
 	@Override
 	public String toString() {
-		return "LoginBean [email=" + email + ", password=" + StringUtils.generateMD5Hash(password) + "]";
+		return "LoginBean [email=" + email + ", password="
+				+ StringUtils.generateMD5Hash(password) + "]";
 	}
 
 	public Pessoa getPessoaLogin() {

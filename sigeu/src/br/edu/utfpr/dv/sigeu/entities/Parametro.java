@@ -19,7 +19,7 @@ import javax.persistence.Table;
  * @author Tiago
  */
 @Entity
-@Table(name = "parametro", catalog = "sigeu", schema = "public")
+@Table(name = "parametro")
 @NamedQueries({
     @NamedQuery(name = "Parametro.findAll", query = "SELECT p FROM Parametro p")})
 public class Parametro implements Serializable {

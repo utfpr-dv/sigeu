@@ -59,6 +59,7 @@ import br.edu.utfpr.dv.sigeu.entities.Transacao;
 import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
+import br.edu.utfpr.dv.sigeu.sort.ClassroomComparator;
 
 import com.adamiworks.utils.StringUtils;
 
@@ -574,6 +575,8 @@ public class IntegrationService {
 			List<Classroom> listClassroom = timetable.getClassroomList();
 			List<ItemReserva> listSala = new ArrayList<ItemReserva>();
 
+			listClassroom.sort(new ClassroomComparator());
+
 			for (Classroom c : listClassroom) {
 				CategoriaItemReserva categoria = null;
 
@@ -702,6 +705,8 @@ public class IntegrationService {
 
 			// FASE 2 //
 
+			int total = 0;
+
 			// trans = new Transaction();
 			// trans.begin();
 
@@ -712,6 +717,8 @@ public class IntegrationService {
 			List<Card> listCard = timetable.getCardList();
 
 			for (Card card : listCard) {
+				total++;
+
 				// Recupera o Lesson
 				Lesson lesson = lessonDAO.encontrePorId(idTimeTable,
 						card.getLessonid());
@@ -731,6 +738,8 @@ public class IntegrationService {
 					}
 				}
 
+				String nomeUsuario = "";
+
 				// Recupera professores do Lesson
 				List<Professor> listProfessorCal = new ArrayList<Professor>();
 				String teachers[] = lesson.getTeacherids().split(",");
@@ -738,10 +747,13 @@ public class IntegrationService {
 					for (Professor p : listProfessor) {
 						if (s.equals(p.getCodigo())) {
 							listProfessorCal.add(p);
+							nomeUsuario += p.getName() + ", ";
 							continue;
 						}
 					}
 				}
+
+				nomeUsuario = StringUtils.cutLast(nomeUsuario, 2);
 
 				// Recupera as salas registradas no card
 				String classroomids[] = card.getClassroomids().split(",");
@@ -812,6 +824,7 @@ public class IntegrationService {
 							reserva.setIdTipoReserva(tipoReserva);
 							reserva.setIdTransacao(transacao);
 							reserva.setIdUsuario(usuarioAdmin);
+							reserva.setNomeUsuario(nomeUsuario);
 							reserva.setIdPessoa(usuarioAdmin);
 							reserva.setIdAutorizador(usuarioAdmin);
 							reserva.setEmailNotificacao(usuarioAdmin.getEmail());
@@ -833,17 +846,19 @@ public class IntegrationService {
 
 							reserva.setMotivo(motivo.toString());
 
-							SimpleDateFormat sdf = new SimpleDateFormat(
-									"dd/MM/yyyy");
-							SimpleDateFormat sdf2 = new SimpleDateFormat(
-									"HH:mm");
+							// SimpleDateFormat sdf = new SimpleDateFormat(
+							// "dd/MM/yyyy");
+							// SimpleDateFormat sdf2 = new SimpleDateFormat(
+							// "HH:mm");
+							//
+							// System.out.println("--> Reserva: ["
+							// + sdf.format(reserva.getData()) + " "
+							// + sdf2.format(reserva.getHoraInicio())
+							// + " "
+							// + reserva.getIdItemReserva().getNome()
+							// + "]");
 
-							System.out.println("--> Reserva: ["
-									+ sdf.format(reserva.getData()) + " "
-									+ sdf2.format(reserva.getHoraInicio())
-									+ " "
-									+ reserva.getIdItemReserva().getNome()
-									+ "]");
+							/** AQUI A RESERVA É CRIADA **/
 							reservaDAO.criar(reserva);
 
 							count++;
@@ -852,6 +867,9 @@ public class IntegrationService {
 								trans.commit();
 								trans.begin();
 								count = 0;
+
+								System.out.println(total
+										+ " reservas gravadas.");
 							}
 						}
 
