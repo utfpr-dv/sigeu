@@ -118,9 +118,6 @@ public class ReservaAdminBean extends JavaBean {
 
 				System.out.println("--> IMPORTAÇÃO DO XML FINALIZADA.");
 
-				this.addInfoMessage("Importação XML",
-						"Importação realizada com sucesso! Reservas do calendário criadas!");
-
 			} catch (Exception e) {
 				addErrorMessage("Processamento XML",
 						"O processamento do XML falhou");
@@ -132,6 +129,9 @@ public class ReservaAdminBean extends JavaBean {
 			addErrorMessage("Importação XML", e.getMessage());
 			e.printStackTrace();
 		}
+
+		addInfoMessage("Importação XML",
+				"Importação realizada com sucesso!");
 
 	}
 

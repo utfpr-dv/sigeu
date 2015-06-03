@@ -73,6 +73,8 @@ public class HibernateUtil {
 				String.valueOf(poolMin));
 		configuration.setProperty("hibernate.c3p0.max_size",
 				String.valueOf(poolMax));
+		configuration.setProperty("hibernate.jdbc.batch_size", "50");
+
 		// configuration.setProperty("hibernate.c3p0.unreturnedConnectionTimeout",
 		// "10");
 

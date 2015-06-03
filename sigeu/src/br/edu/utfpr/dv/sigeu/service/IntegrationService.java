@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -60,10 +62,17 @@ import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 import br.edu.utfpr.dv.sigeu.sort.ClassroomComparator;
+import br.edu.utfpr.dv.sigeu.sort.ReservaDataComparator;
 
 import com.adamiworks.utils.StringUtils;
 
 public class IntegrationService {
+
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
+			"dd/MM/yyyy");
+
+	// private static SimpleDateFormat hourFormat = new
+	// SimpleDateFormat("HH:mm");
 
 	public static void deleteAllPreviousTimetables() throws Exception {
 		Transaction transaction = null;
@@ -705,7 +714,7 @@ public class IntegrationService {
 
 			// FASE 2 //
 
-			int total = 0;
+			// int total = 0;
 
 			// trans = new Transaction();
 			// trans.begin();
@@ -716,8 +725,10 @@ public class IntegrationService {
 			Hibernate.initialize(timetable.getCardList());
 			List<Card> listCard = timetable.getCardList();
 
+			List<Reserva> listReserva = new ArrayList<Reserva>();
+
 			for (Card card : listCard) {
-				total++;
+				// total++;
 
 				// Recupera o Lesson
 				Lesson lesson = lessonDAO.encontrePorId(idTimeTable,
@@ -804,7 +815,7 @@ public class IntegrationService {
 
 					// reservaDAO = new ReservaDAO(trans);
 
-					int count = 0;
+					// int count = 0;
 
 					while (true) {
 						// Somente se o dia da semana for compatível
@@ -858,19 +869,18 @@ public class IntegrationService {
 							// + reserva.getIdItemReserva().getNome()
 							// + "]");
 
-							/** AQUI A RESERVA É CRIADA **/
-							reservaDAO.criar(reserva);
+							listReserva.add(reserva);
 
-							count++;
-
-							if (count == 1000) {
-								trans.commit();
-								trans.begin();
-								count = 0;
-
-								System.out.println(total
-										+ " reservas gravadas.");
-							}
+							// count++;
+							//
+							// if (count == 1000) {
+							// trans.commit();
+							// trans.begin();
+							// count = 0;
+							//
+							// System.out.println(total
+							// + " reservas gravadas.");
+							// }
 						}
 
 						// Se forem os mesmos dias, encerra o laço
@@ -882,12 +892,50 @@ public class IntegrationService {
 						dia.add(Calendar.DAY_OF_MONTH, 1);
 					}
 
-					if (count > 0) {
-						trans.commit();
-						trans.begin();
-					}
+					// if (count > 0) {
+					// trans.commit();
+					// trans.begin();
+					// }
 
 				}
+			}
+
+			listReserva.sort(new ReservaDataComparator());
+
+			int count = 0;
+
+			Date dateShow = null;
+			Date dateControl = null;
+
+			for (Reserva r : listReserva) {
+				count++;
+
+				dateControl = r.getData();
+
+				if (dateShow == null || !dateControl.equals(dateShow)) {
+					dateShow = dateControl;
+					System.out.println("Data: " + dateFormat.format(dateShow));
+				}
+
+				/** AQUI A RESERVA É CRIADA **/
+				reservaDAO.criar(r);
+
+				if (count == 50) {
+					trans.commit();
+					trans.begin();
+					count = 0;
+
+					// System.out.println("Data: "
+					// + dateFormat.format(r.getData()) + " "
+					// + hourFormat.format(r.getHoraInicio()) + "-"
+					// + hourFormat.format(r.getHoraFim()));
+
+				}
+
+			}
+
+			if (count > 0) {
+				trans.commit();
 			}
 
 		} catch (Exception e) {
@@ -897,7 +945,7 @@ public class IntegrationService {
 		}
 
 		// Atualiza professores
-		// IntegrationService.relacionaProfessorPessoa();
+		IntegrationService.relacionaProfessorPessoa();
 	}
 
 	public static void relacionaProfessorPessoa() throws Exception {
@@ -918,35 +966,74 @@ public class IntegrationService {
 					.getCampus(), null, 0);
 			List<Professor> listProfessor = professorDAO.pesquisaTodos(campus);
 
+			List<PessoaSimilarity> listSimilarity = null;
+
 			for (Professor prof : listProfessor) {
+				listSimilarity = new ArrayList<IntegrationService.PessoaSimilarity>();
+
+				/**
+				 * Encontra a similaridade entre os nomes e ordena pela mais
+				 * provável. Ignora taxas menores que 60%
+				 */
 				for (Pessoa pessoa : listPessoa) {
-					if (prof.getName()
-							.trim()
-							.toUpperCase()
-							.equals(pessoa.getNomeCompleto().trim()
-									.toUpperCase())) {
-						boolean exists = true;
+					double sim = StringUtils.similarity(
+							pessoa.getNomeCompleto(), prof.getName());
 
-						ProfessorPessoa pp = null;
-						pp = professorPessoaDAO.encontrePorId(prof
-								.getIdProfessor());
-
-						if (pp == null) {
-							exists = false;
-							pp = new ProfessorPessoa();
-						}
-
-						pp.setIdPessoa(pessoa);
-						pp.setIdProfessor(prof.getIdProfessor());
-						pp.setProfessor(prof);
-
-						if (!exists) {
-							professorPessoaDAO.criar(pp);
-						} else {
-							professorPessoaDAO.alterar(pp);
-						}
-
+					if (sim >= 0.6d) {
+						PessoaSimilarity pps = new PessoaSimilarity();
+						pps.setPessoa(pessoa);
+						pps.setDistance(sim);
+						listSimilarity.add(pps);
 					}
+				}
+
+				if (listSimilarity.size() > 0) {
+					/**
+					 * Ordena a lista
+					 */
+					listSimilarity.sort(new PessoaSimilarityComparator());
+
+					for (PessoaSimilarity ps : listSimilarity) {
+						System.out.println(prof.getName() + " ~ "
+								+ ps.getPessoa().getNomeCompleto() + " = "
+								+ ps.getDistance());
+					}
+
+					System.out.println("===");
+
+					Pessoa pessoa = listSimilarity.get(0).getPessoa();
+
+					// for (Pessoa pessoa : listPessoa) {
+					// if (prof.getName()
+					// .trim()
+					// .toUpperCase()
+					// .equals(pessoa.getNomeCompleto().trim()
+					// .toUpperCase())) {
+					boolean exists = true;
+
+					ProfessorPessoa pp = null;
+					pp = professorPessoaDAO
+							.encontrePorId(prof.getIdProfessor());
+
+					if (pp == null) {
+						exists = false;
+						pp = new ProfessorPessoa();
+					}
+
+					pp.setIdPessoa(pessoa);
+					pp.setIdProfessor(prof.getIdProfessor());
+					pp.setProfessor(prof);
+
+					if (!exists) {
+						professorPessoaDAO.criar(pp);
+					} else {
+						professorPessoaDAO.alterar(pp);
+					}
+
+				} else {
+					System.out.println(prof.getName()
+							+ " NÃO POSSUI REGISTROS SEMELHANTES.");
+					// }
 				}
 			}
 
@@ -956,5 +1043,52 @@ public class IntegrationService {
 		} finally {
 			trans.close();
 		}
+	}
+
+	/**
+	 * Classe para armazenar similaridade entre nomes de professores e pessoas.
+	 * 
+	 * @author Tiago
+	 *
+	 */
+	private static class PessoaSimilarity {
+
+		private Pessoa pessoa;
+		private double distance;
+
+		Pessoa getPessoa() {
+			return pessoa;
+		}
+
+		void setPessoa(Pessoa pessoa) {
+			this.pessoa = pessoa;
+		}
+
+		double getDistance() {
+			return distance;
+		}
+
+		void setDistance(double distance) {
+			this.distance = distance;
+		}
+
+	}
+
+	/**
+	 * Ordena a lista pelo valor de proximidade.
+	 * 
+	 * @author Tiago
+	 *
+	 */
+	public static class PessoaSimilarityComparator implements
+			Comparator<PessoaSimilarity> {
+
+		@Override
+		public int compare(PessoaSimilarity arg0, PessoaSimilarity arg1) {
+			// Descending arg1 - arg0
+			return new Double((arg1.getDistance() * 1000)
+					- (arg0.getDistance() * 1000)).intValue();
+		}
+
 	}
 }

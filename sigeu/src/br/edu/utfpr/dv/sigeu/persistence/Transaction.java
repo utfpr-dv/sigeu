@@ -32,6 +32,7 @@ public class Transaction {
 	 */
 	public void close() {
 		session.flush();
+		session.clear();
 		session.close();
 	}
 
@@ -47,7 +48,15 @@ public class Transaction {
 	 */
 	public void commit() {
 		session.getTransaction().commit();
+		this.flush();
+	}
+	
+	/**
+	 * Realiza um flush do Hibernate e limpa a sessão
+	 */
+	public void flush() {
 		session.flush();
+		//session.clear();
 	}
 
 	/**
