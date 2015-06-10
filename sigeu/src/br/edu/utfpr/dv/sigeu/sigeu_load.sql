@@ -90,6 +90,23 @@ FROM
 ORDER BY 
 	id_campus, 
 	nome_usuario;
+
+-- VIEW para identificação de professor/pessoa
+CREATE OR REPLACE VIEW public.VW_PROFESSOR_PESSOA
+AS
+SELECT
+	prof.id_professor,
+	prof.name AS nome_professor,
+	pess.id_pessoa,
+	pess.nome_completo AS nome_pessoa
+FROM
+	public.professor prof LEFT OUTER JOIN
+	public.professor_pessoa pp ON
+		prof.id_professor = pp.id_professor LEFT OUTER JOIN
+	public.pessoa pess ON
+		pess.id_pessoa = pp.id_pessoa
+ORDER BY
+	prof.name;
 	
 -- TRIGGER FUNCTION PARA EVITAR RESERVAS DUPLICADAS
 CREATE OR REPLACE FUNCTION tf_reserva_concorrente() 

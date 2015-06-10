@@ -25,7 +25,7 @@
 								value="Pesquisar" icon="ui-icon-search" style="width:100px"
 								action="#{pesquisaItemReservaBean.pesquisa}" update="@form" /></td>
 						<td align="right"><p:button value="Novo"
-								outcome="/restrito/itemreserva/ItemReserva.xhtml"
+								outcome="/admin/ItemReserva.xhtml"
 								icon="ui-icon-circle-plus" style="width:100px" /></td>
 					</tr>
 				</table>
@@ -66,7 +66,7 @@
 
 					<p:column style="width: 104px; text-align: center">
 						<p:button value="Editar"
-							outcome="/restrito/itemreserva/ItemReserva.xhtml"
+							outcome="/admin/ItemReserva.xhtml"
 							icon="ui-icon-pencil" title="Editar" style="width: 100px">
 							<f:param name="editarId" value="#{i.idItemReserva}" />
 						</p:button>

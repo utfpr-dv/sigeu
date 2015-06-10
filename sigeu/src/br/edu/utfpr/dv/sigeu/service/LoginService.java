@@ -6,6 +6,7 @@ import java.util.Map;
 
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.LdapServerDAO;
+import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
 import br.edu.utfpr.dv.sigeu.entities.GrupoPessoa;
 import br.edu.utfpr.dv.sigeu.entities.LdapServer;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
@@ -26,7 +27,8 @@ public class LoginService {
 	 * @return Pessoa
 	 * @throws Exception
 	 */
-	public static Pessoa autentica(String email, String password) throws Exception {
+	public static Pessoa autentica(String email, String password)
+			throws Exception {
 
 		Pessoa pessoa = null;
 		String hash = null;
@@ -37,7 +39,9 @@ public class LoginService {
 
 		if (ldap == null) {
 			// Não existe servidor cadastrado
-			throw new ServidorLdapNaoCadastradoException("E-mail inválido ou Servidor LDAP não encontrado (" + email + ")");
+			throw new ServidorLdapNaoCadastradoException(
+					"E-mail inválido ou Servidor LDAP não encontrado (" + email
+							+ ")");
 		} else {
 			// Define o objeto Campus do Singleton para uso
 			Config.getInstance().setCampus(ldap.getIdCampus());
@@ -58,7 +62,8 @@ public class LoginService {
 			// Servidor cadastrado, verificando senha
 			String uid = email.substring(0, email.indexOf("@"));
 			hash = StringUtils.generateMD5Hash(password);
-			LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(), ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
+			LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(),
+					ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
 
 			// Caso ocorra falha de senha, uma exceção será
 			// disparada
@@ -111,7 +116,23 @@ public class LoginService {
 			}
 
 			// Atualiza os grupos da pessoa
-			GrupoPessoaService.atualizaGrupos(pessoa, grupos);
+			Transaction trans = null;
+			try {
+				trans = new Transaction();
+				trans.begin();
+				PessoaDAO pessoaDAO = new PessoaDAO(trans);
+				// Busca novamente a pessoa do banco de dados para conferir os
+				// grupos
+				pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
+				GrupoPessoaService.atualizaGrupos(trans, pessoa, grupos);
+				trans.commit();
+			} catch (Exception e) {
+				throw e;
+			} finally {
+				if (trans != null) {
+					trans.close();
+				}
+			}
 
 			// // Atualiza servidor LDAP da Pessoa
 			// if (pessoa.getPessoaLdapServer() == null) {

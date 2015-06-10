@@ -47,29 +47,38 @@ public class GrupoPessoaService {
 	 * Exclui os grupos que não estão mais relacionados e inclui os grupos que
 	 * faltam relacionamento
 	 * 
+	 * @param trans
+	 *            Transação de controle. Este método foi projetado para ser
+	 *            utilizado em um loop com várias atualizações de grupos, e não
+	 *            somente uma. Portanto o controle transacional não deve ficar
+	 *            interno a este método.
 	 * @param pessoa
 	 *            Objeto pessoa do banco de dados
 	 * @param grupos
 	 *            Lista de grupos do LDAP
 	 */
-	public static void atualizaGrupos(Pessoa pessoa, List<GrupoPessoa> grupos) {
-		Transaction trans = null;
+	public static void atualizaGrupos(Transaction trans, Pessoa pessoa,
+			List<GrupoPessoa> grupos) throws Exception {
+		// try {
+		// trans = new Transaction();
+		// trans.begin();
 
-		try {
-			trans = new Transaction();
-			trans.begin();
+		PessoaDAO pessoaDAO = new PessoaDAO(trans);
+		GrupoPessoaDAO grupoPessoaDAO = new GrupoPessoaDAO(trans);
 
-			PessoaDAO pessoaDAO = new PessoaDAO(trans);
-			GrupoPessoaDAO grupoPessoaDAO = new GrupoPessoaDAO(trans);
+		// Busca novamente do banco de dados
+		//pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
 
-			// Busca novamente do banco de dados
-			pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
+		List<GrupoPessoa> gruposCadastrados = pessoa.getGrupoPessoaList();
+		// List<GrupoPessoa> listaVazia = new ArrayList<GrupoPessoa>();
 
-			List<GrupoPessoa> gruposCadastrados = pessoa.getGrupoPessoaList();
-			// List<GrupoPessoa> listaVazia = new ArrayList<GrupoPessoa>();
+		boolean modificado = false;
 
-			boolean modificado = false;
+		if (gruposCadastrados == null || gruposCadastrados.size() == 0) {
+			modificado = true;
+		}
 
+		if (!modificado) {
 			// Verifica se algum grupo foi removido
 			for (GrupoPessoa gp : grupos) {
 				boolean eliminado = true;
@@ -99,56 +108,60 @@ public class GrupoPessoaService {
 					break;
 				}
 			}
+		}
 
-			if (modificado) {
-				// Elimina todos os grupos
+		if (modificado) {
+			// Elimina todos os grupos
+			if (gruposCadastrados != null && gruposCadastrados.size() > 0) {
 				for (int i = pessoa.getGrupoPessoaList().size() - 1; i >= 0; i--) {
 					GrupoPessoa grupo = pessoa.getGrupoPessoaList().get(i);
 					grupo.getPessoaList().remove(pessoa);
 					grupoPessoaDAO.alterar(grupo);
 					// i--;
 				}
+			}
+			
+			pessoa.setGrupoPessoaList(null);
+			pessoaDAO.alterar(pessoa);
 
-				pessoa.setGrupoPessoaList(null);
-				pessoaDAO.alterar(pessoa);
+			// Adiciona a pessoa a cada grupo
+			// List<Pessoa> pessoaList = new ArrayList<Pessoa>();
+			// pessoaList.add(pessoa);
 
-				// Adiciona a pessoa a cada grupo
-				// List<Pessoa> pessoaList = new ArrayList<Pessoa>();
-				// pessoaList.add(pessoa);
+			// Inclui novamente os grupos buscando do banco de dados
+			gruposCadastrados = new ArrayList<GrupoPessoa>();
 
-				// Inclui novamente os grupos buscando do banco de dados
-				gruposCadastrados = new ArrayList<GrupoPessoa>();
-				for (int i = 0; i < grupos.size(); i++) {
-					Integer id = grupos.get(i).getIdGrupoPessoa();
-					GrupoPessoa grupo = grupoPessoaDAO.encontrePorId(id);
-					List<Pessoa> pessoaList = grupo.getPessoaList();
+			for (int i = 0; i < grupos.size(); i++) {
+				Integer id = grupos.get(i).getIdGrupoPessoa();
+				GrupoPessoa grupo = grupoPessoaDAO.encontrePorId(id);
+				List<Pessoa> pessoaList = grupo.getPessoaList();
 
-					if (pessoaList == null) {
-						pessoaList = new ArrayList<Pessoa>();
-					}
-					pessoaList.add(pessoa);
-
-					grupo.setPessoaList(pessoaList);
-
-					grupoPessoaDAO.alterar(grupo);
-					gruposCadastrados.add(grupo);
+				if (pessoaList == null) {
+					pessoaList = new ArrayList<Pessoa>();
 				}
+				pessoaList.add(pessoa);
 
-				// Readiciona todos os grupos
-				pessoa.setGrupoPessoaList(gruposCadastrados);
+				grupo.setPessoaList(pessoaList);
 
-				pessoaDAO.alterar(pessoa);
+				grupoPessoaDAO.alterar(grupo);
+				gruposCadastrados.add(grupo);
 			}
 
-			trans.commit();
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			if (trans != null) {
-				trans.close();
-			}
+			// Readiciona todos os grupos
+			pessoa.setGrupoPessoaList(gruposCadastrados);
 
+			pessoaDAO.alterar(pessoa);
 		}
+
+		// trans.commit();
+		// } catch (Exception e) {
+		// throw e;
+		// } finally {
+		// if (trans != null) {
+		// trans.close();
+		// }
+		//
+		// }
 
 	}
 

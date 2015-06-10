@@ -18,7 +18,7 @@
 							requiredMessage="Preencha data inicial e final para pesquisa por período" /> 
 							<p:commandButton id="p2" value="Pesquisar" icon="ui-icon-search"
 							style="width:100px" action="#{pesquisaFeriadoBean.pesquisaPorData}" update="@form" process="@this dataInicial dataFinal" /></td>
-					<td align="right"><p:button value="Novo" outcome="/restrito/feriado/Feriado.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
+					<td align="right"><p:button value="Novo" outcome="/admin/Feriado.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
 				</tr>
 			</table>
 
@@ -42,7 +42,7 @@
 				</p:column>
 
 				<p:column style="width: 104px; text-align: center">
-					<p:button value="Editar" outcome="/restrito/feriado/Feriado.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
+					<p:button value="Editar" outcome="/admin/Feriado.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
 						<f:param name="editarId" value="#{i.idFeriado}" />
 					</p:button>
 				</p:column>

@@ -43,8 +43,9 @@ public class ProfessorPessoaDAO extends HibernateDAO<ProfessorPessoa> {
 
 	@Override
 	public void defineId(ProfessorPessoa o) {
-		Integer val = this.gerarNovoId().intValue();
-		o.setIdProfessor(val);
+		/** Não pode fazer nada aqui. */
+		// Integer val = this.gerarNovoId().intValue();
+		// o.setIdProfessor(val);
 	}
 
 }

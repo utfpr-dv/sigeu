@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta charset="UTF-8" />
+	<title>:: Ooops! ::</title>
+	<h:outputStylesheet library="css" name="default.css" />
+</h:head>
+<h:body styleClass="bodyBackground">
+	<div id="divOnCenter1" class="divOnCenter">
+		<div id="errorMessage" style="margin: 20px 20px 20px 20px">
+			<table class="tableDiv">
+				<tr>
+					<td><div class="headerLogo">
+							<h:link outcome="/restrito/Home.xhtml">
+								<h:graphicImage library="img" name="utfpr_logo.png" />
+							</h:link>
+						</div></td>
+					<td valign="bottom" align="right"><div class="headerInfo">
+							<p:outputLabel value="#{loginBean.nomeUsuario}"
+								style="font-weight: bold; font-size: small" />
+							<input id="LogoffButton" type="button" value="Logoff"
+								onclick="doLogoff();" />
+						</div></td>
+				</tr>
+			</table>
+			<h2 style="color: #000;">Oops!</h2>
+			<p>Você não tem as credenciais necessárias para acessar esta
+				página.</p>
+		</div>
+	</div>
+	<script>
+		function getContextPath() {
+			return window.location.pathname.substring(0,
+					window.location.pathname.indexOf("/", 2));
+		}
+
+		var ctx = getContextPath();
+		
+		function doLogoff() {
+			window.location = ctx + "/Logoff";
+		}
+	</script>
+</h:body>
+</html>

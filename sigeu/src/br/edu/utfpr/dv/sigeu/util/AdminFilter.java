@@ -11,9 +11,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class LoginFilter implements Filter {
+import br.edu.utfpr.dv.sigeu.config.Config;
 
-	public static final String SESSION_USUARIO_AUTENTICADO = "email_usuario";
+public class AdminFilter implements Filter {
 
 	@Override
 	public void destroy() {
@@ -23,38 +23,33 @@ public class LoginFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
+
 		boolean loginOk = false;
-		String email = null;
+
 		HttpServletRequest requestHttp = ((HttpServletRequest) request);
 
-		// String url = "";
+		String uri = "";
 		// String queryString = "";
 
-		// if (request instanceof HttpServletRequest) {
-		// url = ((HttpServletRequest) request).getRequestURL().toString();
-		// queryString = ((HttpServletRequest) request).getQueryString();
-		// }
-
-		// System.out.println("URL: " + url);
-
-		// System.out.println("LoginFilter: " + requestHttp.getRequestURI());
-
-		Object emailSessao = requestHttp.getSession().getAttribute(
-				SESSION_USUARIO_AUTENTICADO);
-
-		if (emailSessao != null) {
-			email = (String) emailSessao;
+		if (request instanceof HttpServletRequest) {
+			uri = requestHttp.getRequestURI();
+			// url = ((HttpServletRequest) request).getRequestURL().toString();
+			// queryString = ((HttpServletRequest) request).getQueryString();
 		}
 
-		// System.out.println("E-mail registrado é: " + email);
+		// System.out.println("URI: " + uri);
 
-		loginOk = (email != null && email.trim().length() > 0);
+		if (uri.startsWith("/sigeu/admin/")) {
+			loginOk = Config.getInstance().getPessoaLogin().getAdmin();
+		} else {
+			loginOk = true;
+		}
 
 		if (!loginOk) {
-			// Manda para página de login
+			// Manda para página de erro
 			String contextPath = requestHttp.getContextPath();
 			((HttpServletResponse) response).sendRedirect(contextPath
-					+ "/Login.xhtml");
+					+ "/Oops.xhtml");
 		} else {
 			// Continua na página solicitada
 			chain.doFilter(request, response);

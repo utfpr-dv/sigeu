@@ -14,6 +14,7 @@ import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.exception.DatabaseConfigException;
 
 public class HibernateUtil {
+	public static final int HIBERNATE_BATCH_SIZE = 100;
 	private static HibernateUtil self;
 	// private ComboPooledDataSource cpds = null;
 
@@ -73,7 +74,8 @@ public class HibernateUtil {
 				String.valueOf(poolMin));
 		configuration.setProperty("hibernate.c3p0.max_size",
 				String.valueOf(poolMax));
-		configuration.setProperty("hibernate.jdbc.batch_size", "50");
+		configuration.setProperty("hibernate.jdbc.batch_size",
+				String.valueOf(HIBERNATE_BATCH_SIZE));
 
 		// configuration.setProperty("hibernate.c3p0.unreturnedConnectionTimeout",
 		// "10");

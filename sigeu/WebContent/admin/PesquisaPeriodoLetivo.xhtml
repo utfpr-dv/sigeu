@@ -13,7 +13,7 @@
 							value="#{pesquisaPeriodoLetivoBean.textoPesquisa}" /> <p:commandButton id="p1" value="Pesquisar" icon="ui-icon-search" style="width:100px"
 							action="#{pesquisaPeriodoLetivoBean.pesquisa}" update="@form" process="@this textoPesquisa" /></td>
 
-					<td align="right"><p:button value="Novo" outcome="/restrito/periodoletivo/PeriodoLetivo.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
+					<td align="right"><p:button value="Novo" outcome="/admin/PeriodoLetivo.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
 				</tr>
 			</table>
 
@@ -37,7 +37,7 @@
 				</p:column>
 
 				<p:column style="width: 104px; text-align: center">
-					<p:button value="Editar" outcome="/restrito/periodoletivo/PeriodoLetivo.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
+					<p:button value="Editar" outcome="/admin/PeriodoLetivo.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
 						<f:param name="editarId" value="#{i.idPeriodoLetivo}" />
 					</p:button>
 				</p:column>

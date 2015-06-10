@@ -975,13 +975,15 @@ public class IntegrationService {
 
 				/**
 				 * Encontra a similaridade entre os nomes e ordena pela mais
-				 * provável. Ignora taxas menores que 66%
+				 * provável. Ignora taxas menores que 85%, pois só deve
+				 * considerar pequenos erros de grafia de acentuação ou falta de
+				 * preposições.
 				 */
 				for (Pessoa pessoa : listPessoa) {
-					double sim = StringUtils.nameSimilarity(
+					double sim = StringUtils.similarity(
 							pessoa.getNomeCompleto(), prof.getName());
 
-					if (sim >= 0.66d) {
+					if (sim >= 0.85d) {
 						PessoaSimilarity pps = new PessoaSimilarity();
 						pps.setPessoa(pessoa);
 						pps.setDistance(sim);
@@ -1020,11 +1022,11 @@ public class IntegrationService {
 					if (pp == null) {
 						exists = false;
 						pp = new ProfessorPessoa();
+						pp.setIdProfessor(prof.getIdProfessor());
+						pp.setProfessor(prof);
 					}
 
 					pp.setIdPessoa(pessoa);
-					pp.setIdProfessor(prof.getIdProfessor());
-					pp.setProfessor(prof);
 
 					if (!exists) {
 						professorPessoaDAO.criar(pp);

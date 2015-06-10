@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.CacheMode;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 
 import br.edu.utfpr.dv.sigeu.entities.Campus;
@@ -22,7 +23,13 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 		String hql = "from Pessoa o where o.idPessoa = :id";
 		Query q = session.createQuery(hql);
 		q.setInteger("id", id);
-		return (Pessoa) q.uniqueResult();
+		Pessoa p = (Pessoa) q.uniqueResult();
+
+		if (p != null) {
+			Hibernate.initialize(p.getGrupoPessoaList());
+		}
+
+		return p;
 	}
 
 	public Pessoa encontrePorEmail(String email) throws Exception {
@@ -49,8 +56,9 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 
 	@Override
 	public void defineId(Pessoa o) {
-		Integer id = this.gerarNovoId().intValue();
-		o.setIdPessoa(id);
+//			Integer id = this.gerarNovoId().intValue();
+//			o.setIdPessoa(id);	
+		/* O ID da entidade PESSOA é adicionada automaticamente pelo banco de dados */
 	}
 
 	public List<Pessoa> pesquisa(Campus campus, String textoPesquisa, int limit) {

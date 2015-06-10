@@ -12,7 +12,7 @@
 					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" /> <p:inputText id="textoPesquisa" size="64"
 							value="#{pesquisaLdapServerBean.textoPesquisa}" /> <p:commandButton value="Pesquisar" icon="ui-icon-search" style="width:100px"
 							action="#{pesquisaLdapServerBean.pesquisa}" update="@form" /></td>
-					<td align="right"><p:button value="Novo" outcome="/restrito/ldapserver/LdapServer.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
+					<td align="right"><p:button value="Novo" outcome="/admin/LdapServer.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
 				</tr>
 			</table>
 
@@ -44,7 +44,7 @@
 				</p:column>
 
 				<p:column style="width: 104px; text-align: center">
-					<p:button value="Editar" outcome="/restrito/ldapserver/LdapServer.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
+					<p:button value="Editar" outcome="/admin/LdapServer.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">
 						<f:param name="editarId" value="#{ent.idServer}" />
 					</p:button>
 				</p:column>

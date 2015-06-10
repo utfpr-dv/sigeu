@@ -4,8 +4,8 @@
  <print-settings numCopies="1" zoom="1.0" pageNumbersPrinted="true" orientation="1" paperWidth="612.0" paperHeight="792.0" leftBorder="50.0" rightBorder="50.0" topBorder="50.0" bottomBorder="50.0" />
  <project-data-sources>
   <data-source id="DS0">
+   <property key="Logical" value="SIGEU - local" />
    <property key="Connection Type" value="PostgreSQL" />
-   <property key="Logical" value="Modelo de Dados" />
    <property key="JDBC URL" value="jdbc:postgresql://localhost:5432/sigeu" />
    <property key="UID" value="sigeu" />
    <property key="PWD" value="sigeu" />
@@ -22,7 +22,7 @@
   <table id="TAB1" populated="true" UUID="d3084822-a2b9-43df-9dda-e1713ea1375e" name="pessoa" objectType="TABLE" physicalName="pessoa" >
    <remarks></remarks>
    <folder id="FOLTAB11" populated="true" name="Columns" physicalName="Columns" type="1">
-    <column id="COL2" populated="true" UUID="0972b9e7-24d1-4500-ba54-7a1851099030" autoIncrement="false" autoIncrementSequenceName="pessoa_id_pessoa_seq" defaultValue="" name="id_pessoa" nullable="0" physicalName="id_pessoa" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+    <column id="COL2" populated="true" UUID="0972b9e7-24d1-4500-ba54-7a1851099030" autoIncrement="true" autoIncrementSequenceName="pessoa_id_pessoa_seq" defaultValue="" name="id_pessoa" nullable="0" physicalName="id_pessoa" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
      <remarks></remarks>
     </column>
     <column id="COL3" populated="true" UUID="4cf1f181-1b15-40a7-b62b-1982fb06a2a0" autoIncrement="false" autoIncrementSequenceName="pessoa_campus_campus_seq" defaultValue="" name="id_campus" nullable="0" physicalName="id_campus" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
@@ -1178,7 +1178,7 @@
    </relationship>
   </relationships>
  </target-database>
- <ddl-generator type="ca.sqlpower.architect.ddl.PostgresDDLGenerator" allow-connection="true" target-schema="public"> </ddl-generator>
+ <ddl-generator type="ca.sqlpower.architect.ddl.PostgresDDLGenerator" allow-connection="false" target-schema="public"> </ddl-generator>
  <liquibase-settings useSeparateChangeSets="false" generateId="false" idStart="1"/>
  <compare-dm-settings  ddlGenerator="ca.sqlpower.architect.ddl.PostgresDDLGenerator"  outputFormatAsString="SQL"  saveFlag="true" >
   <source-stuff   datastoreTypeAsString="DATABASE"   connectName="SIGEU"   filePath=""  />
@@ -1186,7 +1186,7 @@
   <liquibase-settings useSeparateChangeSets="false" generateId="false" idStart="1"/>
  </compare-dm-settings>
  <create-kettle-job-settings filePath="" jobName="" schemaName="" kettleJoinType="0" savingToFile="true" />
- <play-pen zoom="1.0" viewportX="1577" viewportY="919" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
+ <play-pen zoom="1.0" viewportX="493" viewportY="109" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
   <table-pane table-ref="TAB1" x="1356" y="568" bgColor="0xc7d0df" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB16" x="2115" y="21" bgColor="0xf6bcbc" fgColor="0x0000cc" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB21" x="2029" y="208" bgColor="0xc7d0df" fgColor="0x000000" rounded="false" dashed="false"/>
