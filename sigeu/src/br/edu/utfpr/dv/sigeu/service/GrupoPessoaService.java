@@ -53,92 +53,102 @@ public class GrupoPessoaService {
 	 *            Lista de grupos do LDAP
 	 */
 	public static void atualizaGrupos(Pessoa pessoa, List<GrupoPessoa> grupos) {
-		Transaction trans = new Transaction();
-		trans.begin();
+		Transaction trans = null;
 
-		PessoaDAO pessoaDAO = new PessoaDAO(trans);
-		GrupoPessoaDAO grupoPessoaDAO = new GrupoPessoaDAO(trans);
+		try {
+			trans = new Transaction();
+			trans.begin();
 
-		// Busca novamente do banco de dados
-		pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
+			PessoaDAO pessoaDAO = new PessoaDAO(trans);
+			GrupoPessoaDAO grupoPessoaDAO = new GrupoPessoaDAO(trans);
 
-		List<GrupoPessoa> gruposCadastrados = pessoa.getGrupoPessoaList();
-		// List<GrupoPessoa> listaVazia = new ArrayList<GrupoPessoa>();
+			// Busca novamente do banco de dados
+			pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
 
-		boolean modificado = false;
+			List<GrupoPessoa> gruposCadastrados = pessoa.getGrupoPessoaList();
+			// List<GrupoPessoa> listaVazia = new ArrayList<GrupoPessoa>();
 
-		// Verifica se algum grupo foi removido
-		for (GrupoPessoa gp : grupos) {
-			boolean eliminado = true;
-			boolean naoRelacionado = true;
+			boolean modificado = false;
 
-			for (GrupoPessoa grupoCadastrado : gruposCadastrados) {
-				if (grupoCadastrado.getNome().equals(gp.getNome())) {
-					eliminado = false;
+			// Verifica se algum grupo foi removido
+			for (GrupoPessoa gp : grupos) {
+				boolean eliminado = true;
+				boolean naoRelacionado = true;
+
+				for (GrupoPessoa grupoCadastrado : gruposCadastrados) {
+					if (grupoCadastrado.getNome().equals(gp.getNome())) {
+						eliminado = false;
+						break;
+					}
+				}
+
+				if (eliminado) {
+					modificado = true;
+					break;
+				}
+
+				for (GrupoPessoa grupoCadastrado : gruposCadastrados) {
+					if (gp.getNome().equals(grupoCadastrado.getNome())) {
+						naoRelacionado = false;
+						break;
+					}
+				}
+
+				if (naoRelacionado) {
+					modificado = true;
 					break;
 				}
 			}
 
-			if (eliminado) {
-				modificado = true;
-				break;
-			}
-
-			for (GrupoPessoa grupoCadastrado : gruposCadastrados) {
-				if (gp.getNome().equals(grupoCadastrado.getNome())) {
-					naoRelacionado = false;
-					break;
+			if (modificado) {
+				// Elimina todos os grupos
+				for (int i = pessoa.getGrupoPessoaList().size() - 1; i >= 0; i--) {
+					GrupoPessoa grupo = pessoa.getGrupoPessoaList().get(i);
+					grupo.getPessoaList().remove(pessoa);
+					grupoPessoaDAO.alterar(grupo);
+					// i--;
 				}
-			}
 
-			if (naoRelacionado) {
-				modificado = true;
-				break;
-			}
-		}
+				pessoa.setGrupoPessoaList(null);
+				pessoaDAO.alterar(pessoa);
 
-		if (modificado) {
-			// Elimina todos os grupos
-			for (int i = pessoa.getGrupoPessoaList().size() - 1; i >= 0; i--) {
-				GrupoPessoa grupo = pessoa.getGrupoPessoaList().get(i);
-				grupo.getPessoaList().remove(pessoa);
-				grupoPessoaDAO.alterar(grupo);
-				// i--;
-			}
+				// Adiciona a pessoa a cada grupo
+				// List<Pessoa> pessoaList = new ArrayList<Pessoa>();
+				// pessoaList.add(pessoa);
 
-			pessoa.setGrupoPessoaList(null);
-			pessoaDAO.alterar(pessoa);
+				// Inclui novamente os grupos buscando do banco de dados
+				gruposCadastrados = new ArrayList<GrupoPessoa>();
+				for (int i = 0; i < grupos.size(); i++) {
+					Integer id = grupos.get(i).getIdGrupoPessoa();
+					GrupoPessoa grupo = grupoPessoaDAO.encontrePorId(id);
+					List<Pessoa> pessoaList = grupo.getPessoaList();
 
-			// Adiciona a pessoa a cada grupo
-			// List<Pessoa> pessoaList = new ArrayList<Pessoa>();
-			// pessoaList.add(pessoa);
+					if (pessoaList == null) {
+						pessoaList = new ArrayList<Pessoa>();
+					}
+					pessoaList.add(pessoa);
 
-			// Inclui novamente os grupos buscando do banco de dados
-			gruposCadastrados = new ArrayList<GrupoPessoa>();
-			for (int i = 0; i < grupos.size(); i++) {
-				Integer id = grupos.get(i).getIdGrupoPessoa();
-				GrupoPessoa grupo = grupoPessoaDAO.encontrePorId(id);
-				List<Pessoa> pessoaList = grupo.getPessoaList();
+					grupo.setPessoaList(pessoaList);
 
-				if (pessoaList == null) {
-					pessoaList = new ArrayList<Pessoa>();
+					grupoPessoaDAO.alterar(grupo);
+					gruposCadastrados.add(grupo);
 				}
-				pessoaList.add(pessoa);
 
-				grupo.setPessoaList(pessoaList);
+				// Readiciona todos os grupos
+				pessoa.setGrupoPessoaList(gruposCadastrados);
 
-				grupoPessoaDAO.alterar(grupo);
-				gruposCadastrados.add(grupo);
+				pessoaDAO.alterar(pessoa);
 			}
 
-			// Readiciona todos os grupos
-			pessoa.setGrupoPessoaList(gruposCadastrados);
+			trans.commit();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if (trans != null) {
+				trans.close();
+			}
 
-			pessoaDAO.alterar(pessoa);
 		}
-
-		trans.commit();
-		trans.close();
 
 	}
 
@@ -152,13 +162,15 @@ public class GrupoPessoaService {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public static GrupoPessoa encontrePorDescricao(String descricao) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			SQLException {
+	public static GrupoPessoa encontrePorDescricao(String descricao)
+			throws IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, SQLException {
 		Transaction trans = new Transaction();
 		trans.begin();
 
 		GrupoPessoaDAO dao = new GrupoPessoaDAO(trans);
-		GrupoPessoa gp = dao.encontrePorDescricao(Config.getInstance().getCampus(), descricao);
+		GrupoPessoa gp = dao.encontrePorDescricao(Config.getInstance()
+				.getCampus(), descricao);
 
 		if (gp != null) {
 			Hibernate.initialize(gp.getIdCampus());

@@ -130,9 +130,18 @@ public class ReservaAdminBean extends JavaBean {
 			e.printStackTrace();
 		}
 
-		addInfoMessage("Importação XML",
-				"Importação realizada com sucesso!");
+		addInfoMessage("Importação XML", "Importação realizada com sucesso!");
 
+	}
+
+	public void relacionaProfessorPessoa() {
+		try {
+			IntegrationService.relacionaProfessorPessoa();
+			addInfoMessage("", "Relacionamento Concluído!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			addErrorMessage("", e.getMessage());
+		}
 	}
 
 	public List<PeriodoLetivo> getListaPeriodoLetivo() {

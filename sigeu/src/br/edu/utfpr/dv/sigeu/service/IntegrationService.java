@@ -962,8 +962,10 @@ public class IntegrationService {
 			ProfessorPessoaDAO professorPessoaDAO = new ProfessorPessoaDAO(
 					trans);
 
-			List<Pessoa> listPessoa = pessoaDAO.pesquisa(Config.getInstance()
-					.getCampus(), null, 0);
+			// List<Pessoa> listPessoa =
+			// pessoaDAO.pesquisa(Config.getInstance().getCampus(), null, 0);
+			List<Pessoa> listPessoa = pessoaDAO.pesquisaPorGrupo(Config
+					.getInstance().getCampus(), "PROFESSORES", 0);
 			List<Professor> listProfessor = professorDAO.pesquisaTodos(campus);
 
 			List<PessoaSimilarity> listSimilarity = null;
@@ -973,13 +975,13 @@ public class IntegrationService {
 
 				/**
 				 * Encontra a similaridade entre os nomes e ordena pela mais
-				 * provável. Ignora taxas menores que 60%
+				 * provável. Ignora taxas menores que 66%
 				 */
 				for (Pessoa pessoa : listPessoa) {
-					double sim = StringUtils.similarity(
+					double sim = StringUtils.nameSimilarity(
 							pessoa.getNomeCompleto(), prof.getName());
 
-					if (sim >= 0.6d) {
+					if (sim >= 0.66d) {
 						PessoaSimilarity pps = new PessoaSimilarity();
 						pps.setPessoa(pessoa);
 						pps.setDistance(sim);

@@ -12,6 +12,7 @@ import org.hibernate.Session;
  */
 public class Transaction {
 	private Session session = null;
+	private boolean inTransaction = false;
 
 	public Transaction() {
 		super();
@@ -25,15 +26,18 @@ public class Transaction {
 			session = HibernateUtil.currentInstance().openSession();
 		}
 		session.beginTransaction();
+		inTransaction = true;
 	}
 
 	/**
 	 * Encerra uma transação, desconectando-a do banco de dados;
 	 */
 	public void close() {
-		session.flush();
-		session.clear();
-		session.close();
+		if (inTransaction) {
+			session.flush();
+			session.clear();
+			session.close();
+		}
 	}
 
 	/**
@@ -50,13 +54,13 @@ public class Transaction {
 		session.getTransaction().commit();
 		this.flush();
 	}
-	
+
 	/**
 	 * Realiza um flush do Hibernate e limpa a sessão
 	 */
 	public void flush() {
 		session.flush();
-		//session.clear();
+		// session.clear();
 	}
 
 	/**

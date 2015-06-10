@@ -142,14 +142,23 @@
 								update="processaXml" />
 							<br />
 							<br />
+							
 							<p:commandButton id="processaXml" value="Processar"
 								icon="ui-icon-check"
-								action="#{reservaAdminBean.processaXmlAscTables}" update=":messages"
-								process="periodoLetivo @this"
-								disabled="#{reservaAdminBean.xmlFileName eq null}" >
-								<p:ajax listener="#{reservaAdminBean.processaXmlAscTablesPreMessage}" />
-								</p:commandButton>
+								action="#{reservaAdminBean.processaXmlAscTables}"
+								update=":messages" process="periodoLetivo @this"
+								disabled="#{reservaAdminBean.xmlFileName eq null}">
+								<p:ajax
+									listener="#{reservaAdminBean.processaXmlAscTablesPreMessage}" />
+							</p:commandButton>
+							
+							<br />
+							<br />
 
+							<p:commandButton id="relacionaProfessorPessoa" value="Relaciona"
+								icon="ui-icon-check"
+								action="#{reservaAdminBean.relacionaProfessorPessoa}"
+								update=":messages" process="periodoLetivo @this" />
 						</p:tab>
 
 						<p:tab title="Importação LDAP">
@@ -162,7 +171,8 @@
 								style="width:120px"
 								action="#{reservaAdminBean.atualizarCadastrosDoLdap}"
 								update="@form" process="@this">
-								<p:ajax listener="#{reservaAdminBean.atualizarCadastrosDoLdapPreMessage}" />
+								<p:ajax
+									listener="#{reservaAdminBean.atualizarCadastrosDoLdapPreMessage}" />
 								<p:confirm header="Atualiza do LDAP"
 									message="Confirma atualização? Esse processo levará minutos para ser concluído."
 									icon="ui-icon-alert" />

@@ -65,7 +65,8 @@ public class PessoaService {
 	 * 
 	 * @return
 	 */
-	public static Pessoa encontrePorId(Integer id, boolean carregaGrupos) throws Exception {
+	public static Pessoa encontrePorId(Integer id, boolean carregaGrupos)
+			throws Exception {
 		Transaction trans = new Transaction();
 		Pessoa p = null;
 		try {
@@ -127,7 +128,8 @@ public class PessoaService {
 		PessoaDAO dao = new PessoaDAO(trans);
 		Pessoa p;
 		try {
-			p = dao.encontrePorCnpjCpf(Config.getInstance().getCampus(), cnpjCpf);
+			p = dao.encontrePorCnpjCpf(Config.getInstance().getCampus(),
+					cnpjCpf);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -155,9 +157,11 @@ public class PessoaService {
 
 			PessoaDAO dao = new PessoaDAO(trans);
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-				lista = dao.pesquisa(Config.getInstance().getCampus(), HibernateDAO.PESQUISA_LIMITE);
+				lista = dao.pesquisa(Config.getInstance().getCampus(),
+						HibernateDAO.PESQUISA_LIMITE);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(), textoPesquisa, 0);
+				lista = dao.pesquisa(Config.getInstance().getCampus(),
+						textoPesquisa, 0);
 			}
 
 			if (lista != null) {
@@ -187,7 +191,8 @@ public class PessoaService {
 	 */
 	public static void atualizaPessoasLdap(String emailLogin) throws Exception {
 		LdapServer ldap = LdapServerService.encontrePorEmail(emailLogin);
-		LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(), ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
+		LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(),
+				ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
 
 		// ///////////////////////////////////
 		List<String> mapa = ldapUtils.getAllLdapInfo(ldap.getVarLdapUid());
@@ -208,37 +213,44 @@ public class PessoaService {
 			for (String a : attrs) {
 				String map[] = a.split(":");
 
-				if (map[0].trim().toUpperCase().equals(ldap.getVarLdapCnpjCpf().toUpperCase())) {
+				if (map[0].trim().toUpperCase()
+						.equals(ldap.getVarLdapCnpjCpf().toUpperCase())) {
 					cnpjCpf = map[1].trim();
 				}
 
-				if (map[0].trim().toUpperCase().equals(ldap.getVarLdapEmail().toUpperCase())) {
+				if (map[0].trim().toUpperCase()
+						.equals(ldap.getVarLdapEmail().toUpperCase())) {
 					email = map[1].trim();
 				}
 
-				if (map[0].trim().toUpperCase().equals(ldap.getVarLdapMatricula().toUpperCase())) {
+				if (map[0].trim().toUpperCase()
+						.equals(ldap.getVarLdapMatricula().toUpperCase())) {
 					matricula = map[1].trim();
 				}
 
-				if (map[0].trim().toUpperCase().equals(ldap.getVarLdapNomeCompleto().toUpperCase())) {
+				if (map[0].trim().toUpperCase()
+						.equals(ldap.getVarLdapNomeCompleto().toUpperCase())) {
 					nomeCompleto = map[1].trim();
 				}
 
-				if (map[0].trim().toUpperCase().equals(ldap.getVarLdapUid().toUpperCase())) {
+				if (map[0].trim().toUpperCase()
+						.equals(ldap.getVarLdapUid().toUpperCase())) {
 					uid = map[1].trim();
 				}
 
-				if (map[0].trim().toUpperCase().equals(ldap.getVarLdapCampus().toUpperCase())) {
+				if (map[0].trim().toUpperCase()
+						.equals(ldap.getVarLdapCampus().toUpperCase())) {
 					lCampus = map[1].trim();
 				}
 			}
 
-			// if(uid.matches("[A-Z|a-z]{1}[0-9].*")){
-			// // Ignora os cadastros de alunos
-			// continue;
-			// }
+			if (uid.matches("[A-Z|a-z]{1}[0-9].*")) {
+				// Ignora os cadastros de alunos
+				continue;
+			}
 
-			System.out.println("==========================================================");
+			System.out
+					.println("==========================================================");
 			System.out.println(uid);
 
 			Pessoa pessoa = null;
@@ -253,9 +265,13 @@ public class PessoaService {
 			}
 
 			// Cadastra apenas pessoas do mesmo servidor de e-mail
-			if (!ldap.getIdCampus().getSigla().toUpperCase().trim().equals(lCampus.toUpperCase())) {
-				continue;
-			}
+			/**
+			 * CANCELADO
+			 */
+			// if (!ldap.getIdCampus().getSigla().toUpperCase().trim()
+			// .equals(lCampus.toUpperCase())) {
+			// continue;
+			// }
 
 			pessoa = PessoaService.encontrePorEmail(email);
 
@@ -330,8 +346,10 @@ public class PessoaService {
 			// Atualiza os grupos da pessoa
 			GrupoPessoaService.atualizaGrupos(pessoa, grupos);
 
-			System.out.println("Criadas: " + criadas + " / Alteradas: " + alteradas);
-			System.out.println("==========================================================\n");
+			System.out.println("Criadas: " + criadas + " / Alteradas: "
+					+ alteradas);
+			System.out
+					.println("==========================================================\n");
 		}
 	}
 
@@ -343,7 +361,8 @@ public class PessoaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Pessoa> pesquisar(String query, boolean ativo, int limit) throws Exception {
+	public static List<Pessoa> pesquisar(String query, boolean ativo, int limit)
+			throws Exception {
 		List<Pessoa> lista = null;
 
 		Transaction trans = new Transaction();
@@ -357,9 +376,11 @@ public class PessoaService {
 				if (limit == 0) {
 					limit = HibernateDAO.PESQUISA_LIMITE;
 				}
-				lista = dao.pesquisa(Config.getInstance().getCampus(), ativo, limit);
+				lista = dao.pesquisa(Config.getInstance().getCampus(), ativo,
+						limit);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(), query, ativo, limit);
+				lista = dao.pesquisa(Config.getInstance().getCampus(), query,
+						ativo, limit);
 			}
 
 			if (lista != null) {
