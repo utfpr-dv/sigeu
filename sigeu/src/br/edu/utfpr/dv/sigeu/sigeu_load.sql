@@ -1,4 +1,16 @@
-﻿-- Cria contador de instituicao
+-- altera tabelas para mudar o tipo de auto increment
+alter table public.reserva alter column id_reserva set data type integer;
+alter table public.reserva alter column id_reserva set default nextval('reserva_id_reserva_seq');
+alter table public.reserva alter column id_reserva set not null;
+alter table public.pessoa alter column id_pessoa set data type integer;
+alter table public.pessoa alter column id_pessoa set default nextval('pessoa_id_pessoa_seq');
+alter table public.pessoa alter column id_pessoa set not null;
+
+-- altera sequences
+ALTER SEQUENCE pessoa_id_pessoa_seq RESTART with 1000;
+ALTER SEQUENCE reserva_id_reserva_seq RESTART with 1000;
+
+-- Cria contador de instituicao
 INSERT INTO SEQUENCIA( nome, valor ) VALUES( 'instituicao', 101 );
 
 -- Cria contador de campus

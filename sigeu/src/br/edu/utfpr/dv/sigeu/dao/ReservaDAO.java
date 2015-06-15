@@ -51,6 +51,11 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	public void defineId(Reserva o) {
 		Integer id = this.gerarNovoId().intValue();
 		o.setIdReserva(id);
+
+		// Seta false para a importação caso null
+		if (o.getImportado() == null) {
+			o.setImportado(false);
+		}
 	}
 
 	/**
@@ -94,9 +99,9 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		return this.pesquisaObjetos(q, 0);
 	}
 
-	public List<Reserva> pesquisaReservaDoUsuario(Campus campus, StatusReserva status,
-			Pessoa pessoa, Date data, CategoriaItemReserva categoria,
-			ItemReserva item) {
+	public List<Reserva> pesquisaReservaDoUsuario(Campus campus,
+			StatusReserva status, Pessoa pessoa, Date data,
+			CategoriaItemReserva categoria, ItemReserva item) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
@@ -233,7 +238,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		return list;
 	}
-	
+
 	/**
 	 * Lista todas as reservas pendentes de autorização para uma Pessoa.
 	 * 

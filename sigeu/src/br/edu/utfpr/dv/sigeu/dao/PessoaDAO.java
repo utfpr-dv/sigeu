@@ -32,12 +32,29 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 		return p;
 	}
 
-	public Pessoa encontrePorEmail(String email) throws Exception {
-		String hql = "from Pessoa o where o.email = :email";
+	/**
+	 * Pesquisa a pessoa por e-mail e campus
+	 * 
+	 * @param email
+	 * @param campus
+	 * @return
+	 * @throws Exception
+	 */
+	public Pessoa encontrePorEmail(String email, Campus campus)
+			throws Exception {
+		String hql = "from Pessoa o where o.email = :email and o.idCampus.idCampus = :campus";
 		Query q = session.createQuery(hql);
 		q.setCacheMode(CacheMode.REFRESH);
 		q.setString("email", email);
-		return (Pessoa) q.uniqueResult();
+		q.setInteger("campus", campus.getIdCampus());
+
+		Pessoa p = (Pessoa) q.uniqueResult();
+		if (p != null) {
+			Hibernate.initialize(p.getIdCampus().getLdapServerList());
+			Hibernate.initialize(p.getGrupoPessoaList());
+		}
+
+		return p;
 	}
 
 	public Pessoa encontrePorCnpjCpf(Campus campus, String cnpjCpf)
@@ -56,9 +73,12 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 
 	@Override
 	public void defineId(Pessoa o) {
-//			Integer id = this.gerarNovoId().intValue();
-//			o.setIdPessoa(id);	
-		/* O ID da entidade PESSOA é adicionada automaticamente pelo banco de dados */
+		// Integer id = this.gerarNovoId().intValue();
+		// o.setIdPessoa(id);
+		/*
+		 * O ID da entidade PESSOA é adicionada automaticamente pelo banco de
+		 * dados
+		 */
 	}
 
 	public List<Pessoa> pesquisa(Campus campus, String textoPesquisa, int limit) {

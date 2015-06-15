@@ -7,6 +7,7 @@ import java.util.Map;
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.LdapServerDAO;
 import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.GrupoPessoa;
 import br.edu.utfpr.dv.sigeu.entities.LdapServer;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
@@ -30,12 +31,23 @@ public class LoginService {
 	public static Pessoa autentica(String email, String password)
 			throws Exception {
 
+		/*
+		 * ===================================================================
+		 * TODO - REMOVER DEPOIS QUE CONFIGURAR LOGIN POR INSTITUIÇÃO E CAMPUS
+		 * ===================================================================
+		 */
+		// Fixa Campus DV
+		Campus campus = CampusService.encontrePorId(100);
+
+		/* =================================================================== */
+
 		Pessoa pessoa = null;
 		String hash = null;
 
 		// Confere se autenticou por LDAP. Em caso positivo, já cadastra a
 		// pessoa no banco de dados
-		LdapServer ldap = LoginService.getLdapByEmail(email);
+		// LdapServer ldap = LoginService.getLdapByEmail(email);
+		LdapServer ldap = campus.getLdapServerList().get(0);
 
 		if (ldap == null) {
 			// Não existe servidor cadastrado
@@ -47,7 +59,7 @@ public class LoginService {
 			Config.getInstance().setCampus(ldap.getIdCampus());
 
 			boolean novo = false;
-			pessoa = PessoaService.encontrePorEmail(email);
+			pessoa = PessoaService.encontrePorEmail(email, campus);
 
 			if (pessoa == null) {
 				novo = true;

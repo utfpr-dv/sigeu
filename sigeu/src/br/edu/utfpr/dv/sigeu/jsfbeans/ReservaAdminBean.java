@@ -13,7 +13,6 @@ import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.service.IntegrationService;
 import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
-import br.edu.utfpr.dv.sigeu.service.PessoaService;
 
 @ManagedBean(name = "reservaAdminBean")
 @ViewScoped
@@ -49,8 +48,7 @@ public class ReservaAdminBean extends JavaBean {
 		Thread.sleep(1000);
 
 		try {
-			PessoaService.atualizaPessoasLdap(Config.getInstance()
-					.getPessoaLogin().getEmail());
+			IntegrationService.atualizaPessoasLdap(Config.getInstance().getCampus());
 		} catch (Exception e) {
 			this.addErrorMessage("Atualização cadastral",
 					"Houve um erro durante a atualização de cadastros. Informe ao Admin.");

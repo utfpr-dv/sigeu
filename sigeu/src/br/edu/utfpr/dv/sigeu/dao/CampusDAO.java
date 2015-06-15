@@ -2,6 +2,7 @@ package br.edu.utfpr.dv.sigeu.dao;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 
 import br.edu.utfpr.dv.sigeu.entities.Campus;
@@ -20,7 +21,14 @@ public class CampusDAO extends HibernateDAO<Campus> {
 		String hql = "from Campus o where o.idCampus = :id";
 		Query q = session.createQuery(hql);
 		q.setInteger("id", id);
-		return (Campus) q.uniqueResult();
+
+		Campus c = (Campus) q.uniqueResult();
+
+		if (c != null) {
+			Hibernate.initialize(c.getLdapServerList());
+		}
+
+		return c;
 	}
 
 	@Override
@@ -38,7 +46,8 @@ public class CampusDAO extends HibernateDAO<Campus> {
 		return this.pesquisa(textoPesquisa, null, limit);
 	}
 
-	public List<Campus> pesquisa(String textoPesquisa, Instituicao instituicao, int limit) {
+	public List<Campus> pesquisa(String textoPesquisa, Instituicao instituicao,
+			int limit) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Campus o JOIN o.idInstituicao i ");

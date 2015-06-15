@@ -186,6 +186,7 @@ public class ReservaService {
 		r.setDataGravacao(reserva.getDataGravacao());
 		r.setHoraGravacao(reserva.getHoraGravacao());
 		r.setIdAutorizador(reserva.getIdAutorizador());
+		r.setImportado(reserva.getImportado());
 
 		return r;
 	}
