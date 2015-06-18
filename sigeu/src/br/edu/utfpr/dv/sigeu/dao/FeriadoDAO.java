@@ -36,9 +36,10 @@ public class FeriadoDAO extends HibernateDAO<Feriado> {
 	}
 
 	@Override
-	public void defineId(Feriado o) {
+	public void preCriacao(Feriado o) {
 		Long val = this.gerarNovoId();
 		o.setIdFeriado(val.intValue());
+		o.setDescricao(o.getDescricao().toUpperCase().trim());
 	}
 
 	@Override
@@ -108,5 +109,10 @@ public class FeriadoDAO extends HibernateDAO<Feriado> {
 			return retorno;
 		}
 		return null;
+	}
+
+	@Override
+	public void preAlteracao(Feriado o) {
+		o.setDescricao(o.getDescricao().toUpperCase().trim());
 	}
 }

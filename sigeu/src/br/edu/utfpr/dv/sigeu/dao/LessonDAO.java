@@ -34,9 +34,15 @@ public class LessonDAO extends HibernateDAO<Lesson> {
 	}
 
 	@Override
-	public void defineId(Lesson o) {
+	public void preCriacao(Lesson o) {
 		Long id = this.gerarNovoId();
 		o.setIdLesson(id.intValue());
+	}
+
+	@Override
+	public void preAlteracao(Lesson o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

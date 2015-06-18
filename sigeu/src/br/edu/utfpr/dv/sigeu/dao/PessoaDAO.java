@@ -72,7 +72,8 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 	}
 
 	@Override
-	public void defineId(Pessoa o) {
+	public void preCriacao(Pessoa o) {
+		o.setNomeCompleto(o.getNomeCompleto().toUpperCase().trim());
 		// Integer id = this.gerarNovoId().intValue();
 		// o.setIdPessoa(id);
 		/*
@@ -86,7 +87,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 			return this.pesquisa(campus, limit);
 		}
 
-		String hql = "from Pessoa o where (upper(o.email) like upper(:q) or upper(o.nomeCompleto) like upper(:q)) and o.idCampus.idCampus = :idCampus order by o.ativo DESC, upper(o.nomeCompleto) ASC";
+		String hql = "from Pessoa o where (upper(o.email) like upper(:q) or o.nomeCompleto like upper(:q)) and o.idCampus.idCampus = :idCampus order by o.ativo DESC, o.nomeCompleto ASC";
 		Query q = session.createQuery(hql);
 		q.setString("q", "%" + textoPesquisa + "%");
 		q.setInteger("idCampus", campus.getIdCampus());
@@ -109,7 +110,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 
 	public List<Pessoa> pesquisaPorGrupo(Campus campus, String nomeGrupo,
 			int limit) {
-		String hql = "SELECT o from Pessoa o Join o.grupoPessoaList g where o.idCampus.idCampus = :idCampus AND upper(g.nome) = :q order by o.ativo DESC, upper(o.nomeCompleto) ASC";
+		String hql = "SELECT o from Pessoa o Join o.grupoPessoaList g where o.idCampus.idCampus = :idCampus AND upper(g.nome) = :q order by o.ativo DESC, o.nomeCompleto ASC";
 		Query q = session.createQuery(hql);
 		q.setString("q", nomeGrupo.trim().toUpperCase());
 		q.setInteger("idCampus", campus.getIdCampus());
@@ -134,7 +135,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 	}
 
 	public List<Pessoa> pesquisa(Campus campus, int limit) {
-		String hql = "from Pessoa o WHERE o.idCampus.idCampus = :idCampus order by o.ativo DESC, upper(o.nomeCompleto) ASC";
+		String hql = "from Pessoa o WHERE o.idCampus.idCampus = :idCampus order by o.ativo DESC, o.nomeCompleto ASC";
 		Query q = session.createQuery(hql);
 		q.setInteger("idCampus", campus.getIdCampus());
 		if (limit > 0) {
@@ -154,7 +155,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 	}
 
 	public List<Pessoa> pesquisa(Campus campus, boolean ativo, int limit) {
-		String hql = "from Pessoa o WHERE o.idCampus.idCampus = :idCampus and o.ativo = :ativo order by o.ativo DESC, upper(o.nomeCompleto) ASC";
+		String hql = "from Pessoa o WHERE o.idCampus.idCampus = :idCampus and o.ativo = :ativo order by o.ativo DESC, o.nomeCompleto ASC";
 		Query q = session.createQuery(hql);
 		q.setInteger("idCampus", campus.getIdCampus());
 		q.setBoolean("ativo", ativo);
@@ -181,7 +182,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 			return this.pesquisa(campus, ativo, limit);
 		}
 
-		String hql = "from Pessoa o where o.ativo = :ativo and (upper(o.email) like upper(:q) or upper(o.nomeCompleto) like upper(:q)) and o.idCampus.idCampus = :idCampus order by o.ativo DESC, upper(o.nomeCompleto) ASC";
+		String hql = "from Pessoa o where o.ativo = :ativo and (upper(o.email) like upper(:q) or o.nomeCompleto like upper(:q)) and o.idCampus.idCampus = :idCampus order by o.ativo DESC, o.nomeCompleto ASC";
 		Query q = session.createQuery(hql);
 		q.setString("q", "%" + query + "%");
 		q.setInteger("idCampus", campus.getIdCampus());
@@ -201,5 +202,10 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 			return retorno;
 		}
 		return null;
+	}
+
+	@Override
+	public void preAlteracao(Pessoa o) {
+		o.setNomeCompleto(o.getNomeCompleto().toUpperCase().trim());
 	}
 }

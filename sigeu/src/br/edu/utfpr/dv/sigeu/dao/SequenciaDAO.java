@@ -50,8 +50,14 @@ public class SequenciaDAO extends HibernateDAO<Sequencia> {
 	}
 
 	@Override
-	public void defineId(Sequencia o) {
+	public void preCriacao(Sequencia o) {
 		// Nothing to do
+	}
+
+	@Override
+	public void preAlteracao(Sequencia o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

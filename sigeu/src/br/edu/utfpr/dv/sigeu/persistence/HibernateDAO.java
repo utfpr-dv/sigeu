@@ -43,14 +43,29 @@ public abstract class HibernateDAO<E> {
 		return val;
 	}
 
-	public abstract void defineId(E o);
+	/**
+	 * Método utilizado para tratamento de dados antes de persistir o registro
+	 * criando um novo.
+	 * 
+	 * @param o
+	 */
+	public abstract void preCriacao(E o);
+
+	/**
+	 * Método utilizado para tratamento de dados antes de persistir o registro
+	 * alterando um existente.
+	 * 
+	 * @param o
+	 */
+	public abstract void preAlteracao(E o);
 
 	public void criar(E o) {
-		this.defineId(o);
+		this.preCriacao(o);
 		session.save(o);
 	}
 
 	public void alterar(E o) {
+		this.preAlteracao(o);
 		session.update(o);
 	}
 

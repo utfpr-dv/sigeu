@@ -52,9 +52,15 @@ public class DisciplinaDAO extends HibernateDAO<Disciplina> {
 	}
 
 	@Override
-	public void defineId(Disciplina o) {
+	public void preCriacao(Disciplina o) {
 		Integer val = this.gerarNovoId().intValue();
 		o.setIdDisciplina(val);
+	}
+
+	@Override
+	public void preAlteracao(Disciplina o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

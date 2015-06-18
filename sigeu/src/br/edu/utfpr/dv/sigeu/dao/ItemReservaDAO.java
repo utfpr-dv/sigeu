@@ -70,9 +70,10 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 	}
 
 	@Override
-	public void defineId(ItemReserva o) {
+	public void preCriacao(ItemReserva o) {
 		Long val = this.gerarNovoId();
 		o.setIdItemReserva(val.intValue());
+		o.setNome(o.getNome().toUpperCase().trim());
 	}
 
 	@Override
@@ -160,6 +161,12 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa,
 			int limit) {
 		return this.pesquisa(campus, textoPesquisa, null, limit);
+	}
+
+	@Override
+	public void preAlteracao(ItemReserva o) {
+		o.setNome(o.getNome().trim().toUpperCase());
+
 	}
 
 }

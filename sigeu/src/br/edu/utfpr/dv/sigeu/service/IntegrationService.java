@@ -122,6 +122,112 @@ public class IntegrationService {
 	}
 
 	/**
+	 * Importa apenas os professores do XML
+	 * 
+	 * @param xmlFileName
+	 * @throws Exception
+	 */
+	public static void importProfessoresXml(String xmlFileName)
+			throws Exception {
+		String fileName = Config.getInstance().getConfig(
+				Config.CONFIG_PATH_UPLOAD)
+				+ File.separator + xmlFileName;
+
+		System.out.println("Importando arquivo XML: " + fileName);
+
+		File xmlFile = new File(fileName);
+
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(xmlFile);
+
+		// Necessário??
+		doc.getDocumentElement().normalize();
+
+		// Criando objeto principal de importação
+		Timetable timetable = new Timetable();
+		timetable.setNomeArquivo(xmlFile.getName());
+		timetable.setDataCarregamento(Calendar.getInstance().getTime());
+		timetable.setIdCampus(Config.getInstance().getCampus());
+
+		// Declaração de objetos
+		NodeList nodeList = null;
+
+		// Recupera Teachers
+		List<Teacher> teacherList = new ArrayList<Teacher>();
+
+		nodeList = doc.getElementsByTagName("teacher");
+
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node nNode = nodeList.item(i);
+
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element e = (Element) nNode;
+
+				String id = e.getAttribute("id").trim();
+				String name = e.getAttribute("name").trim();
+				String shortname = StringUtils.left(e.getAttribute("short")
+						.trim(), 32);
+
+				if (name.length() == 0 || id.length() == 0
+						|| shortname.length() == 0) {
+					continue;
+				}
+
+				Teacher c = new Teacher();
+				c.setId(id);
+				c.setName(name);
+				c.setShortname(shortname);
+				c.setGender(e.getAttribute("gender").charAt(0));
+				c.setColor(e.getAttribute("color"));
+				c.setIdTimetable(timetable);
+
+				teacherList.add(c);
+			}
+		}
+
+		// Gravação
+		Transaction trans = null;
+
+		try {
+			trans = new Transaction();
+			trans.begin();
+
+			List<Professor> listProfessor = new ArrayList<Professor>();
+			ProfessorDAO professorDAO = new ProfessorDAO(trans);
+
+			for (Teacher t : teacherList) {
+				Professor p = professorDAO.encontrePorCodigo(Config
+						.getInstance().getCampus(), t.getId());
+
+				if (p == null) {
+					p = new Professor();
+				}
+
+				p.setCodigo(StringUtils.left(t.getId().trim(), 32));
+				p.setCor(StringUtils.left(t.getColor().trim(), 12));
+				p.setGenero(t.getGender());
+				p.setIdCampus(timetable.getIdCampus());
+				p.setName(StringUtils.left(t.getName().trim(), 128));
+
+				if (p.getIdProfessor() == null) {
+					professorDAO.criar(p);
+				} else {
+					professorDAO.alterar(p);
+				}
+
+				listProfessor.add(p);
+			}
+
+			trans.commit();
+		} catch (Exception e) {
+			if (trans != null) {
+				trans.close();
+			}
+		}
+	}
+
+	/**
 	 * Importa os dados do arquivo XML para o banco de dados.
 	 * 
 	 * @param xmlFileName
@@ -982,7 +1088,7 @@ public class IntegrationService {
 
 				/**
 				 * Encontra a similaridade entre os nomes e ordena pela mais
-				 * provável. Ignora taxas menores que 85%, pois só deve
+				 * provável. Ignora taxas menores que 80%, pois só deve
 				 * considerar pequenos erros de grafia de acentuação ou falta de
 				 * preposições.
 				 */
@@ -990,7 +1096,7 @@ public class IntegrationService {
 					double sim = StringUtils.similarity(
 							pessoa.getNomeCompleto(), prof.getName());
 
-					if (sim >= 0.85d) {
+					if (sim >= 0.80d) {
 						PessoaSimilarity pps = new PessoaSimilarity();
 						pps.setPessoa(pessoa);
 						pps.setDistance(sim);
@@ -1102,7 +1208,7 @@ public class IntegrationService {
 		}
 
 	}
-	
+
 	/**
 	 * Lê toda a estrutura de cadastros do servidor LDAP e cadastra todas as
 	 * pessoas na base de dados
@@ -1118,16 +1224,16 @@ public class IntegrationService {
 
 		try {
 			trans = new Transaction();
-			//Campus campus = Config.getInstance().getCampus();
+			// Campus campus = Config.getInstance().getCampus();
 
 			trans.begin();
 
 			PessoaDAO pessoaDAO = new PessoaDAO(trans);
 			GrupoPessoaDAO grupoPessoaDAO = new GrupoPessoaDAO(trans);
 
-			//LdapServer ldap = LdapServerService.encontrePorEmail(emailLogin);
+			// LdapServer ldap = LdapServerService.encontrePorEmail(emailLogin);
 			LdapServer ldap = campus.getLdapServerList().get(0);
-			
+
 			LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(),
 					ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
 
@@ -1144,7 +1250,7 @@ public class IntegrationService {
 			String nomeCompleto = null;
 			String email = null;
 			String uid = null;
-			String lCampus = null;
+			// String lCampus = null;
 			String map[] = null;
 			Pessoa pessoa = null;
 			boolean update = true;
@@ -1169,7 +1275,7 @@ public class IntegrationService {
 				nomeCompleto = null;
 				email = null;
 				uid = null;
-				lCampus = null;
+				// lCampus = null;
 
 				for (String a : attrs) {
 					map = a.split(":");
@@ -1201,10 +1307,10 @@ public class IntegrationService {
 						uid = map[1].trim();
 					}
 
-					if (map[0].trim().toUpperCase()
-							.equals(ldap.getVarLdapCampus().toUpperCase())) {
-						lCampus = map[1].trim();
-					}
+					// if (map[0].trim().toUpperCase()
+					// .equals(ldap.getVarLdapCampus().toUpperCase())) {
+					// lCampus = map[1].trim();
+					// }
 				}
 
 				logger.printTimestamp("3");
@@ -1243,14 +1349,14 @@ public class IntegrationService {
 				// para tanto,
 				// será necessário que eles façam login no sistema para ter o
 				// cadastro realizado.
-//				if (ldap.getIdCampus().getSigla() != null
-//						&& ldap.getIdCampus().getSigla().trim().length() > 0) {
-//
-//					if (!ldap.getIdCampus().getSigla().toUpperCase().trim()
-//							.equals(lCampus.toUpperCase())) {
-//						continue;
-//					}
-//				}
+				// if (ldap.getIdCampus().getSigla() != null
+				// && ldap.getIdCampus().getSigla().trim().length() > 0) {
+				//
+				// if (!ldap.getIdCampus().getSigla().toUpperCase().trim()
+				// .equals(lCampus.toUpperCase())) {
+				// continue;
+				// }
+				// }
 
 				// pessoa = PessoaService.encontrePorEmail(email);
 				pessoa = pessoaDAO.encontrePorEmail(email, campus);
@@ -1376,7 +1482,7 @@ public class IntegrationService {
 
 			if (commitCount > 0) {
 				trans.commit();
-				//trans.close();
+				// trans.close();
 			}
 		} catch (Exception e) {
 			throw e;

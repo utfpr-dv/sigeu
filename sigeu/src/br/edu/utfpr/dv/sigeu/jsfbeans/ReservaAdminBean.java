@@ -48,7 +48,8 @@ public class ReservaAdminBean extends JavaBean {
 		Thread.sleep(1000);
 
 		try {
-			IntegrationService.atualizaPessoasLdap(Config.getInstance().getCampus());
+			IntegrationService.atualizaPessoasLdap(Config.getInstance()
+					.getCampus());
 		} catch (Exception e) {
 			this.addErrorMessage("Atualização cadastral",
 					"Houve um erro durante a atualização de cadastros. Informe ao Admin.");
@@ -134,6 +135,7 @@ public class ReservaAdminBean extends JavaBean {
 
 	public void relacionaProfessorPessoa() {
 		try {
+			IntegrationService.importProfessoresXml(xmlFileName);
 			IntegrationService.relacionaProfessorPessoa();
 			addInfoMessage("", "Relacionamento Concluído!");
 		} catch (Exception e) {

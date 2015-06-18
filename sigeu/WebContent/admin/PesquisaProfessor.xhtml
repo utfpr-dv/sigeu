@@ -1,0 +1,60 @@
+<ui:composition template="/WEB-INF/template/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Professores</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmPesquisaProfessor" prependId="false"
+			rendered="#{loginBean.pessoaLogin.admin eq true}">
+			<h2>Pesquisa Professor (importados do XML aSc TimeTables)</h2>
+
+			<table style="border: 10px; spacing: 0px; width: 100%">
+				<tr>
+					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" />
+						<p:inputText id="textoPesquisa" size="64"
+							value="#{pesquisaProfessorBean.textoPesquisa}" /> <p:commandButton
+							value="Pesquisar" icon="ui-icon-search" style="width:100px"
+							action="#{pesquisaProfessorBean.pesquisa}" update="@form" /></td>
+				</tr>
+			</table>
+
+			<p:dataTable id="entTable" value="#{pesquisaProfessorBean.lista}"
+				var="ent" style="margin-top: 20px"
+				emptyMessage="Nenhum registro encontrado." rows="40"
+				paginator="true" paginatorAlwaysVisible="true"
+				paginatorPosition="bottom">
+
+				<p:column headerText="ID" style="text-align: center; width: 80px">
+					<h:outputText value="#{ent.idProfessor}" />
+				</p:column>
+
+				<p:column headerText="Nome" sortBy="#{ent.name}">
+					<h:outputText value="#{ent.name}" />
+				</p:column>
+
+				<p:column headerText="Nome Pessoa"
+					sortBy="#{ent.professorPessoa.idPessoa.nomeCompleto}">
+					<h:outputText value="#{ent.professorPessoa.idPessoa.nomeCompleto}" />
+				</p:column>
+				
+				<p:column headerText="Email Pessoa"
+					sortBy="#{ent.professorPessoa.idPessoa.email}">
+					<h:outputText value="#{ent.professorPessoa.idPessoa.email}" />
+				</p:column>
+
+				<p:column style="width: 104px; text-align: center">
+					<p:button value="Relacionar" outcome="/admin/ProfessorPessoa.xhtml"
+						icon="ui-icon-pencil" title="Editar" style="width: 100px">
+						<f:param name="editarId" value="#{ent.idProfessor}" />
+					</p:button>
+				</p:column>
+
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

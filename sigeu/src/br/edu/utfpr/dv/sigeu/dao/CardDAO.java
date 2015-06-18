@@ -26,9 +26,15 @@ public class CardDAO extends HibernateDAO<Card> {
 	}
 
 	@Override
-	public void defineId(Card o) {
+	public void preCriacao(Card o) {
 		Integer val = this.gerarNovoId().intValue();
 		o.setIdCard(val);
+	}
+
+	@Override
+	public void preAlteracao(Card o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

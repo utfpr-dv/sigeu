@@ -20,7 +20,8 @@ public abstract class JavaBean implements Serializable {
 	 */
 	public void addErrorMessage(String title, String message) {
 		FacesContext context = FacesContext.getCurrentInstance();
-		context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, title));
+		context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+				message, title));
 	}
 
 	/**
@@ -29,7 +30,8 @@ public abstract class JavaBean implements Serializable {
 	 * @param message
 	 */
 	public void addWarnMessage(String title, String message) {
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, message, title));
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_WARN, message, title));
 	}
 
 	/**
@@ -38,7 +40,8 @@ public abstract class JavaBean implements Serializable {
 	 * @param message
 	 */
 	public void addInfoMessage(String title, String message) {
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, message, title));
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_INFO, message, title));
 	}
 
 	/**
@@ -47,7 +50,8 @@ public abstract class JavaBean implements Serializable {
 	 * @param message
 	 */
 	public void addFatalMessage(String title, String message) {
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, message, title));
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_FATAL, message, title));
 	}
 
 	/**
@@ -57,10 +61,12 @@ public abstract class JavaBean implements Serializable {
 	 */
 	public void redirect(String url) {
 		try {
-			FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+			FacesContext.getCurrentInstance().getExternalContext()
+					.redirect(url);
 		} catch (IOException e) {
 			e.printStackTrace();
-			this.addErrorMessage("Página indisponível", "Não foi possível acessar: " + url);
+			this.addErrorMessage("Página indisponível",
+					"Não foi possível acessar: " + url);
 		}
 	}
 
@@ -103,12 +109,23 @@ public abstract class JavaBean implements Serializable {
 	}
 
 	public void clearMessages() {
-		Iterator<String> itIds = FacesContext.getCurrentInstance().getClientIdsWithMessages();
+		Iterator<String> itIds = FacesContext.getCurrentInstance()
+				.getClientIdsWithMessages();
 		while (itIds.hasNext()) {
-			List<FacesMessage> messageList = FacesContext.getCurrentInstance().getMessageList(itIds.next());
+			List<FacesMessage> messageList = FacesContext.getCurrentInstance()
+					.getMessageList(itIds.next());
 			if (!messageList.isEmpty()) {
 				messageList.clear();
 			}
 		}
+	}
+
+	protected void handleException(Throwable t) {
+		addErrorMessage(
+				"Exception",
+				t.toString()
+						+ ": "
+						+ (t.getLocalizedMessage() == null ? "" : t
+								.getLocalizedMessage()));
 	}
 }

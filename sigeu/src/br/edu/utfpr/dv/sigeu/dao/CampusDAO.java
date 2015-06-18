@@ -37,7 +37,7 @@ public class CampusDAO extends HibernateDAO<Campus> {
 	}
 
 	@Override
-	public void defineId(Campus o) {
+	public void preCriacao(Campus o) {
 		Long val = this.gerarNovoId();
 		o.setIdCampus(val.intValue());
 	}
@@ -78,6 +78,12 @@ public class CampusDAO extends HibernateDAO<Campus> {
 
 	public List<Campus> pesquisa(Instituicao instituicao, int limit) {
 		return this.pesquisa(null, instituicao, limit);
+	}
+
+	@Override
+	public void preAlteracao(Campus o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

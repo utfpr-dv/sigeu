@@ -2,6 +2,7 @@ package br.edu.utfpr.dv.sigeu.dao;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 
 import br.edu.utfpr.dv.sigeu.entities.Campus;
@@ -20,7 +21,17 @@ public class ProfessorDAO extends HibernateDAO<Professor> {
 		String hql = "from Professor o where o.idProfessor = :id";
 		Query q = session.createQuery(hql);
 		q.setInteger("id", id);
-		return (Professor) q.uniqueResult();
+
+		Professor p = (Professor) q.uniqueResult();
+
+		if (p != null) {
+			Hibernate.initialize(p.getProfessorPessoa());
+			if (p.getProfessorPessoa() != null) {
+				Hibernate.initialize(p.getProfessorPessoa().getIdPessoa());
+			}
+		}
+
+		return p;
 	}
 
 	public Professor encontrePorCodigo(Campus campus, String codigo) {
@@ -32,8 +43,30 @@ public class ProfessorDAO extends HibernateDAO<Professor> {
 	}
 
 	public List<Professor> pesquisaTodos(Campus campus) {
-		String hql = "from Professor o where o.idCampus.idCampus = :id";
+		String hql = "from Professor o where o.idCampus.idCampus = :id order by o.name ASC";
 		Query q = session.createQuery(hql);
+		q.setInteger("id", campus.getIdCampus());
+
+		return this.pesquisaObjetos(q, 0);
+	}
+
+	public List<Professor> pesquisa(Campus campus, String termo) {
+		if (termo == null || termo.trim().length() == 0) {
+			return this.pesquisa(campus);
+		}
+		String hql = "from Professor o where o.idCampus.idCampus = :id and upper(o.name) like :termo order by o.name ASC";
+		Query q = session.createQuery(hql);
+
+		q.setInteger("id", campus.getIdCampus());
+		q.setString("termo", "%" + termo.trim().toUpperCase() + "%");
+
+		return this.pesquisaObjetos(q, 0);
+	}
+
+	public List<Professor> pesquisa(Campus campus) {
+		String hql = "from Professor o where o.idCampus.idCampus = :id order by o.name ASC";
+		Query q = session.createQuery(hql);
+
 		q.setInteger("id", campus.getIdCampus());
 
 		return this.pesquisaObjetos(q, 0);
@@ -45,9 +78,15 @@ public class ProfessorDAO extends HibernateDAO<Professor> {
 	}
 
 	@Override
-	public void defineId(Professor o) {
+	public void preCriacao(Professor o) {
 		Integer val = this.gerarNovoId().intValue();
 		o.setIdProfessor(val);
+		o.setName(o.getName().trim().toUpperCase());
+	}
+
+	@Override
+	public void preAlteracao(Professor o) {
+		o.setName(o.getName().trim().toUpperCase());
 	}
 
 }

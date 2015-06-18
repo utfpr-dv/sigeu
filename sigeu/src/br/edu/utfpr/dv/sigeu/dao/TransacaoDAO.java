@@ -30,7 +30,7 @@ public class TransacaoDAO extends HibernateDAO<Transacao> {
 	}
 
 	@Override
-	public void defineId(Transacao o) {
+	public void preCriacao(Transacao o) {
 		Integer id = this.gerarNovoId().intValue();
 		o.setIdTransacao(id);
 	}
@@ -51,6 +51,12 @@ public class TransacaoDAO extends HibernateDAO<Transacao> {
 		t.setDataHora(Calendar.getInstance().getTime());
 		this.criar(t);
 		return t;
+	}
+
+	@Override
+	public void preAlteracao(Transacao o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

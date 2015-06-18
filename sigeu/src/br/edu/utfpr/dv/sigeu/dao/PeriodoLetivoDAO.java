@@ -38,9 +38,10 @@ public class PeriodoLetivoDAO extends HibernateDAO<PeriodoLetivo> {
 	}
 
 	@Override
-	public void defineId(PeriodoLetivo o) {
+	public void preCriacao(PeriodoLetivo o) {
 		Integer val = this.gerarNovoId().intValue();
 		o.setIdPeriodoLetivo(val);
+		o.setNome(o.getNome().toUpperCase().trim());
 	}
 
 	public List<PeriodoLetivo> pesquisa(int limit) {
@@ -97,6 +98,11 @@ public class PeriodoLetivoDAO extends HibernateDAO<PeriodoLetivo> {
 		q.setInteger("idCampus", campus.getIdCampus());
 
 		return this.pesquisaObjetos(q, 0);
+	}
+
+	@Override
+	public void preAlteracao(PeriodoLetivo o) {
+		o.setNome(o.getNome().toUpperCase().trim());
 	}
 
 }

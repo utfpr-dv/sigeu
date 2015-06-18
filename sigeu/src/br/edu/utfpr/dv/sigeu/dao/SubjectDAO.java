@@ -26,9 +26,15 @@ public class SubjectDAO extends HibernateDAO<Subject> {
 	}
 
 	@Override
-	public void defineId(Subject o) {
+	public void preCriacao(Subject o) {
 		Long id = this.gerarNovoId();
 		o.setIdSubject(id.intValue());
+	}
+
+	@Override
+	public void preAlteracao(Subject o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

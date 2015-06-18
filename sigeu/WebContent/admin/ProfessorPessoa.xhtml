@@ -1,0 +1,54 @@
+<ui:composition template="/WEB-INF/template/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">SIGEU: Relaciona Professor à Pessoa</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmProfessor" prependId="false"
+			rendered="#{loginBean.pessoaLogin.admin eq true}">
+			<h2>Pessoa</h2>
+
+			<p:panelGrid columns="2" id="painel"
+				style="margin-top: 5px; width: 100%">
+				<p:outputLabel value="ID" />
+				<p:outputLabel value="#{professorBean.professor.idProfessor}"
+					id="id" />
+
+				<p:outputLabel value="Nome" />
+				<p:outputLabel value="#{professorBean.professor.name}" />
+
+				<p:outputLabel value="Pessoa (LDAP)" />
+				<p:autoComplete id="pessoa" forceSelection="true"
+					value="#{professorBean.pesquisaPessoa}"
+					completeMethod="#{professorBean.selecionaPessoa}" required="true"
+					minQueryLength="3" queryDelay="50" size="60">
+					<p:ajax event="itemSelect" listener="#{professorBean.definePessoa}"
+						update="pessoa" process="@this" />
+				</p:autoComplete>
+
+			</p:panelGrid>
+
+			<div id="buttons" style="margin-top: 15px">
+				<p:commandButton value="Salvar" id="botaoSalvar"
+					action="#{professorBean.gravar}" icon="ui-icon-disk"
+					style="width:100px" process="@form" update="@form" />
+				<p:commandButton value="Cancelar" id="botaoCancelar"
+					onclick="history.go(-1)" icon="ui-icon-arrowreturn-1-w"
+					style="width:100px" process="@this" />
+			</div>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -31,8 +31,14 @@ public class MailServerDAO extends HibernateDAO<MailServer> {
 	}
 
 	@Override
-	public void defineId(MailServer o) {
+	public void preCriacao(MailServer o) {
 
+	}
+
+	@Override
+	public void preAlteracao(MailServer o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

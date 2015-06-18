@@ -42,10 +42,16 @@ public class ProfessorPessoaDAO extends HibernateDAO<ProfessorPessoa> {
 	}
 
 	@Override
-	public void defineId(ProfessorPessoa o) {
+	public void preCriacao(ProfessorPessoa o) {
 		/** Não pode fazer nada aqui. */
 		// Integer val = this.gerarNovoId().intValue();
 		// o.setIdProfessor(val);
+	}
+
+	@Override
+	public void preAlteracao(ProfessorPessoa o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

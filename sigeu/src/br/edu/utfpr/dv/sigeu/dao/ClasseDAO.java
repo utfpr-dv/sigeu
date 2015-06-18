@@ -28,7 +28,7 @@ public class ClasseDAO extends HibernateDAO<Classe> {
 	}
 
 	@Override
-	public void defineId(Classe o) {
+	public void preCriacao(Classe o) {
 		Integer val = this.gerarNovoId().intValue();
 		o.setIdClasse(val);
 	}
@@ -39,6 +39,12 @@ public class ClasseDAO extends HibernateDAO<Classe> {
 		q.setString("codigo", codigo);
 		q.setInteger("idCampus", Config.getInstance().getCampus().getIdCampus());
 		return (Classe) q.uniqueResult();
+	}
+
+	@Override
+	public void preAlteracao(Classe o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

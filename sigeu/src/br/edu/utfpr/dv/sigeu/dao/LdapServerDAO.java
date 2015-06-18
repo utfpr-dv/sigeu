@@ -65,7 +65,7 @@ public class LdapServerDAO extends HibernateDAO<LdapServer> {
 	}
 
 	@Override
-	public void defineId(LdapServer o) {
+	public void preCriacao(LdapServer o) {
 		Integer id = this.gerarNovoId().intValue();
 		o.setIdServer(id);
 	}
@@ -110,5 +110,11 @@ public class LdapServerDAO extends HibernateDAO<LdapServer> {
 			return retorno;
 		}
 		return null;
+	}
+
+	@Override
+	public void preAlteracao(LdapServer o) {
+		// TODO Auto-generated method stub
+		
 	}
 }

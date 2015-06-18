@@ -38,7 +38,7 @@ public class PeriodDAO extends HibernateDAO<Period> {
 	}
 
 	@Override
-	public void defineId(Period o) {
+	public void preCriacao(Period o) {
 		// Deve vir preenchido.
 		//Long id = this.gerarNovoId();
 		//o.setIdPeriod(id.intValue());
@@ -58,6 +58,12 @@ public class PeriodDAO extends HibernateDAO<Period> {
 		}
 
 		return l;
+	}
+
+	@Override
+	public void preAlteracao(Period o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

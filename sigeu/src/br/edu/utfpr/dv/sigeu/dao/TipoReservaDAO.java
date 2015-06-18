@@ -35,7 +35,7 @@ public class TipoReservaDAO extends HibernateDAO<TipoReserva> {
 	}
 
 	@Override
-	public void defineId(TipoReserva o) {
+	public void preCriacao(TipoReserva o) {
 		Long val = this.gerarNovoId();
 		o.setIdTipoReserva(val.intValue());
 	}
@@ -79,6 +79,12 @@ public class TipoReservaDAO extends HibernateDAO<TipoReserva> {
 	public List<TipoReserva> pesquisa(Campus campus, String textoPesquisa, int limit) {
 		Boolean ativo = null;
 		return this.pesquisa(campus, null, ativo, limit);
+	}
+
+	@Override
+	public void preAlteracao(TipoReserva o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

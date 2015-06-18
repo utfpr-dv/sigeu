@@ -48,7 +48,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	}
 
 	@Override
-	public void defineId(Reserva o) {
+	public void preCriacao(Reserva o) {
 		Integer id = this.gerarNovoId().intValue();
 		o.setIdReserva(id);
 
@@ -272,6 +272,12 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		}
 
 		return list;
+	}
+
+	@Override
+	public void preAlteracao(Reserva o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

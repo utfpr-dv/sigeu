@@ -31,7 +31,7 @@ public class TimetableDAO extends HibernateDAO<Timetable> {
 	}
 
 	@Override
-	public void defineId(Timetable o) {
+	public void preCriacao(Timetable o) {
 		Integer val = this.gerarNovoId().intValue();
 		o.setIdTimetable(val);
 	}
@@ -94,5 +94,11 @@ public class TimetableDAO extends HibernateDAO<Timetable> {
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+
+	@Override
+	public void preAlteracao(Timetable o) {
+		// TODO Auto-generated method stub
+		
 	}
 }

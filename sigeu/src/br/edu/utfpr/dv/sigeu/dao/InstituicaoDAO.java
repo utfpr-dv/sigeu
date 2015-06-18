@@ -29,7 +29,7 @@ public class InstituicaoDAO extends HibernateDAO<Instituicao> {
 	}
 
 	@Override
-	public void defineId(Instituicao o) {
+	public void preCriacao(Instituicao o) {
 		Long val = this.gerarNovoId();
 		o.setIdInstituicao(val.intValue());
 	}
@@ -76,5 +76,11 @@ public class InstituicaoDAO extends HibernateDAO<Instituicao> {
 			return retorno;
 		}
 		return null;
+	}
+
+	@Override
+	public void preAlteracao(Instituicao o) {
+		// TODO Auto-generated method stub
+		
 	}
 }

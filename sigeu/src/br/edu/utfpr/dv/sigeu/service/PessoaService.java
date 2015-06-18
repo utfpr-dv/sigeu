@@ -1,5 +1,6 @@
 package br.edu.utfpr.dv.sigeu.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -7,6 +8,7 @@ import org.hibernate.Hibernate;
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
+import br.edu.utfpr.dv.sigeu.entities.GrupoPessoa;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
@@ -179,7 +181,6 @@ public class PessoaService {
 		return lista;
 	}
 
-
 	/**
 	 * Pesquisa as pessoas passando o parametro ativo ou não
 	 * 
@@ -225,5 +226,75 @@ public class PessoaService {
 		}
 
 		return lista;
+	}
+
+	/**
+	 * Pesquisa as pessoas passando o parametro ativo ou não
+	 * 
+	 * @param query
+	 * @param ativo
+	 * @param grupo
+	 * @param limit
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<Pessoa> pesquisar(String query, boolean ativo,
+			String grupo, int limit) throws Exception {
+		List<Pessoa> lista = null;
+		List<Pessoa> listaRetorno = null;
+
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+
+			PessoaDAO dao = new PessoaDAO(trans);
+
+			if (query == null || query.trim().length() <= 0) {
+				if (limit == 0) {
+					limit = HibernateDAO.PESQUISA_LIMITE;
+				}
+				lista = dao.pesquisa(Config.getInstance().getCampus(), ativo,
+						limit);
+			} else {
+				lista = dao.pesquisa(Config.getInstance().getCampus(), query,
+						ativo, limit);
+			}
+
+			if (lista != null) {
+				for (Pessoa p : lista) {
+					Hibernate.initialize(p.getIdCampus());
+					Hibernate.initialize(p.getIdCampus().getIdInstituicao());
+					Hibernate.initialize(p.getGrupoPessoaList());
+				}
+			}
+
+			listaRetorno = lista;
+
+			if (grupo != null && grupo.trim().length() > 0 && lista != null
+					&& lista.size() > 0) {
+				listaRetorno = new ArrayList<Pessoa>();
+
+				grupo = grupo.trim().toUpperCase();
+
+				for (Pessoa p : lista) {
+
+					for (GrupoPessoa gp : p.getGrupoPessoaList()) {
+						if (gp.getNome().trim().toUpperCase().equals(grupo)) {
+							listaRetorno.add(p);
+							break;
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			trans.close();
+		}
+
+		return listaRetorno;
 	}
 }

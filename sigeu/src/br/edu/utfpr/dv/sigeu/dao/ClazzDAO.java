@@ -26,9 +26,15 @@ public class ClazzDAO extends HibernateDAO<Clazz> {
 	}
 
 	@Override
-	public void defineId(Clazz o) {
+	public void preCriacao(Clazz o) {
 		Long id = this.gerarNovoId();
 		o.setIdClazz(id.intValue());
+	}
+
+	@Override
+	public void preAlteracao(Clazz o) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
