@@ -1,6 +1,5 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -33,89 +32,69 @@ public class LoginBean extends JavaBean {
 	public String login() {
 		boolean ok = true;
 
-		int posAt = this.email.indexOf("@");
+		// int posAt = this.email.indexOf("@");
 
-		if (posAt < 0 || posAt == 0 || posAt == email.length() - 1) {
-			this.addErrorMessage("E-Mail", "[" + email
-					+ "] não é um endereço de e-mail válido.");
-		} else {
+		// if (posAt < 0 || posAt == 0 || posAt == email.length() - 1) {
+		// this.addErrorMessage("E-Mail", "[" + email
+		// + "] não é um endereço de e-mail válido.");
+		// } else {
 
-			try {
-				pessoaLogin = LoginService.autentica(email, password);
+		try {
+			pessoaLogin = LoginService.autentica(email, password);
 
-				if (pessoaLogin == null) {
+			if (pessoaLogin == null) {
+				this.addErrorMessage("Login",
+						"E-mail não cadastrado ou senha inválida!");
+			} else {
+				if (!pessoaLogin.getAtivo()) {
 					this.addErrorMessage("Login",
-							"E-mail não cadastrado ou senha inválida!");
+							"Acesso inativado. Informe ao administrador do sistema.");
 				} else {
-					if (!pessoaLogin.getAtivo()) {
-						this.addErrorMessage("Login",
-								"Acesso inativado. Informe ao administrador do sistema.");
-					} else {
-						this.setNomeUsuario(pessoaLogin.getNomeCompleto());
+					this.setNomeUsuario(pessoaLogin.getNomeCompleto());
 
-						HttpServletRequest request = (HttpServletRequest) FacesContext
-								.getCurrentInstance().getExternalContext()
-								.getRequest();
-						request.getSession().setAttribute(
-								LoginFilter.SESSION_USUARIO_AUTENTICADO, email);
+					HttpServletRequest request = (HttpServletRequest) FacesContext
+							.getCurrentInstance().getExternalContext()
+							.getRequest();
+					request.getSession().setAttribute(
+							LoginFilter.SESSION_USUARIO_AUTENTICADO, email);
 
-						// FacesContext.getCurrentInstance().getExternalContext().redirect("/restrito/Home.xhtml");
-					}
+					// FacesContext.getCurrentInstance().getExternalContext().redirect("/restrito/Home.xhtml");
 				}
-			} catch (CommunicationException e) {
-				ok = false;
-				FacesContext
-						.getCurrentInstance()
-						.addMessage(
-								null,
-								new FacesMessage(
-										FacesMessage.SEVERITY_ERROR,
-										"Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.",
-										null));
-				e.printStackTrace();
-			} catch (NamingException e) {
-				ok = false;
-				FacesContext.getCurrentInstance().addMessage(
-						null,
-						new FacesMessage(FacesMessage.SEVERITY_ERROR,
-								"Usuário ou senha inválidos. Tente novamente.",
-								null));
-				e.printStackTrace();
-			} catch (ServidorLdapNaoCadastradoException e) {
-				ok = false;
-				FacesContext
-						.getCurrentInstance()
-						.addMessage(
-								null,
-								new FacesMessage(
-										FacesMessage.SEVERITY_ERROR,
-										"Servidor de autenticação não cadastrado para o endereço de e-mail especificado.",
-										null));
-				e.printStackTrace();
-			} catch (UsuarioDesativadoException e) {
-				ok = false;
-				this.addWarnMessage("Login",
-						"Usuário não autorizado. Entre em contato com o Administrador do sistema.");
-				e.printStackTrace();
-			} catch (GenericJDBCException e) {
-				ok = false;
-				this.addErrorMessage("Login", e.getMessage());
-			} catch (Exception e) {
-				ok = false;
-				String msg = e.getMessage();
-				if (msg == null || msg.trim().length() == 0) {
-					msg = "Ocorreu um erro ao tentar comunicar com o servidor de autenticação";
-				}
-				this.addErrorMessage("Login", msg);
-				e.printStackTrace();
 			}
-			if (ok) {
-				if (Config.getInstance().isDebugMode()) {
-					this.addWarnMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
-				}
-				return "/restrito/Home.xhtml";
-			}
+		} catch (CommunicationException e) {
+			ok = false;
+			handleException(
+					"Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.",
+					e);
+		} catch (NamingException e) {
+			ok = false;
+			handleException("Usuário ou senha inválidos. Tente novamente.", e);
+		} catch (ServidorLdapNaoCadastradoException e) {
+			ok = false;
+			handleException(
+					"Servidor de autenticação não cadastrado para o endereço de e-mail especificado.",
+					e);
+		} catch (UsuarioDesativadoException e) {
+			ok = false;
+			handleException(
+					"Usuário não autorizado. Entre em contato com o Administrador do sistema.",
+					e);
+		} catch (GenericJDBCException e) {
+			ok = false;
+			handleException(e);
+		} catch (Exception e) {
+			ok = false;
+			handleException(
+					"Ocorreu um erro ao tentar comunicar com o servidor de autenticação",
+					e);
 		}
+		if (ok) {
+			if (Config.getInstance().isDebugMode()) {
+				this.addWarnMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
+			}
+			return "/restrito/Home.xhtml";
+		}
+		// }
 
 		return null;
 	}

@@ -1,6 +1,7 @@
 package br.edu.utfpr.dv.sigeu.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -63,7 +64,8 @@ public class PeriodoLetivoDAO extends HibernateDAO<PeriodoLetivo> {
 		return null;
 	}
 
-	public List<PeriodoLetivo> pesquisa(Campus campus, String textoPesquisa, int limit) {
+	public List<PeriodoLetivo> pesquisa(Campus campus, String textoPesquisa,
+			int limit) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM PeriodoLetivo o ");
@@ -103,6 +105,14 @@ public class PeriodoLetivoDAO extends HibernateDAO<PeriodoLetivo> {
 	@Override
 	public void preAlteracao(PeriodoLetivo o) {
 		o.setNome(o.getNome().toUpperCase().trim());
+	}
+
+	public PeriodoLetivo encontreAtual(Campus campus, Date data) {
+		String hql = "from PeriodoLetivo o where :data between o.dataInicio AND o.dataFim AND o.idCampus.idCampus = :idCampus";
+		Query q = session.createQuery(hql);
+		q.setDate("data", data);
+		q.setInteger("idCampus", campus.getIdCampus());
+		return (PeriodoLetivo) q.uniqueResult();
 	}
 
 }

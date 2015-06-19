@@ -39,6 +39,11 @@ public class LoginService {
 		// Fixa Campus DV
 		Campus campus = CampusService.encontrePorId(100);
 
+		// Se não é um e-mail, apenas nome, então...
+		if (!email.contains("@")) {
+			email += campus.getLdapServerList().get(0).getSufixoEmail();
+		}
+
 		/* =================================================================== */
 
 		Pessoa pessoa = null;

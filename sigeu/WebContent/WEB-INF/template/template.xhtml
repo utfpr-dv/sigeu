@@ -13,6 +13,12 @@
 </style>
 </h:head>
 <h:body styleClass="bodyBackground">
+	<div id="idmessages">
+		<p:messages id="messages" showDetail="false" autoUpdate="true"
+			closable="true"
+			style="top: 10px; width: 75%; position: fixed; left: 50%; margin: 0 0 0 -37.5%; z-index: 1;" />
+	</div>
+
 	<p:ajaxStatus styleClass="ajax-status">
 		<f:facet name="start">
 			<div id="waitgif">
@@ -25,6 +31,7 @@
 	</p:ajaxStatus>
 
 	<f:view locale="pt">
+
 		<div id="mainBody">
 			<header class="header">
 				<table class="tableDiv">
@@ -42,8 +49,6 @@
 							</div></td>
 					</tr>
 				</table>
-
-				<p:messages id="messages" showDetail="false" autoUpdate="true" />
 
 				<h:form id="formMenu">
 					<p:menubar autoDisplay="false">

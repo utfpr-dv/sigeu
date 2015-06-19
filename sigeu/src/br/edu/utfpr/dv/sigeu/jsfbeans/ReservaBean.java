@@ -13,6 +13,7 @@ import javax.faces.bean.ViewScoped;
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
+import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
@@ -22,6 +23,7 @@ import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.service.CategoriaItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.EmailService;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
+import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
@@ -257,87 +259,119 @@ public class ReservaBean extends JavaBean {
 	}
 
 	public void pesquisa() {
-		categoriaItemReserva = null;
+		/** Valida período letivo atual */
+		try {
+			Calendar cc = Calendar.getInstance();
+			cc.set(Calendar.HOUR_OF_DAY, 00);
+			cc.set(Calendar.MINUTE, 00);
+			cc.set(Calendar.SECOND, 00);
+			cc.set(Calendar.MILLISECOND, 00);
 
-		if (campoItem == null || campoItem.trim().equals("")) {
-			this.itemReserva = null;
-		}
+			Date hoje = cc.getTime();
+			PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(Config
+					.getInstance().getCampus(), hoje);
 
-		repeticaoReservaEnum = RepeticaoReservaEnum.getEnum(campoRepete);
-
-		if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
-			if (campoDataFimRepete == null
-					|| campoDataFimRepete.before(campoData)
-					|| campoDataFimRepete.compareTo(campoData) == 0) {
-				addWarnMessage("consulta",
-						"A data limite de repetição deve ser maior que a data da reserva.");
-				// EditableValueHolder evh = (EditableValueHolder) FacesContext
-				// .getCurrentInstance().getViewRoot()
-				// .findComponent(":frmPesquisaReserva:dataRepete");
-				// evh.setValid(false);
-				return;
+			if (pl == null) {
+				throw new Exception("Nenhum Período Letivo Cadastrado");
 			}
-		}
 
-		for (CategoriaItemReserva c : listaCategoriaItemReserva) {
-			if (c.getNome().equals(campoCategoria)) {
-				categoriaItemReserva = c;
-				break;
-			}
-		}
-
-		if (campoData == null || categoriaItemReserva == null
-				|| campoHoraInicial == null || campoHoraFinal == null) {
-			this.addErrorMessage("Informações insuficientes",
-					"Necessário informar: Categoria, Data e Horário para buscar reservas.");
-		} else {
-
-			if (campoHoraInicial.after(campoHoraFinal)
-					|| campoHoraInicial.equals(campoHoraFinal)) {
-				this.addErrorMessage("Horário inválido",
-						"Hora inicial deve ser menor que hora final.");
+			if (campoData.after(pl.getDataFim())) {
+				addWarnMessage("Reservas",
+						"Não são permitidas reservas para o final do semestre atual. Consulte o DERDI.");
 			} else {
-				try {
-					// Preenche a lista de reservas do dia
-					// this.listaReservaDia =
-					// ReservaService.pesquisaReservasDoDia(campoData,
-					// categoriaItemReserva, itemReserva);
 
-					// Preenche a lista de itens disponíveis
-					listaItemDisponivel = ReservaService
-							.pesquisaItemReservaDisponivel(campoData,
-									campoHoraInicial, campoHoraFinal,
-									categoriaItemReserva, itemReserva);
+				categoriaItemReserva = null;
 
-					if (listaItemDisponivel == null
-							|| listaItemDisponivel.size() == 0) {
-						this.addWarnMessage("Item Disponível",
-								"Nenhum item disponível para a data e horário informados.");
+				if (campoItem == null || campoItem.trim().equals("")) {
+					this.itemReserva = null;
+				}
+
+				repeticaoReservaEnum = RepeticaoReservaEnum
+						.getEnum(campoRepete);
+
+				if (!repeticaoReservaEnum
+						.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
+					if (campoDataFimRepete == null
+							|| campoDataFimRepete.before(campoData)
+							|| campoDataFimRepete.compareTo(campoData) == 0) {
+						addWarnMessage("consulta",
+								"A data limite de repetição deve ser maior que a data da reserva.");
+						// EditableValueHolder evh = (EditableValueHolder)
+						// FacesContext
+						// .getCurrentInstance().getViewRoot()
+						// .findComponent(":frmPesquisaReserva:dataRepete");
+						// evh.setValid(false);
+						return;
 					}
+				}
 
-					// Preenche lista das minhas reservas
-					this.listaMinhasReservas = ReservaService
-							.pesquisaReservasEfetivadasDoUsuario(pessoaLogin,
-									campoData, categoriaItemReserva,
-									itemReserva);
-
-					// Rola entre a lista de itens disponíveis para checar se
-					// realmente está disponível com o repeteco
-					if (!repeticaoReservaEnum
-							.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
-						listaItemDisponivel = ReservaService
-								.removeItensNaoDisponiveisParaReservaRecorrente(
-										campoData, campoHoraInicial,
-										campoHoraFinal, repeticaoReservaEnum,
-										campoDataFimRepete, listaItemDisponivel);
+				for (CategoriaItemReserva c : listaCategoriaItemReserva) {
+					if (c.getNome().equals(campoCategoria)) {
+						categoriaItemReserva = c;
+						break;
 					}
+				}
 
-				} catch (Exception e) {
-					addErrorMessage("Pesquisa", "Pesquisa falhou.");
-					addErrorMessage("Pesquisa", e.getMessage());
-					e.printStackTrace();
+				if (campoData == null || categoriaItemReserva == null
+						|| campoHoraInicial == null || campoHoraFinal == null) {
+					this.addErrorMessage("Informações insuficientes",
+							"Necessário informar: Categoria, Data e Horário para buscar reservas.");
+				} else {
+
+					if (campoHoraInicial.after(campoHoraFinal)
+							|| campoHoraInicial.equals(campoHoraFinal)) {
+						this.addErrorMessage("Horário inválido",
+								"Hora inicial deve ser menor que hora final.");
+					} else {
+						try {
+							// Preenche a lista de reservas do dia
+							// this.listaReservaDia =
+							// ReservaService.pesquisaReservasDoDia(campoData,
+							// categoriaItemReserva, itemReserva);
+
+							// Preenche a lista de itens disponíveis
+							listaItemDisponivel = ReservaService
+									.pesquisaItemReservaDisponivel(campoData,
+											campoHoraInicial, campoHoraFinal,
+											categoriaItemReserva, itemReserva);
+
+							if (listaItemDisponivel == null
+									|| listaItemDisponivel.size() == 0) {
+								this.addWarnMessage("Item Disponível",
+										"Nenhum item disponível para a data e horário informados.");
+							}
+
+							// Preenche lista das minhas reservas
+							this.listaMinhasReservas = ReservaService
+									.pesquisaReservasEfetivadasDoUsuario(
+											pessoaLogin, campoData,
+											categoriaItemReserva, itemReserva);
+
+							// Rola entre a lista de itens disponíveis para
+							// checar
+							// se
+							// realmente está disponível com o repeteco
+							if (!repeticaoReservaEnum
+									.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
+								listaItemDisponivel = ReservaService
+										.removeItensNaoDisponiveisParaReservaRecorrente(
+												campoData, campoHoraInicial,
+												campoHoraFinal,
+												repeticaoReservaEnum,
+												campoDataFimRepete,
+												listaItemDisponivel);
+							}
+
+						} catch (Exception e) {
+							addErrorMessage("Pesquisa", "Pesquisa falhou.");
+							addErrorMessage("Pesquisa", e.getMessage());
+							e.printStackTrace();
+						}
+					}
 				}
 			}
+		} catch (Exception e1) {
+			handleException(e1);
 		}
 	}
 

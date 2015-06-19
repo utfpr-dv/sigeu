@@ -142,7 +142,7 @@ BEGIN
 			data_inicio AND data_fim;
 	
 		IF NEW.data > d_data_pl THEN
-			RAISE 'Reservas para $ além do término do período letivo atual %', NEW.data, d_data_pl;
+			RAISE 'Reservas para % além do término do período letivo atual %', NEW.data, d_data_pl;
 		END IF;
 			
 		SELECT

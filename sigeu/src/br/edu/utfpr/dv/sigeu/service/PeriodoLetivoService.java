@@ -1,5 +1,6 @@
 package br.edu.utfpr.dv.sigeu.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -90,7 +91,8 @@ public class PeriodoLetivoService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<PeriodoLetivo> pesquisar(String textoPesquisa) throws Exception {
+	public static List<PeriodoLetivo> pesquisar(String textoPesquisa)
+			throws Exception {
 		List<PeriodoLetivo> lista = null;
 
 		Transaction trans = new Transaction();
@@ -103,7 +105,8 @@ public class PeriodoLetivoService {
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
 				lista = dao.pesquisa(HibernateDAO.PESQUISA_LIMITE);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(), textoPesquisa, 0);
+				lista = dao.pesquisa(Config.getInstance().getCampus(),
+						textoPesquisa, 0);
 			}
 
 			if (lista != null) {
@@ -129,7 +132,8 @@ public class PeriodoLetivoService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static PeriodoLetivo encontrePorId(Integer editarId) throws Exception {
+	public static PeriodoLetivo encontrePorId(Integer editarId)
+			throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
@@ -162,7 +166,8 @@ public class PeriodoLetivoService {
 			trans.begin();
 
 			PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-			PeriodoLetivo existente = dao.encontrePorId(item.getIdPeriodoLetivo());
+			PeriodoLetivo existente = dao.encontrePorId(item
+					.getIdPeriodoLetivo());
 
 			dao.remover(existente);
 			trans.commit();
@@ -203,7 +208,8 @@ public class PeriodoLetivoService {
 		return lista;
 	}
 
-	public static PeriodoLetivo encontrePorNome(Campus campus, String value) throws Exception {
+	public static PeriodoLetivo encontrePorNome(Campus campus, String value)
+			throws Exception {
 
 		Transaction trans = new Transaction();
 
@@ -211,6 +217,22 @@ public class PeriodoLetivoService {
 			trans.begin();
 			PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
 			return dao.encontrePorNome(campus, value);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			trans.close();
+		}
+	}
+
+	public static PeriodoLetivo encontreAtual(Campus campus, Date data)
+			throws Exception {
+
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+			PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
+			return dao.encontreAtual(campus, data);
 		} catch (Exception e) {
 			throw e;
 		} finally {

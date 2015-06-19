@@ -121,11 +121,10 @@ public abstract class JavaBean implements Serializable {
 	}
 
 	protected void handleException(Throwable t) {
-		addErrorMessage(
-				"Exception",
-				t.toString()
-						+ ": "
-						+ (t.getLocalizedMessage() == null ? "" : t
-								.getLocalizedMessage()));
+		addErrorMessage("Exception", t.toString());
+	}
+
+	protected void handleException(String msg, Throwable t) {
+		addErrorMessage("Exception", msg + " [" + t.toString());
 	}
 }

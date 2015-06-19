@@ -1,31 +1,49 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<meta charset="UTF-8" />
 	<title>:: SIGEU Login ::</title>
 	<h:outputStylesheet library="css" name="default.css" />
 </h:head>
 <h:body styleClass="bodyBackground">
+	<div id="login-messages" style="float: top;">
+		<p:messages id="messages" showDetail="false" autoUpdate="true"
+			closable="true" />
+	</div>
+
 	<div id="login-dialog">
-		<p:messages id="messages" showDetail="false" autoUpdate="true" closable="true" />
-
 		<h:form id="frm" prependId="false">
-			<p:fieldset legend="Autenticação">
-				<p:panelGrid columns="2">
+			<p:panelGrid columns="2">
 
-					<p:outputLabel value="E-mail" />
-					<p:inputText size="32" id="username" value="#{loginBean.email}" />
+				<p:outputLabel value="Nome de usuário" />
+				<p:inputText size="32" id="username" value="#{loginBean.email}"
+					required="true" requiredMessage="Nome de usuário não informado!" />
 
-					<p:outputLabel value="Senha" />
-					<p:password size="32" id="password" value="#{loginBean.password}" />
+				<p:outputLabel value="Senha" />
+				<p:password size="32" id="password" value="#{loginBean.password}"
+					required="true" requiredMessage="Senha não informada!" />
 
-					<h:panelGroup />
-					<p:commandButton value="Acessar" action="#{loginBean.login}" ajax="false" />
+				<h:panelGroup />
+				<p:commandButton value="Acessar" action="#{loginBean.login}"
+					ajax="false" />
 
-				</p:panelGrid>
-			</p:fieldset>
+			</p:panelGrid>
 		</h:form>
+
+		<br />
+		<p>
+			<p:outputLabel
+				value="Utilize seu nome de usuário da instituição ou seu endereço de e-mail para acesso." />
+		</p>
+
+		<p>
+			<p:outputLabel
+				value="Este site é melhor visualizado em Mozilla Firefox versão 38 ou superior e Google Chrome versão 43 ou superior." />
+		</p>
 	</div>
 </h:body>
 </html>
