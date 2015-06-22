@@ -17,13 +17,18 @@
 
 	<div id="login-dialog">
 		<h:form id="frm" prependId="false">
+			<h1>BEM-VINDO AO SIGEU</h1>
+			<h2>Sistema Integrado de Gestão de Universidades</h2>
+
+			<br />
+
 			<p:panelGrid columns="2">
 
-				<p:outputLabel value="Nome de usuário" />
+				<p:outputLabel value="Usuário *" />
 				<p:inputText size="32" id="username" value="#{loginBean.email}"
 					required="true" requiredMessage="Nome de usuário não informado!" />
 
-				<p:outputLabel value="Senha" />
+				<p:outputLabel value="Senha **" />
 				<p:password size="32" id="password" value="#{loginBean.password}"
 					required="true" requiredMessage="Senha não informada!" />
 
@@ -37,11 +42,16 @@
 		<br />
 		<p>
 			<p:outputLabel
-				value="Utilize seu nome de usuário da instituição ou seu endereço de e-mail para acesso." />
+				value="* Utilize seu nome de usuário dos sistemas internos ou seu endereço de e-mail institucional para acesso. Funciona com ambos." />
 		</p>
 
 		<p>
 			<p:outputLabel
+				value="** A senha a ser utilizada é a mesma dos sistemas internos da UTFPR." />
+		</p>
+
+		<p>
+			<p:outputLabel style="font-style: italic;"
 				value="Este site é melhor visualizado em Mozilla Firefox versão 38 ou superior e Google Chrome versão 43 ou superior." />
 		</p>
 	</div>

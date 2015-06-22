@@ -1,7 +1,15 @@
+h1 {
+	font-family: Arial, Helvetica, Sans-serif;
+	font-size: x-large;
+	color: #BABACA;
+	margin: 10px 0px 10px 0px;
+}
+
 h2 {
 	font-family: Arial, Helvetica, Sans-serif;
+	font-size: large;
 	color: #BABACA;
-	margin: 15px 0px 10px 0px;
+	margin: 10px 0px 10px 0px;
 }
 
 .ui-widget {
@@ -52,7 +60,7 @@ h2 {
 #login-dialog {
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 100px;
+	margin-top: 40px;
 	border: 2px solid #8AC007;
 	border-radius: 15px 50px;
 	background: #FFF;
@@ -84,9 +92,10 @@ h2 {
 }
 
 #mainBody {
-	width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
+	min-width: 1000px;
+	/*width: 1000px;*/
+	margin-left: auto; 
+	margin-right : auto;
 	/*margin-left: 20px;
 	margin-right: 20px;*/
 	background-color: #FFF;
@@ -94,6 +103,7 @@ h2 {
 	-moz-border-radius: 10px;
 	border-radius: 10px;
 	padding: 10px;
+	margin-right: auto;
 }
 
 .tabCentered {

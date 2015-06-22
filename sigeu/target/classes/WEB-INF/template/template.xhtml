@@ -44,7 +44,7 @@
 						<td valign="bottom" align="right"><div class="headerInfo">
 								<p:outputLabel value="#{loginBean.nomeUsuario}"
 									style="font-weight: bold; font-size: small" />
-								<input id="LogoffButton" type="button" value="Logoff"
+								<input id="LogoffButton" type="button" value="Sair"
 									onclick="doLogoff();" />
 							</div></td>
 					</tr>
@@ -82,8 +82,8 @@
 							<p:separator />
 						</p:submenu>
 						<p:submenu label="Reservas" style="width: 120px">
-							<p:menuitem value="Reservar Item ou Ambiente"
-								outcome="/restrito/PesquisaReserva.xhtml" />
+							<p:menuitem value="Reservas"
+								outcome="/restrito/Reserva.xhtml" />
 							<p:menuitem value="Agenda"
 								outcome="/restrito/AgendaReserva.xhtml" />
 							<p:menuitem value="Autorizações"

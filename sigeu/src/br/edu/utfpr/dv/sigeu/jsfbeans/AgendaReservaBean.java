@@ -58,10 +58,12 @@ public class AgendaReservaBean extends JavaBean {
 
 			for (Period period : listaPeriod) {
 				StringBuilder h = new StringBuilder();
-				h.append(period.getShortname().length() > 2 ? period.getShortname().trim() : StringUtils.padLeft(period.getShortname(), 3, "0"));
+				h.append(StringUtils.padLeft(
+						StringUtils.left(period.getShortname().trim(), 3), 3,
+						"0"));
 				h.append(" \n");
 				h.append(sdfHora.format(period.getStarttime()));
-				h.append(" / \n");
+				h.append(" - \n");
 				h.append(sdfHora.format(period.getEndtime()));
 				horarioVO.setHorario(period.getOrdem(), h.toString());
 			}
@@ -89,7 +91,8 @@ public class AgendaReservaBean extends JavaBean {
 					list.add(i.getNome());
 				}
 			} else {
-				this.addInfoMessage("Selecionar", "Nenhum item de reserva encontrado.");
+				this.addInfoMessage("Selecionar",
+						"Nenhum item de reserva encontrado.");
 			}
 
 		} catch (Exception e) {
@@ -139,7 +142,8 @@ public class AgendaReservaBean extends JavaBean {
 					categoria = itemReserva.getIdCategoria();
 				}
 
-				listaReserva = ReservaService.pesquisaReservasEfetivadasDoDia(data, categoria, itemReserva);
+				listaReserva = ReservaService.pesquisaReservasEfetivadasDoDia(
+						data, categoria, itemReserva);
 
 				if (listaReserva.size() > 0) {
 					reservaParaAgenda();
@@ -162,19 +166,23 @@ public class AgendaReservaBean extends JavaBean {
 
 		for (Reserva r : listaReserva) {
 			PeriodoReservaVO vo = new PeriodoReservaVO();
-			Calendar horaInicio = DateUtils.getCalendarFromDates(r.getData(), r.getHoraInicio());
-			Calendar horaFim = DateUtils.getCalendarFromDates(r.getData(), r.getHoraFim());
+			Calendar horaInicio = DateUtils.getCalendarFromDates(r.getData(),
+					r.getHoraInicio());
+			Calendar horaFim = DateUtils.getCalendarFromDates(r.getData(),
+					r.getHoraFim());
 
 			boolean found = false;
 			for (PeriodoReservaVO prVO : listaPeriodoReservaVO) {
-				if (r.getIdItemReserva().getRotulo().equals(prVO.getNomeItemReserva())) {
+				if (r.getIdItemReserva().getRotulo()
+						.equals(prVO.getNomeItemReserva())) {
 					vo = prVO;
 					found = true;
 					break;
 				}
 			}
 
-			DiaEnum dia = DiaEnum.getDiaEnumByDia(horaInicio.get(Calendar.DAY_OF_WEEK));
+			DiaEnum dia = DiaEnum.getDiaEnumByDia(horaInicio
+					.get(Calendar.DAY_OF_WEEK));
 			vo.setNomeItemReserva(r.getIdItemReserva().getRotulo());
 			vo.setData(r.getData());
 			vo.setDiaDaSemana(dia.getNome());
@@ -185,20 +193,25 @@ public class AgendaReservaBean extends JavaBean {
 				motivo.append(r.getIdUsuario().getNomeCompleto());
 				motivo.append(" \n");
 				motivo.append(r.getMotivo());
-				Calendar perInicio = DateUtils.getCalendarFromDates(r.getData(), p.getStarttime());
-				Calendar perFim = DateUtils.getCalendarFromDates(r.getData(), p.getEndtime());
+				Calendar perInicio = DateUtils.getCalendarFromDates(
+						r.getData(), p.getStarttime());
+				Calendar perFim = DateUtils.getCalendarFromDates(r.getData(),
+						p.getEndtime());
 
-				boolean conflicts = DateUtils.conflicts(horaInicio, horaFim, perInicio, perFim);
+				boolean conflicts = DateUtils.conflicts(horaInicio, horaFim,
+						perInicio, perFim);
 
 				if (conflicts) {
 					vo.setCor(p.getOrdem(), r.getCor());
-					vo.setRotulo(p.getOrdem(), "Reservado");
+					vo.setRotulo(p.getOrdem(), r.getIdTipoReserva()
+							.getDescricao());
 					vo.setMotivo(p.getOrdem(), motivo.toString());
 				} else {
 					if (vo.getRotulo(p.getOrdem()) == null) {
 						vo.setCor(p.getOrdem(), "#FFFFFF");
-						vo.setRotulo(p.getOrdem(), "Livre");
-						vo.setMotivo(p.getOrdem(), "Horário Livre! Clique para fazer a reserva.");
+						//vo.setRotulo(p.getOrdem(), "Livre");
+						vo.setRotulo(p.getOrdem(), "");
+						vo.setMotivo(p.getOrdem(), "Horário Livre.");
 					}
 				}
 			}
@@ -220,7 +233,8 @@ public class AgendaReservaBean extends JavaBean {
 		String msg = "<html><body><br/><h2>Confirmação de Reservas<h2><table><tr><td><b>DATA<b><td><td><b>DIA DA SEMANA<b><td><td><b>RECURSO<b><td><td><b>HORÁRIO<b><td><td><b>USUÁRIO<b><td><td><b>TIPO<b><td><td><b>MOTIVO<b><td><tr><tr><td><b>17/04/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>24/04/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>01/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>08/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>15/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>22/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>29/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>05/06/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>12/06/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>19/06/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>26/06/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><table><br/><br/><h3>SIGEU - Sistema Integrado de Gestão Universitária<h3><body></html>";
 
 		try {
-			email.criaMensagemHtml("tiagoadami@utfpr.edu.br", "derdi-dv@utfpr.edu.br", "Texto Simples", msg);
+			email.criaMensagemHtml("tiagoadami@utfpr.edu.br",
+					"derdi-dv@utfpr.edu.br", "Texto Simples", msg);
 			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e1) {
 			e1.printStackTrace();
@@ -281,7 +295,8 @@ public class AgendaReservaBean extends JavaBean {
 		return listaPeriodoReservaVO;
 	}
 
-	public void setListaPeriodoReservaVO(List<PeriodoReservaVO> listaPeriodoReservaVO) {
+	public void setListaPeriodoReservaVO(
+			List<PeriodoReservaVO> listaPeriodoReservaVO) {
 		this.listaPeriodoReservaVO = listaPeriodoReservaVO;
 	}
 

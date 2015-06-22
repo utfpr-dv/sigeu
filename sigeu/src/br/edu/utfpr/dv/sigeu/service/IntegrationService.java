@@ -862,6 +862,12 @@ public class IntegrationService {
 				}
 
 				String nomeUsuario = "";
+				Professor professor = null;
+				Pessoa usuario = null; // A reserva ficará em nome de um
+										// professor apenas, independentemente
+										// de ter sobreposição de horários de
+										// mais de um professor em uma mesma
+										// sala na mesma hora
 
 				// Recupera professores do Lesson
 				List<Professor> listProfessorCal = new ArrayList<Professor>();
@@ -869,8 +875,21 @@ public class IntegrationService {
 				for (String s : teachers) {
 					for (Professor p : listProfessor) {
 						if (s.equals(p.getCodigo())) {
-							listProfessorCal.add(p);
+
 							nomeUsuario += p.getName() + ", ";
+
+							// Encontra o registro de pessoa associado ao
+							// Professor
+							professor = professorDAO.encontrePorCodigo(campus,
+									p.getCodigo());
+
+							listProfessorCal.add(professor);
+
+							if (professor.getProfessorPessoa() != null) {
+								usuario = professor.getProfessorPessoa()
+										.getIdPessoa();
+							}
+
 							continue;
 						}
 					}
@@ -947,14 +966,15 @@ public class IntegrationService {
 							reserva.setIdItemReserva(sala);
 							reserva.setIdTipoReserva(tipoReserva);
 							reserva.setIdTransacao(transacao);
-							reserva.setIdUsuario(usuarioAdmin);
+							reserva.setIdUsuario(usuario);
 							reserva.setNomeUsuario(nomeUsuario);
 							reserva.setIdPessoa(usuarioAdmin);
 							reserva.setIdAutorizador(usuarioAdmin);
 							reserva.setEmailNotificacao(usuarioAdmin.getEmail());
 							reserva.setRotulo(StringUtils.left(classes.trim(),
 									32));
-							reserva.setCor("#BBD2D2");
+							// reserva.setCor("#BBD2D2");
+							reserva.setCor(professor.getCor());
 							reserva.setStatus(StatusReserva.EFETIVADA
 									.getStatus());
 
@@ -1075,10 +1095,10 @@ public class IntegrationService {
 			ProfessorPessoaDAO professorPessoaDAO = new ProfessorPessoaDAO(
 					trans);
 
-			// List<Pessoa> listPessoa =
-			// pessoaDAO.pesquisa(Config.getInstance().getCampus(), null, 0);
-			List<Pessoa> listPessoa = pessoaDAO.pesquisaPorGrupo(Config
-					.getInstance().getCampus(), "PROFESSORES", 0);
+			List<Pessoa> listPessoa = pessoaDAO.pesquisa(Config.getInstance()
+					.getCampus(), null, 0);
+			// List<Pessoa> listPessoa = pessoaDAO.pesquisaPorGrupo(Config
+			// .getInstance().getCampus(), "PROFESSORES", 0);
 			List<Professor> listProfessor = professorDAO.pesquisaTodos(campus);
 
 			List<PessoaSimilarity> listSimilarity = null;

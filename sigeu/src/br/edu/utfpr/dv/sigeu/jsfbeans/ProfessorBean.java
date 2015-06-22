@@ -80,7 +80,7 @@ public class ProfessorBean extends JavaBean {
 				return null;
 			}
 		}
-		
+
 		return "PesquisaProfessor";
 	}
 
@@ -96,12 +96,14 @@ public class ProfessorBean extends JavaBean {
 		listaPessoa = null;
 
 		try {
-			listaPessoa = PessoaService
-					.pesquisar(query, true, "PROFESSORES", 0);
+			// listaPessoa = PessoaService
+			// .pesquisar(query, true, "PROFESSORES", 0);
+
+			listaPessoa = PessoaService.pesquisar(query, true, 0);
 
 			if (listaPessoa != null && listaPessoa.size() > 0) {
 				for (Pessoa i : listaPessoa) {
-					list.add(i.getNomeCompleto());
+					list.add(i.getNomeCompleto() + " | " + i.getEmail());
 				}
 			}
 
@@ -118,7 +120,7 @@ public class ProfessorBean extends JavaBean {
 		pessoa = null;
 
 		for (Pessoa i : listaPessoa) {
-			if (pesquisaPessoa.equals(i.getNomeCompleto())) {
+			if (pesquisaPessoa.equals(i.getNomeCompleto() + " | " + i.getEmail())) {
 				pessoa = i;
 				addInfoMessage("Selecionar",
 						"Pessoa selecionada: " + i.getNomeCompleto());
