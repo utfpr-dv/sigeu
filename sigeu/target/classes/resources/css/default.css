@@ -94,8 +94,8 @@ h2 {
 #mainBody {
 	min-width: 1000px;
 	/*width: 1000px;*/
-	margin-left: auto; 
-	margin-right : auto;
+	margin-left: auto;
+	margin-right: auto;
 	/*margin-left: 20px;
 	margin-right: 20px;*/
 	background-color: #FFF;
@@ -122,8 +122,13 @@ h2 {
 	padding: 0px 0px 0px 4px !important;
 }
 
+.gridTip {
+	width: 1px;
+	text-align: left;
+}
+
 .gridLabel {
-	width: 70px;
+	width: 60px;
 	text-align: left;
 }
 

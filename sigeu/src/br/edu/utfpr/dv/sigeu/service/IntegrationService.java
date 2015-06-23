@@ -658,35 +658,36 @@ public class IntegrationService {
 
 			// Recupera categoria de sala de aula
 			CategoriaItemReserva salaDeAula = categoriaItemReservaDAO
-					.encontrePorDescricao(campus, "Sala de Aula");
+					.encontrePorDescricao(campus, "SALA / AUDITÓRIO");
 
 			// Recupera categoria de laboratório
 			CategoriaItemReserva laboratorio = categoriaItemReservaDAO
-					.encontrePorDescricao(campus, "Laboratório");
+					.encontrePorDescricao(campus, "LABORATÓRIO");
 
 			// Recupera tipo de reserva "Aula Regular"
 			TipoReserva tipoReserva = tipoReservaDAO.encontrePorDescricao(
-					campus, "Aula Regular");
+					campus, "AULA REGULAR");
 
 			// Responsável pelas reservas
 			// Pessoa usuarioAdmin = pessoaDAO.encontrePorId(1);
 			Pessoa usuarioAdmin = Config.getInstance().getPessoaLogin();
 
 			if (salaDeAula == null) {
-				throw new Exception("Categoria 'Sala de Aula' não localizada");
+				throw new Exception(
+						"Categoria 'SALA / AUDITÓRIO' não localizada");
 			}
 
 			if (laboratorio == null) {
-				throw new Exception("Categoria 'Laboratório' não localizada");
+				throw new Exception("Categoria 'LABORATÓRIO' não localizada");
 			}
 
 			if (tipoReserva == null) {
 				throw new Exception(
-						"Tipo de Reserva 'Aula Regular' não localizada");
+						"Tipo de Reserva 'AULA REGULAR' não localizada");
 			}
 
 			if (usuarioAdmin == null) {
-				throw new Exception("Pessoa 'Admin' não localizada");
+				throw new Exception("Pessoa 'ADMIN' não localizada");
 			}
 
 			Timetable timetable = timetableDAO.encontrePorId(idTimeTable);
@@ -967,7 +968,8 @@ public class IntegrationService {
 							reserva.setIdTipoReserva(tipoReserva);
 							reserva.setIdTransacao(transacao);
 							reserva.setIdUsuario(usuario);
-							reserva.setNomeUsuario(nomeUsuario.trim().toUpperCase());
+							reserva.setNomeUsuario(nomeUsuario.trim()
+									.toUpperCase());
 							reserva.setIdPessoa(usuarioAdmin);
 							reserva.setIdAutorizador(usuarioAdmin);
 							reserva.setEmailNotificacao(usuarioAdmin.getEmail());

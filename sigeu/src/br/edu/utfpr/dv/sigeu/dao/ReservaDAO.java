@@ -126,7 +126,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 	public List<Reserva> pesquisaReservaDoUsuario(Campus campus,
 			StatusReserva status, Pessoa pessoa, Date data,
-			CategoriaItemReserva categoria, ItemReserva item) {
+			CategoriaItemReserva categoria, ItemReserva item, boolean importadas) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
@@ -136,6 +136,10 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		if (item != null) {
 			hql.append("i.idItemReserva = :idItemReserva AND ");
+		}
+
+		if (!importadas) {
+			hql.append("o.importado = :importado AND ");
 		}
 
 		hql.append("o.data = :data ");
@@ -149,6 +153,10 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		if (item != null) {
 			q.setInteger("idItemReserva", item.getIdItemReserva());
+		}
+
+		if (!importadas) {
+			q.setBoolean("importado", false);
 		}
 
 		q.setDate("data", data);

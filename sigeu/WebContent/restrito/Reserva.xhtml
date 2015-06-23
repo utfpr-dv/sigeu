@@ -8,83 +8,99 @@
 	<ui:define name="corpo">
 		<h:form id="frmPesquisaReserva" prependId="false">
 			<p:tabView styleClass="tabCentered">
+
 				<p:tab id="tabPesquisa" title="Solicitação de Reservas"
 					rendered="#{reservaBean.showTab eq 1}">
-					<p:panelGrid columns="8"
-						columnClasses="gridLabel, gridColumn, gridLabel, gridColumn, gridLabel, gridColumn, gridLabel, gridColumn">
-						<p:outputLabel value="Data" for="data" />
-						<p:calendar label="Data da Reserva" id="data"
-							value="#{reservaBean.campoData}" showOn="button" size="10"
-							pattern="dd/MM/yyyy" mask="true" required="true"
-							requiredMessage="Preencha a data da reserva" />
+					<div>
+						<p:panelGrid columns="12"
+							columnClasses="gridLabel, gridColumn, gridTip, gridLabel, gridColumn, gridTip, gridLabel, gridColumn, gridTip,  gridLabel, gridColumn, gridTip">
+							<p:outputLabel value="Data" for="data" />
+							<p:calendar label="Data da Reserva" id="data"
+								value="#{reservaBean.campoData}" showOn="button" size="10"
+								pattern="dd/MM/yyyy" mask="true" required="true"
+								requiredMessage="Preencha a data da reserva" />
+							<p:tooltip id="toolTipData" for="data" value="Data da reserva." />
 
-						<p:outputLabel value="Hora Inicial" for="inicio" />
-						<p:calendar label="Hora Inicial" id="inicio"
-							value="#{reservaBean.campoHoraInicial}" showOn="button" size="2"
-							pattern="HH:mm" timeOnly="true" mask="false" required="true"
-							requiredMessage="Preencha a hora inicial e final da reserva" />
+							<p:outputLabel value="Hora Inicial" for="inicio" />
+							<p:calendar label="Hora Inicial" id="inicio"
+								value="#{reservaBean.campoHoraInicial}" showOn="button" size="2"
+								pattern="HH:mm" timeOnly="true" mask="false" required="true"
+								requiredMessage="Preencha a hora inicial e final da reserva" />
+							<p:tooltip id="toolTipInicio" for="inicio"
+								value="Hora inicial do período de reserva." />
 
-						<p:outputLabel value="Hora Final" for="final" />
-						<p:calendar label="Hora Final" id="final"
-							value="#{reservaBean.campoHoraFinal}" showOn="button" size="2"
-							pattern="HH:mm" timeOnly="true" mask="false" required="true"
-							requiredMessage="Preencha a hora inicial e final da reserva" />
+							<p:outputLabel value="Hora Final" for="final" />
+							<p:calendar label="Hora Final" id="final"
+								value="#{reservaBean.campoHoraFinal}" showOn="button" size="2"
+								pattern="HH:mm" timeOnly="true" mask="false" required="true"
+								requiredMessage="Preencha a hora inicial e final da reserva" />
+							<p:tooltip id="toolTipFinal" for="final"
+								value="Hora final do período de reserva." />
 
-						<p:outputLabel value=" " />
-						<p:outputLabel value=" " />
+							<p:outputLabel value="Importadas" for="campoImportadas" />
+							<p:selectBooleanCheckbox id="campoImportadas"
+								value="#{reservaBean.campoImportadas}" />
+							<p:tooltip id="toolTipCampoImportadas" for="campoImportadas"
+								value="Se marcado exibe também as reservas importadas do sistema acadêmico na aba 'Minhas Reservas'." />
 
-						<p:outputLabel value="Categoria" for="categoria" />
-						<p:selectOneMenu id="categoria"
-							value="#{reservaBean.campoCategoria}" required="true" var="i"
-							style="width: 140px">
-							<f:selectItems value="#{reservaBean.categorias}" />
-							<f:ajax listener="#{reservaBean.defineCategoria}" />
-						</p:selectOneMenu>
+							<p:outputLabel value="Categoria" for="categoria" />
+							<p:selectOneMenu id="categoria"
+								value="#{reservaBean.campoCategoria}" required="true" var="i"
+								style="width: 140px">
+								<f:selectItems value="#{reservaBean.categorias}" />
+								<f:ajax listener="#{reservaBean.defineCategoria}" />
+							</p:selectOneMenu>
+							<p:tooltip id="toolTipCategoria" for="categoria"
+								value="Categoria do recurso a ser reservado." />
 
-						<p:outputLabel value="Recurso (opcional)" for="item" />
-						<p:autoComplete id="item" forceSelection="true"
-							value="#{reservaBean.campoItem}"
-							completeMethod="#{reservaBean.selecionaItem}" required="false"
-							minQueryLength="2" queryDelay="250" size="16">
-							<p:ajax event="itemSelect" listener="#{reservaBean.defineItem}"
-								update="item" process="@this categoria" />
-						</p:autoComplete>
+							<p:outputLabel value="Recurso (opcional)" for="item" />
+							<p:autoComplete id="item" forceSelection="true"
+								value="#{reservaBean.campoItem}"
+								completeMethod="#{reservaBean.selecionaItem}" required="false"
+								minQueryLength="2" queryDelay="250" size="16">
+								<p:ajax event="itemSelect" listener="#{reservaBean.defineItem}"
+									update="item" process="@this categoria" />
+							</p:autoComplete>
+							<p:tooltip id="toolTipItem" for="item"
+								value="Recurso a ser reservado. Deixe em branco para exibir todos dentro da categoria selecionada." />
 
-						<p:outputLabel value="Repete" for="repete" />
-						<p:selectOneMenu id="repete" widgetVar="repete"
-							value="#{reservaBean.campoRepete}" required="true"
-							style="width: 140px">
-							<f:selectItem itemLabel="Não repete" itemValue="N" />
-							<f:selectItem itemLabel="Semanalmente" itemValue="S" />
-						</p:selectOneMenu>
+							<p:outputLabel value="Repete" for="repete" />
+							<p:selectOneMenu id="repete" widgetVar="repete"
+								value="#{reservaBean.campoRepete}" required="true"
+								style="width: 120px">
+								<f:selectItem itemLabel="Não repete" itemValue="N" />
+								<f:selectItem itemLabel="Semanalmente" itemValue="S" />
+							</p:selectOneMenu>
+							<p:tooltip id="toolTipRepete" for="repete"
+								value="Informe o tipo de repetição para fazer reservas recorrentes em mais de uma data." />
 
-						<p:outputLabel value="Data Limite" for="dataRepete" />
-						<p:calendar label="Data fim de repetição" id="dataRepete"
-							widgetVar="dataRepete" value="#{reservaBean.campoDataFimRepete}"
-							showOn="button" size="10" pattern="dd/MM/yyyy" mask="true"
-							requiredMessage="Preencha a data limite para repetição de reservas" />
-					</p:panelGrid>
-					<div
-						style="margin-left: auto !important; margin-right: auto !important; width: 102px">
+							<p:outputLabel value="Data Limite" for="dataRepete" />
+							<p:calendar label="Data fim de repetição" id="dataRepete"
+								widgetVar="dataRepete" value="#{reservaBean.campoDataFimRepete}"
+								showOn="button" size="10" pattern="dd/MM/yyyy" mask="true"
+								requiredMessage="Preencha a data limite para repetição de reservas" />
+							<p:tooltip id="toolTipDataRepete" for="dataRepete"
+								value="Data limite para recorrência de reservas. As reservas recorrentes não ultrapassam esta data." />
+						</p:panelGrid>
+					</div>
+					<div style="margin: 0 auto; text-align: center">
 						<p:commandButton value="Pesquisar" icon="ui-icon-search"
 							style="width:100px; margin-top:10px"
 							action="#{reservaBean.pesquisa}" update="@form" />
 					</div>
+
 					<p:tabView style="margin-top:15px">
 						<p:tab title="Recursos disponíveis">
 							<p:dataTable id="reservaTable"
 								value="#{reservaBean.listaItemDisponivel}" var="i"
 								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado." rows="7"
+								emptyMessage="Nenhum registro encontrado." rows="20"
 								paginator="true" paginatorAlwaysVisible="true"
 								paginatorPosition="bottom">
-								<p:column headerText="Patrimonio">
+								<p:column headerText="Patrimonio" style="width: 80px">
 									<h:outputText value="#{i.patrimonio}" />
 								</p:column>
-								<p:column headerText="Rótulo">
-									<h:outputText value="#{i.rotulo}" />
-								</p:column>
-								<p:column headerText="Categoria">
+								<p:column headerText="Categoria" style="width: 120px">
 									<h:outputText value="#{i.idCategoria.nome}" />
 								</p:column>
 								<p:column headerText="Nome">
@@ -101,34 +117,34 @@
 							<p:dataTable id="minhasReservasTable"
 								value="#{reservaBean.listaMinhasReservas}" var="i"
 								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado." rows="7"
+								emptyMessage="Nenhum registro encontrado." rows="20"
 								paginator="true" paginatorAlwaysVisible="true"
 								paginatorPosition="bottom">
-								<p:column headerText="Patrimonio">
+								<p:column headerText="Patrimonio" style="width: 60px">
 									<h:outputText value="#{i.idItemReserva.patrimonio}" />
 								</p:column>
-								<p:column headerText="Rótulo">
-									<h:outputText value="#{i.idItemReserva.rotulo}" />
-								</p:column>
-								<p:column headerText="Categoria">
-									<h:outputText value="#{i.idItemReserva.idCategoria.nome}" />
-								</p:column>
-								<p:column headerText="Nome">
+								<p:column headerText="Nome do Recurso" style="width: 120px">
 									<h:outputText value="#{i.idItemReserva.nome}" />
 								</p:column>
-								<p:column headerText="Tipo">
+								<p:column headerText="Categoria" style="width: 100px">
+									<h:outputText value="#{i.idItemReserva.idCategoria.nome}" />
+								</p:column>
+								<p:column headerText="Tipo" style="width: 100px">
 									<h:outputText value="#{i.idTipoReserva.descricao}" />
+								</p:column>
+								<p:column headerText="Usuário">
+									<h:outputText value="#{i.nomeUsuario}" />
 								</p:column>
 								<p:column headerText="Motivo">
 									<h:outputText value="#{i.motivo}" />
 								</p:column>
-								<p:column headerText="Data">
+								<p:column headerText="Data" style="width: 60px">
 									<h:outputText value="#{i.data}" converter="dateConverter" />
 								</p:column>
-								<p:column headerText="Início">
+								<p:column headerText="Início" style="width: 40px">
 									<h:outputText value="#{i.horaInicio}" converter="hourConverter" />
 								</p:column>
-								<p:column headerText="Fim">
+								<p:column headerText="Fim" style="width: 40px">
 									<h:outputText value="#{i.horaFim}" converter="hourConverter" />
 								</p:column>
 								<p:column headerText="Ações"
@@ -162,7 +178,7 @@
 
 						<p:outputLabel value="Usuário" for="pesquisaUsuario"
 							rendered="#{loginBean.pessoaLogin.admin eq true}" />
-						<p:autoComplete id="pesquisaUsuario" forceSelection="true"
+						<p:autoComplete id="pesquisaUsuario" forceSelection="false"
 							value="#{reservaBean.campoUsuario}"
 							completeMethod="#{reservaBean.selecionaUsuario}"
 							minQueryLength="1" queryDelay="250" size="60"
@@ -213,7 +229,7 @@
 						<p:commandButton value="Salvar" id="botaoSalvar"
 							action="#{reservaBean.gravaReserva}" icon="ui-icon-disk"
 							style="width:100px"
-							process="dataG inicioG finalG motivoG tipoReserva emailNotificacaoG @this"
+							process="dataG inicioG finalG motivoG tipoReserva emailNotificacaoG @this pesquisaUsuario"
 							update="@form" />
 						<p:commandButton value="Cancelar" id="botaoCancelar"
 							action="#{reservaBean.cancelaUi}" icon="ui-icon-arrowreturn-1-w"

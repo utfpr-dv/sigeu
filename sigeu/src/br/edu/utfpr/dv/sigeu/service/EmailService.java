@@ -76,7 +76,7 @@ public class EmailService {
 
 			sb.append("Reservado para:\n");
 			sb.append(
-					reserva.getIdUsuario().getNomeCompleto().trim()
+					reserva.getNomeUsuario().trim()
 							.toUpperCase()).append("\n\n");
 
 			sb.append(
@@ -197,7 +197,7 @@ public class EmailService {
 
 			sb.append("Estava reservado para:\n");
 			sb.append(
-					reserva.getIdUsuario().getNomeCompleto().trim()
+					reserva.getNomeUsuario().trim()
 							.toUpperCase()).append("\n\n");
 
 			sb.append(

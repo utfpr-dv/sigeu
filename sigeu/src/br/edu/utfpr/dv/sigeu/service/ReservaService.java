@@ -455,14 +455,15 @@ public class ReservaService {
 	 *            Não pode ser null
 	 * @param categoria
 	 *            pode ser null
-	 * @param itemReserva
+	 * @param item
 	 *            poder ser null
+	 * @param importadas
 	 * @return
 	 * @throws Exception
 	 */
 	public static List<Reserva> pesquisaReservasEfetivadasDoUsuario(
 			Pessoa pessoa, Date data, CategoriaItemReserva categoria,
-			ItemReserva item) throws Exception {
+			ItemReserva item, boolean importadas) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
@@ -471,7 +472,7 @@ public class ReservaService {
 
 			List<Reserva> lista = dao.pesquisaReservaDoUsuario(Config
 					.getInstance().getCampus(), StatusReserva.EFETIVADA,
-					pessoa, data, categoria, item);
+					pessoa, data, categoria, item, importadas);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {

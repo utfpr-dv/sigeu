@@ -8,85 +8,88 @@
 	<ui:define name="titulo">SIGEU: Agenda de Reservas</ui:define>
 
 	<ui:define name="corpo">
-		<h2>Agenda de Reservas</h2>
+		<p:tabView styleClass="tabCentered">
+			<p:tab id="tabPesquisa" title="Agenda de Reservas">
+				<h:form id="frmAgendaReserva" prependId="false">
+					<div style="margin: 0 auto; text-align: center">
+						<p:panelGrid columns="8" style="margin: 0 auto">
+							<p:outputLabel value="   Data" for="data" />
+							<p:calendar label="Data da Reserva" id="data"
+								value="#{agendaReservaBean.data}" showOn="button" size="10"
+								pattern="dd/MM/yyyy" mask="true" required="true"
+								requiredMessage="Preencha a data" locale="pt" />
 
-		<h:form id="frmAgendaReserva" prependId="false">
-			<div style="margin: 0 auto; text-align: center">
-				<p:panelGrid columns="8" style="margin: 0 auto">
-					<p:outputLabel value="   Data" for="data" />
-					<p:calendar label="Data da Reserva" id="data"
-						value="#{agendaReservaBean.data}" showOn="button" size="10"
-						pattern="dd/MM/yyyy" mask="true" required="true"
-						requiredMessage="Preencha a data" locale="pt" />
 
+							<p:outputLabel value="  Tipo" for="item" />
+							<p:selectOneMenu id="tipoReserva"
+								value="#{agendaReservaBean.tipoReserva}" required="false"
+								requiredMessage="Informe o tipo de reserva."
+								converter="tipoReservaConverter">
+								<f:selectItem itemLabel="Selecionar" itemValue="" />
+								<f:selectItems value="#{agendaReservaBean.listaTipoReserva}"
+									var="i" itemLabel="#{i.descricao}" itemValue="#{i.descricao}" />
+							</p:selectOneMenu>
 
-					<p:outputLabel value="  Tipo" for="item" />
-					<p:selectOneMenu id="tipoReserva"
-						value="#{agendaReservaBean.tipoReserva}" required="false"
-						requiredMessage="Informe o tipo de reserva."
-						converter="tipoReservaConverter">
-						<f:selectItem itemLabel="Selecionar" itemValue="" />
-						<f:selectItems value="#{agendaReservaBean.listaTipoReserva}"
-							var="i" itemLabel="#{i.descricao}" itemValue="#{i.descricao}" />
-					</p:selectOneMenu>
+							<p:outputLabel value="  Recurso" for="item" />
+							<p:autoComplete id="item" forceSelection="true"
+								value="#{agendaReservaBean.campoItem}"
+								completeMethod="#{agendaReservaBean.selecionaItem}"
+								required="false" minQueryLength="2" queryDelay="250" size="16"
+								requiredMessage="Informe o recurso">
+								<p:ajax event="itemSelect"
+									listener="#{agendaReservaBean.defineItem}" update="item" />
+							</p:autoComplete>
 
-					<p:outputLabel value="  Recurso" for="item" />
-					<p:autoComplete id="item" forceSelection="true"
-						value="#{agendaReservaBean.campoItem}"
-						completeMethod="#{agendaReservaBean.selecionaItem}"
-						required="false" minQueryLength="2" queryDelay="250" size="16"
-						requiredMessage="Informe o recurso">
-						<p:ajax event="itemSelect"
-							listener="#{agendaReservaBean.defineItem}" update="item" />
-					</p:autoComplete>
+							<p:outputLabel value="  Usuário" for="nomeUsuario" />
+							<p:inputText id="nomeUsuario"
+								value="#{agendaReservaBean.nomeUsuario}" size="40"
+								maxlength="200" />
 
-					<p:outputLabel value="  Usuário" for="nomeUsuario" />
-					<p:inputText id="nomeUsuario"
-						value="#{agendaReservaBean.nomeUsuario}" size="40" maxlength="200" />
+						</p:panelGrid>
 
-				</p:panelGrid>
+						<p:commandButton value="Pesquisar" icon="ui-icon-search"
+							style="width:100px; margin: 0 auto; margin-top: 10px;"
+							action="#{agendaReservaBean.pesquisa}" update="@form" />
 
-				<p:commandButton value="Pesquisar" icon="ui-icon-search"
-					style="width:100px; margin: 0 auto; margin-top: 10px;"
-					action="#{agendaReservaBean.pesquisa}" update="@form" />
+					</div>
 
-			</div>
+					<p:dataTable value="#{agendaReservaBean.listaReservaVO}" var="r"
+						paginator="false" emptyMessage="Nenhuma reserva encontrada"
+						style="margin-top: 20px;">
 
-			<p:dataTable value="#{agendaReservaBean.listaReservaVO}" var="r"
-				paginator="false" emptyMessage="Nenhuma reserva encontrada"
-				style="margin-top: 20px;">
+						<p:column headerText="ID"
+							style="background-color: #{r.cor}; text-align: center; width: 40px">
+							<h:outputText value="#{r.idReserva}" />
+						</p:column>
 
-				<p:column headerText="ID"
-					style="background-color: #{r.cor}; text-align: center; width: 40px">
-					<h:outputText value="#{r.idReserva}" />
-				</p:column>
+						<p:column headerText="Recurso" style="width: 120px">
+							<h:outputText value="#{r.nomeItemReserva}" />
+						</p:column>
 
-				<p:column headerText="Recurso" style="width: 120px">
-					<h:outputText value="#{r.nomeItemReserva}" />
-				</p:column>
+						<p:column headerText="Tipo de Reserva"
+							style="text-align: center; width: 100px">
+							<h:outputText value="#{r.tipoReserva}" />
+						</p:column>
 
-				<p:column headerText="Tipo de Reserva"
-					style="text-align: center; width: 100px">
-					<h:outputText value="#{r.tipoReserva}" />
-				</p:column>
+						<p:column headerText="Motivo">
+							<h:outputText value="#{r.motivoReserva}" />
+						</p:column>
 
-				<p:column headerText="Motivo">
-					<h:outputText value="#{r.motivoReserva}" />
-				</p:column>
+						<p:column headerText="Usuário"
+							style="text-align: center; width: 200px">
+							<h:outputText value="#{r.usuarioReserva}" />
+						</p:column>
 
-				<p:column headerText="Usuário"
-					style="text-align: center; width: 200px">
-					<h:outputText value="#{r.usuarioReserva}" />
-				</p:column>
+						<p:column headerText="Horário"
+							style="text-align: center;  width: 80px">
+							<h:outputText value="#{r.horaReserva}" />
+						</p:column>
 
-				<p:column headerText="Horário"
-					style="text-align: center;  width: 80px">
-					<h:outputText value="#{r.horaReserva}" />
-				</p:column>
+					</p:dataTable>
 
-			</p:dataTable>
-
-		</h:form>
+				</h:form>
+			</p:tab>
+		</p:tabView>
 	</ui:define>
 
 </ui:composition>

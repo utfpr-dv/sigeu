@@ -81,10 +81,9 @@ INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo )
 INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0007, 100, upper('Outro'), true );
 
 -- Insere categorias de item de reserva padrão UTFPR
-INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 1, 100, 'Sala de Aula', true );
-INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 2, 100, 'Equipamento', true );
-INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 3, 100, 'Laboratório', true );
-INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 4, 100, 'Miniauditório', true );
+INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 1, 100, 'SALA / AUDITÓRIO', true );
+INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 2, 100, 'EQUIPAMENTO', true );
+INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 3, 100, 'LABORATÓRIO', true );
 
 -- Insere servidor e conta de e-mail para UTFPR DV
 INSERT INTO public.mail_server(id_campus, authentication_required, starttls, ssl, plain_text_over_tls, host, port, from_email, user_name, password )

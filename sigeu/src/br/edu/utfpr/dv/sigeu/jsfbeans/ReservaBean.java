@@ -57,6 +57,7 @@ public class ReservaBean extends JavaBean {
 	private Integer campoMinutoI;
 	private Integer campoHoraF;
 	private Integer campoMinutoF;
+	private Boolean campoImportadas = true;
 	//
 
 	//
@@ -180,8 +181,10 @@ public class ReservaBean extends JavaBean {
 	 * @return
 	 */
 	public List<String> selecionaUsuario(String query) {
+		campoUsuario = null;
 		List<String> list = new ArrayList<String>();
 		listaUsuario = null;
+		usuario = null;
 
 		try {
 			listaUsuario = PessoaService.pesquisar(query, true, 14);
@@ -345,7 +348,8 @@ public class ReservaBean extends JavaBean {
 							this.listaMinhasReservas = ReservaService
 									.pesquisaReservasEfetivadasDoUsuario(
 											pessoaLogin, campoData,
-											categoriaItemReserva, itemReserva);
+											categoriaItemReserva, itemReserva,
+											campoImportadas);
 
 							// Rola entre a lista de itens disponíveis para
 							// checar
@@ -435,14 +439,17 @@ public class ReservaBean extends JavaBean {
 		reserva.setMotivo(motivo);
 
 		if (Config.getInstance().getPessoaLogin().getAdmin()) {
-			// if (loginBean.getPessoaLogin().getAdmin()) {
 			if (usuario == null) {
-				addWarnMessage("Usuário",
-						"Informe o usuário da reserva (quem irá utilizar).");
-				return;
+				/** Quando o usuário informado não existe */
+
+				// addWarnMessage("Usuário",
+				// "Informe o usuário da reserva (quem irá utilizar).");
+				reserva.setIdUsuario(pessoaLogin);
+				reserva.setNomeUsuario(campoUsuario);
+			} else {
+				reserva.setIdUsuario(usuario);
+				reserva.setNomeUsuario(usuario.getNomeCompleto());
 			}
-			reserva.setIdUsuario(usuario);
-			reserva.setNomeUsuario(usuario.getNomeCompleto());
 
 			if (emailNotificacao == null
 					|| emailNotificacao.trim().length() <= 0
@@ -1025,6 +1032,14 @@ public class ReservaBean extends JavaBean {
 
 	public void setMotivoCancelamento(String motivoCancelamento) {
 		this.motivoCancelamento = motivoCancelamento;
+	}
+
+	public Boolean getCampoImportadas() {
+		return campoImportadas;
+	}
+
+	public void setCampoImportadas(Boolean campoImportadas) {
+		this.campoImportadas = campoImportadas;
 	}
 
 	// public LoginBean getLoginBean() {
