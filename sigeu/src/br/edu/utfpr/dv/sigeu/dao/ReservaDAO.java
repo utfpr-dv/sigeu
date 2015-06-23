@@ -52,7 +52,14 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		Integer id = this.gerarNovoId().intValue();
 		o.setIdReserva(id);
 
-		// Seta false para a importação caso null
+		if (o.getMotivo() != null) {
+			o.setMotivo(o.getMotivo().trim().toUpperCase());
+		}
+
+		if (o.getNomeUsuario() != null) {
+			o.setNomeUsuario(o.getNomeUsuario().trim().toUpperCase());
+		}
+
 		if (o.getImportado() == null) {
 			o.setImportado(false);
 		}
@@ -64,16 +71,23 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * @param campus
 	 * @param status
 	 * @param data
+	 * @param tipoReserva
 	 * @param categoria
 	 * @param item
+	 * @param nomeUsuario
 	 * @return
 	 */
 	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
-			Date data, CategoriaItemReserva categoria, ItemReserva item) {
+			Date data, TipoReserva tipoReserva, CategoriaItemReserva categoria,
+			ItemReserva item, String nomeUsuario) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
 		hql.append("WHERE c.idCampus = :idCampus AND o.status = :status AND ");
+
+		if (tipoReserva != null) {
+			hql.append("o.idTipoReserva.idTipoReserva = :idTipoReserva AND ");
+		}
 
 		if (categoria != null) {
 			hql.append("c.idCategoria = :idCategoria AND ");
@@ -81,6 +95,10 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 		if (item != null) {
 			hql.append("i.idItemReserva = :idItemReserva AND ");
+		}
+
+		if (nomeUsuario != null && nomeUsuario.trim().length() > 0) {
+			hql.append("o.nomeUsuario like :nomeUsuario AND ");
 		}
 		hql.append("o.data = :data ");
 		hql.append("ORDER BY i.nome, o.data ASC, o.horaInicio ASC, o.horaFim ASC ");
@@ -94,7 +112,14 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		if (item != null) {
 			q.setInteger("idItemReserva", item.getIdItemReserva());
 		}
+		if (nomeUsuario != null && nomeUsuario.trim().length() > 0) {
+			q.setString("nomeUsuario", "%" + nomeUsuario.trim().toUpperCase()
+					+ "%");
+		}
 		q.setDate("data", data);
+		if (tipoReserva != null) {
+			q.setInteger("idTipoReserva", tipoReserva.getIdTipoReserva());
+		}
 
 		return this.pesquisaObjetos(q, 0);
 	}
@@ -276,8 +301,17 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 
 	@Override
 	public void preAlteracao(Reserva o) {
-		// TODO Auto-generated method stub
-		
+		if (o.getMotivo() != null) {
+			o.setMotivo(o.getMotivo().trim().toUpperCase());
+		}
+
+		if (o.getNomeUsuario() != null) {
+			o.setNomeUsuario(o.getNomeUsuario().trim().toUpperCase());
+		}
+
+		if (o.getImportado() == null) {
+			o.setImportado(false);
+		}
 	}
 
 }

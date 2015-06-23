@@ -967,7 +967,7 @@ public class IntegrationService {
 							reserva.setIdTipoReserva(tipoReserva);
 							reserva.setIdTransacao(transacao);
 							reserva.setIdUsuario(usuario);
-							reserva.setNomeUsuario(nomeUsuario);
+							reserva.setNomeUsuario(nomeUsuario.trim().toUpperCase());
 							reserva.setIdPessoa(usuarioAdmin);
 							reserva.setIdAutorizador(usuarioAdmin);
 							reserva.setEmailNotificacao(usuarioAdmin.getEmail());

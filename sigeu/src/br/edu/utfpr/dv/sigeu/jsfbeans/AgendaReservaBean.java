@@ -13,12 +13,15 @@ import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.Period;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
+import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
 import br.edu.utfpr.dv.sigeu.exception.DestinatarioInexistenteException;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
+import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
 import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
 import br.edu.utfpr.dv.sigeu.vo.PeriodoReservaVO;
+import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.DateUtils;
 import com.adamiworks.utils.StringUtils;
@@ -37,9 +40,14 @@ public class AgendaReservaBean extends JavaBean {
 	private List<ItemReserva> listaItemReserva;
 	private List<Period> listaPeriod;
 	private List<PeriodoReservaVO> listaPeriodoReservaVO;
+	private List<ReservaVO> listaReservaVO;
+	private TipoReserva tipoReserva;
+	private List<TipoReserva> listaTipoReserva;
 
-	private SimpleDateFormat sdfHora;
+	private SimpleDateFormat formatHora;
+	private SimpleDateFormat formatData;
 	private PeriodoReservaVO horarioVO;
+	private String nomeUsuario;
 
 	public AgendaReservaBean() {
 		this.carrega();
@@ -52,7 +60,8 @@ public class AgendaReservaBean extends JavaBean {
 		try {
 			listaPeriod = ReservaService.getAllPeriods();
 			data = Calendar.getInstance().getTime();
-			sdfHora = new SimpleDateFormat("HH:mm");
+			formatHora = new SimpleDateFormat("HH:mm");
+			formatData = new SimpleDateFormat("dd/MM/yyyy");
 
 			horarioVO = new PeriodoReservaVO();
 
@@ -62,11 +71,13 @@ public class AgendaReservaBean extends JavaBean {
 						StringUtils.left(period.getShortname().trim(), 3), 3,
 						"0"));
 				h.append(" \n");
-				h.append(sdfHora.format(period.getStarttime()));
+				h.append(formatHora.format(period.getStarttime()));
 				h.append(" - \n");
-				h.append(sdfHora.format(period.getEndtime()));
+				h.append(formatHora.format(period.getEndtime()));
 				horarioVO.setHorario(period.getOrdem(), h.toString());
 			}
+
+			listaTipoReserva = TipoReservaService.pesquisar(null, true);
 		} catch (Exception e) {
 			addErrorMessage("Iniciar", "Erro ao carregar tela!");
 			e.printStackTrace();
@@ -138,15 +149,40 @@ public class AgendaReservaBean extends JavaBean {
 
 			try {
 				CategoriaItemReserva categoria = null;
+				
 				if (itemReserva != null) {
 					categoria = itemReserva.getIdCategoria();
 				}
 
+				listaReservaVO = new ArrayList<ReservaVO>();
+
 				listaReserva = ReservaService.pesquisaReservasEfetivadasDoDia(
-						data, categoria, itemReserva);
+						data, tipoReserva, categoria, itemReserva, nomeUsuario);
 
 				if (listaReserva.size() > 0) {
 					reservaParaAgenda();
+
+					// Processa a lista de reserva VO
+					for (Reserva reserva : listaReserva) {
+						ReservaVO vo = new ReservaVO();
+						vo.setCampus(reserva.getIdCampus());
+						vo.setDataReserva(formatData.format(reserva.getData()));
+						vo.setHoraReserva(formatHora.format(reserva
+								.getHoraInicio())
+								+ " a "
+								+ formatHora.format(reserva.getHoraFim()));
+						vo.setMotivoReserva(reserva.getMotivo());
+						vo.setNomeItemReserva(reserva.getIdItemReserva()
+								.getNome());
+						vo.setTipoReserva(reserva.getIdTipoReserva()
+								.getDescricao());
+						vo.setUsuarioReserva(reserva.getNomeUsuario());
+						vo.setCor(reserva.getCor());
+						vo.setIdReserva(reserva.getIdReserva());
+
+						listaReservaVO.add(vo);
+					}
+
 				} else {
 					addInfoMessage("Reserva", "Nenhuma reserva encontrada!");
 				}
@@ -209,7 +245,7 @@ public class AgendaReservaBean extends JavaBean {
 				} else {
 					if (vo.getRotulo(p.getOrdem()) == null) {
 						vo.setCor(p.getOrdem(), "#FFFFFF");
-						//vo.setRotulo(p.getOrdem(), "Livre");
+						// vo.setRotulo(p.getOrdem(), "Livre");
 						vo.setRotulo(p.getOrdem(), "");
 						vo.setMotivo(p.getOrdem(), "Horário Livre.");
 					}
@@ -306,6 +342,38 @@ public class AgendaReservaBean extends JavaBean {
 
 	public void setHorarioVO(PeriodoReservaVO horarioVO) {
 		this.horarioVO = horarioVO;
+	}
+
+	public List<ReservaVO> getListaReservaVO() {
+		return listaReservaVO;
+	}
+
+	public void setListaReservaVO(List<ReservaVO> listaReservaVO) {
+		this.listaReservaVO = listaReservaVO;
+	}
+
+	public TipoReserva getTipoReserva() {
+		return tipoReserva;
+	}
+
+	public void setTipoReserva(TipoReserva tipoReserva) {
+		this.tipoReserva = tipoReserva;
+	}
+
+	public List<TipoReserva> getListaTipoReserva() {
+		return listaTipoReserva;
+	}
+
+	public void setListaTipoReserva(List<TipoReserva> listaTipoReserva) {
+		this.listaTipoReserva = listaTipoReserva;
+	}
+
+	public String getNomeUsuario() {
+		return nomeUsuario;
+	}
+
+	public void setNomeUsuario(String nomeUsuario) {
+		this.nomeUsuario = nomeUsuario;
 	}
 
 }

@@ -13,6 +13,7 @@ public class ReservaVO {
 	private String tipoReserva;
 	private String motivoReserva;
 	private String usuarioReserva;
+	private String cor;
 	//
 	// Campos de controle (ocultos)
 	private Campus campus;
@@ -105,6 +106,14 @@ public class ReservaVO {
 
 	public void setTipoReserva(String tipoReserva) {
 		this.tipoReserva = tipoReserva;
+	}
+
+	public String getCor() {
+		return cor;
+	}
+
+	public void setCor(String cor) {
+		this.cor = cor;
 	}
 
 }

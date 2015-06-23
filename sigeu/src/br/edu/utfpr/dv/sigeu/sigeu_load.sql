@@ -59,7 +59,7 @@ VALUES( 1, 1 );
 
 -- Cria parâmetro com nome do sistema
 INSERT INTO parametro( codigo, valor ) 
-VALUES( 'nome_sistema', 'SGU - Sistema de Gestão de Universidades' );
+VALUES( 'nome_sistema', 'SIGEU - Sistema Integrado para Gestão de Universidades' );
 
 -- Cria parâmetro com ajuda de LOGIN
 INSERT INTO parametro( codigo, valor )
@@ -70,21 +70,19 @@ INSERT INTO parametro( codigo, valor )
 VALUES( 'login_browser', 'Esse site é melhor visualizado em resoluçao 1024x768 nos navegadores: Safari, Firefox, Chrome e Opera Browser.' );
 
 -- Insere tipos de reserva padrão para UTFPR
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 1, 100, 'Aula Regular', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 2, 100, 'Aula de Reposição', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 3, 100, 'Reunião', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 4, 100, 'Semana Acadêmica', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 5, 100, 'Empréstimo Temporário (comodato)', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 6, 100, 'Evento Interno', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 7, 100, 'Evento Externo', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 8, 100, 'Planejamento', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 9, 100, 'Monitoria', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 10, 100, 'Concurso Público', true );
-INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 11, 100, 'Processo Seletivo', true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0001, 100, upper('Aula Regular'), true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0002, 100, upper('Aula de Reposição'), true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0010, 100, upper('Conc. Público ou Proc. Seletivo'), true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0005, 100, upper('Empréstimo Temporário'), true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0008, 100, upper('Planejamento'), true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0009, 100, upper('Monitoria'), true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0003, 100, upper('Reunião'), true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0004, 100, upper('Videoconferência'), true );
+INSERT INTO public.tipo_reserva ( id_tipo_reserva, id_campus, descricao, ativo ) VALUES ( 0007, 100, upper('Outro'), true );
 
 -- Insere categorias de item de reserva padrão UTFPR
 INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 1, 100, 'Sala de Aula', true );
-INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 2, 100, 'Projetor Multimídia', true );
+INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 2, 100, 'Equipamento', true );
 INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 3, 100, 'Laboratório', true );
 INSERT INTO public.categoria_item_reserva ( id_categoria, id_campus, nome, ativo ) VALUES ( 4, 100, 'Miniauditório', true );
 

@@ -363,13 +363,16 @@ public class ReservaService {
 	 * estiver null
 	 * 
 	 * @param data
+	 * @param tipoReserva
 	 * @param categoria
 	 * @param item
+	 * @param usuario
 	 * @return
 	 * @throws Exception
 	 */
 	public static List<Reserva> pesquisaReservasEfetivadasDoDia(Date data,
-			CategoriaItemReserva categoria, ItemReserva item) throws Exception {
+			TipoReserva tipoReserva, CategoriaItemReserva categoria,
+			ItemReserva item, String usuario) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
@@ -377,8 +380,8 @@ public class ReservaService {
 			ReservaDAO dao = new ReservaDAO(trans);
 
 			List<Reserva> lista = dao.pesquisaReserva(Config.getInstance()
-					.getCampus(), StatusReserva.EFETIVADA, data, categoria,
-					item);
+					.getCampus(), StatusReserva.EFETIVADA, data, tipoReserva,
+					categoria, item, usuario);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {

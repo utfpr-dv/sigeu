@@ -42,7 +42,8 @@
 								</h:link>
 							</div></td>
 						<td valign="bottom" align="right"><div class="headerInfo">
-								<p:outputLabel value="#{loginBean.nomeUsuario}"
+								<p:outputLabel
+									value="#{loginBean.nomeUsuario} - Mat.: #{loginBean.pessoaLogin.matricula} - #{loginBean.pessoaLogin.email}"
 									style="font-weight: bold; font-size: small" />
 								<input id="LogoffButton" type="button" value="Sair"
 									onclick="doLogoff();" />
@@ -67,7 +68,7 @@
 							<p:separator />
 							<p:menuitem value="Categoria de Item de Reserva"
 								outcome="/admin/PesquisaCategoriaItemReserva.xhtml" />
-							<p:menuitem value="Item de Reserva"
+							<p:menuitem value="Item de Reserva (Recurso)"
 								outcome="/admin/PesquisaItemReserva.xhtml" />
 							<p:menuitem value="Tipo de Reserva"
 								outcome="/admin/PesquisaTipoReserva.xhtml" />
@@ -82,8 +83,7 @@
 							<p:separator />
 						</p:submenu>
 						<p:submenu label="Reservas" style="width: 120px">
-							<p:menuitem value="Reservas"
-								outcome="/restrito/Reserva.xhtml" />
+							<p:menuitem value="Reservas" outcome="/restrito/Reserva.xhtml" />
 							<p:menuitem value="Agenda"
 								outcome="/restrito/AgendaReserva.xhtml" />
 							<p:menuitem value="Autorizações"

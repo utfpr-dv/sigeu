@@ -1,0 +1,264 @@
+<ui:composition template="/WEB-INF/template/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://openfaces.org/">
+
+	<ui:define name="titulo">SIGEU: Agenda de Reservas</ui:define>
+
+	<ui:define name="corpo">
+		<h2>Reservas</h2>
+
+		<h:form id="frmAgendaReserva" prependId="false">
+			<div style="width: 500px; margin: 0 auto; text-align: center">
+				<p:panelGrid columns="5" style="margin: 0 auto">
+					<p:outputLabel value="   Data" for="data" />
+					<p:calendar label="Data da Reserva" id="data"
+						value="#{agendaReservaBean.data}" showOn="button" size="10"
+						pattern="dd/MM/yyyy" mask="true" required="true"
+						requiredMessage="Preencha a data" locale="pt" />
+
+					<p:outputLabel value="  Recurso" for="item" />
+					<p:autoComplete id="item" forceSelection="true"
+						value="#{agendaReservaBean.campoItem}"
+						completeMethod="#{agendaReservaBean.selecionaItem}"
+						required="false" minQueryLength="2" queryDelay="250" size="16"
+						requiredMessage="Informe o recurso">
+						<p:ajax event="itemSelect"
+							listener="#{agendaReservaBean.defineItem}" update="item" />
+					</p:autoComplete>
+				</p:panelGrid>
+
+				<p:commandButton value="Pesquisar" icon="ui-icon-search"
+					style="width:100px; margin: 0 auto"
+					action="#{agendaReservaBean.pesquisa}" update="@form" />
+
+			</div>
+			<div style="margin-top: 10px;">
+				<h3>Agenda de reservas</h3>
+			</div>
+
+			<p:dataTable value="#{agendaReservaBean.listaReservaVO}" var="r"
+				paginator="false" emptyMessage="Nenhuma reserva encontrada">
+
+				<p:column headerText="ID"
+					style="background-color: #{r.cor}; text-align: center; width: 40px">
+					<h:outputText value="#{r.idReserva}" />
+				</p:column>
+
+				<p:column headerText="Recurso" style="width: 120px">
+					<h:outputText value="#{r.nomeItemReserva}" />
+				</p:column>
+
+				<p:column headerText="Tipo de Reserva"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{r.tipoReserva}" />
+				</p:column>
+
+				<p:column headerText="Motivo">
+					<h:outputText value="#{r.motivoReserva}" />
+				</p:column>
+
+				<p:column headerText="Usuário"
+					style="text-align: center; width: 200px">
+					<h:outputText value="#{r.usuarioReserva}" />
+				</p:column>
+
+				<p:column headerText="Horário"
+					style="text-align: center;  width: 80px">
+					<h:outputText value="#{r.horaReserva}" />
+				</p:column>
+
+			</p:dataTable>
+
+
+			<p:dataTable value="#{agendaReservaBean.listaPeriodoReservaVO}"
+				var="vo" paginator="false" emptyMessage="Nenhuma reserva encontrada">
+				<p:column headerText="Recurso"
+					style="text-align: center;width: 100px; ">
+					<h:outputText value="#{vo.nomeItemReserva}" />
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario01}"
+					style="text-align: center; background-color: #{vo.cor01};">
+
+					<p:tooltip id="toolTip01" for="text01" value="#{vo.motivo01}"
+						trackMouse="true" />
+					<h:outputText id="text01" value="#{vo.rotulo01}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario02}"
+					style="text-align: center; background-color: #{vo.cor02};">
+
+					<p:tooltip id="toolTip02" for="text02" value="#{vo.motivo02}"
+						trackMouse="true" />
+					<h:outputText id="text02" value="#{vo.rotulo02}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario03}"
+					style="text-align: center; background-color: #{vo.cor03};">
+
+					<p:tooltip id="toolTip03" for="text03" value="#{vo.motivo03}"
+						trackMouse="true" />
+					<h:outputText id="text03" value="#{vo.rotulo03}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario04}"
+					style="text-align: center; background-color: #{vo.cor04};">
+
+					<p:tooltip id="toolTip04" for="text04" value="#{vo.motivo04}"
+						trackMouse="true" />
+					<h:outputText id="text04" value="#{vo.rotulo04}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario05}"
+					style="text-align: center; background-color: #{vo.cor05};">
+
+					<p:tooltip id="toolTip05" for="text05" value="#{vo.motivo05}"
+						trackMouse="true" />
+					<h:outputText id="text05" value="#{vo.rotulo05}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario06}"
+					style="text-align: center; background-color: #{vo.cor06};">
+
+					<p:tooltip id="toolTip06" for="text06" value="#{vo.motivo06}"
+						trackMouse="true" />
+					<h:outputText id="text06" value="#{vo.rotulo06}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario07}"
+					style="text-align: center; background-color: #{vo.cor07};">
+
+					<p:tooltip id="toolTip07" for="text07" value="#{vo.motivo07}"
+						trackMouse="true" />
+					<h:outputText id="text07" value="#{vo.rotulo07}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario08}"
+					style="text-align: center; background-color: #{vo.cor08};">
+
+					<p:tooltip id="toolTip08" for="text08" value="#{vo.motivo08}"
+						trackMouse="true" />
+					<h:outputText id="text08" value="#{vo.rotulo08}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario09}"
+					style="text-align: center; background-color: #{vo.cor09};">
+
+					<p:tooltip id="toolTip09" for="text09" value="#{vo.motivo09}"
+						trackMouse="true" />
+					<h:outputText id="text09" value="#{vo.rotulo09}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario10}"
+					style="text-align: center; background-color: #{vo.cor10};">
+
+					<p:tooltip id="toolTip10" for="text10" value="#{vo.motivo10}"
+						trackMouse="true" />
+					<h:outputText id="text10" value="#{vo.rotulo10}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario11}"
+					style="text-align: center; background-color: #{vo.cor11};">
+
+					<p:tooltip id="toolTip11" for="text11" value="#{vo.motivo11}"
+						trackMouse="true" />
+					<h:outputText id="text11" value="#{vo.rotulo11}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario12}"
+					style="text-align: center; background-color: #{vo.cor12};">
+
+					<p:tooltip id="toolTip12" for="text12" value="#{vo.motivo12}"
+						trackMouse="true" />
+					<h:outputText id="text12" value="#{vo.rotulo12}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario13}"
+					style="text-align: center; background-color: #{vo.cor13};">
+
+					<p:tooltip id="toolTip13" for="text13" value="#{vo.motivo13}"
+						trackMouse="true" />
+					<h:outputText id="text13" value="#{vo.rotulo13}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario14}"
+					style="text-align: center; background-color: #{vo.cor14};">
+
+					<p:tooltip id="toolTip14" for="text14" value="#{vo.motivo14}"
+						trackMouse="true" />
+					<h:outputText id="text14" value="#{vo.rotulo14}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario15}"
+					style="text-align: center; background-color: #{vo.cor15};">
+
+					<p:tooltip id="toolTip15" for="text15" value="#{vo.motivo15}"
+						trackMouse="true" />
+					<h:outputText id="text15" value="#{vo.rotulo15}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario16}"
+					style="text-align: center; background-color: #{vo.cor16};">
+
+					<p:tooltip id="toolTip16" for="text16" value="#{vo.motivo16}"
+						trackMouse="true" />
+					<h:outputText id="text16" value="#{vo.rotulo16}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+				<p:column headerText="#{agendaReservaBean.horarioVO.horario17}"
+					style="text-align: center; background-color: #{vo.cor17};">
+
+					<p:tooltip id="toolTip17" for="text17" value="#{vo.motivo17}"
+						trackMouse="true" />
+					<h:outputText id="text17" value="#{vo.rotulo17}"
+						style="font-family: sans-serif;" />
+
+				</p:column>
+
+			</p:dataTable>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
