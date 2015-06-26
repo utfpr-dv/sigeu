@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -1261,9 +1262,16 @@ public class IntegrationService {
 
 			// ///////////////////////////////////
 			List<String> mapa = ldapUtils.getAllLdapInfo(ldap.getVarLdapUid());
+			/**
+			 * Usar este código abaixo para encontrar todos os UIDs com os
+			 * grupos em uma chamada ao LDAP só.
+			 */
+			Map<String, String> userTree = ldapUtils.getAllUsers(ldap
+					.getVarLdapUid());
 
 			int criadas = 0;
 			int alteradas = 0;
+			int ignorados = 0;
 
 			/* Declaração de variáveis do loop */
 			String attrs[] = null;
@@ -1272,7 +1280,7 @@ public class IntegrationService {
 			String nomeCompleto = null;
 			String email = null;
 			String uid = null;
-			// String lCampus = null;
+			String lCampus = null;
 			String map[] = null;
 			Pessoa pessoa = null;
 			boolean update = true;
@@ -1284,6 +1292,8 @@ public class IntegrationService {
 			/**/
 
 			SystemOutUtils logger = new SystemOutUtils(false);
+
+			String varLdapCampus = ldap.getVarLdapCampus().trim().toUpperCase();
 
 			for (String s : mapa) {
 				logger.printTimestamp("1");
@@ -1297,7 +1307,7 @@ public class IntegrationService {
 				nomeCompleto = null;
 				email = null;
 				uid = null;
-				// lCampus = null;
+				lCampus = null;
 
 				for (String a : attrs) {
 					map = a.split(":");
@@ -1329,11 +1339,17 @@ public class IntegrationService {
 						uid = map[1].trim();
 					}
 
-					// if (map[0].trim().toUpperCase()
-					// .equals(ldap.getVarLdapCampus().toUpperCase())) {
-					// lCampus = map[1].trim();
-					// }
+					if (map[0].trim().toUpperCase()
+							.equals(ldap.getVarLdapCampus().toUpperCase())) {
+						lCampus = map[1].trim().toUpperCase();
+					}
 				}
+
+				System.out.println(uid);
+
+				System.out.println("---> Criadas: " + criadas
+						+ " | Alteradas: " + alteradas + " | Ignorados: "
+						+ ignorados);
 
 				logger.printTimestamp("3");
 
@@ -1341,29 +1357,52 @@ public class IntegrationService {
 
 				pessoa = null;
 
-				if (cnpjCpf == null || matricula == null
-						|| nomeCompleto == null) {
-					continue;
-				}
-
-				if (email == null || email.trim().length() == 0) {
-					// Restringe cadastro apenas a servidores que possuem e-mail
-					continue;
-				}
-
 				/**
-				 * Ignora os cadastros de alunos buscando apenas cadastros do
-				 * mesmo servidor de e-mail
+				 * Se for cadastro de aluno e do mesmo campus não exige e-mail.
+				 * Se o e-mail for null, preenche com unknown@unknown.com
 				 */
-				// if (uid.matches("[A-Z|a-z]{1}[0-9].*") ||
-				// !email.contains(ldap.getSufixoEmail())) {
-				if (!email.toLowerCase().trim()
-						.contains(ldap.getSufixoEmail().toLowerCase().trim())) {
-					continue;
-				}
+				if (uid.matches("[A-Z|a-z]{1}[0-9].*")) {
+					if (nomeCompleto == null) {
+						ignorados++;
+						continue;
+					}
+					/**
+					 * ALUNO
+					 */
+					// if (lCampus.equals(varLdapCampus)) {
+					/**
+					 * ALUNO DO MESMO CAMPUS
+					 */
+					if (email == null || email.trim().length() == 0) {
+						email = "unknown@unknown.com";
+					}
+					// } else {
+					// /**
+					// * ALUNO DE OUTRO CAMPUS - IGNORAR
+					// */
+					// ignorados++;
+					// continue;
+					// }
 
-				System.out.println("===");
-				System.out.println(uid);
+					cnpjCpf = (cnpjCpf == null ? "00000000000" : cnpjCpf);
+					matricula = (matricula == null ? "00000000" : matricula);
+				} else {
+					/**
+					 * SERVIDOR - TAE OU PROFESSOR
+					 */
+					if (email == null || email.trim().length() == 0) {
+						// Restringe cadastro apenas a servidores que possuem
+						// e-mail
+						ignorados++;
+						continue;
+					}
+
+					if (cnpjCpf == null || matricula == null
+							|| nomeCompleto == null) {
+						ignorados++;
+						continue;
+					}
+				}
 
 				// Cadastra apenas pessoas do mesmo campus através da sigla de
 				// identificação
@@ -1399,24 +1438,29 @@ public class IntegrationService {
 					logger.printTimestamp("5.2.1");
 					fieldsIgnored = 0;
 
-					if (pessoa.getCnpjCpf().equals(cnpjCpf)) {
+					if (pessoa.getCnpjCpf().trim().toUpperCase()
+							.equals(cnpjCpf.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
 
-					if (pessoa.getEmail().equals(email)) {
+					if (pessoa.getEmail().trim().toUpperCase()
+							.equals(email.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
 
-					if (pessoa.getMatricula().equals(matricula)) {
+					if (pessoa.getMatricula().trim().toUpperCase()
+							.equals(matricula.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
 
-					if (pessoa.getNomeCompleto().equals(nomeCompleto)) {
+					if (pessoa.getNomeCompleto().trim().toUpperCase()
+							.equals(nomeCompleto.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
 
 					// Se todos os campos continuam iguais, não faz nada
 					if (fieldsIgnored >= 4) {
+						ignorados++;
 						continue;
 					}
 
@@ -1448,10 +1492,26 @@ public class IntegrationService {
 
 				logger.printTimestamp("7");
 
+				/**
+				 * ======================================================
+				 * ENCONTRA GRUPO DA PESSOA
+				 * ======================================================
+				 */
 				// Confere os grupos da Pessoa
-				baseDn = ldapUtils.getDnByUid(uid);
+				// baseDn = ldapUtils.getDnByUid(uid);
+
+				// Pesquisa o uid atual dentro da lista da árvore
+				baseDn = userTree.get(uid);
+
+				if (baseDn == null) {
+					continue;
+				}
+
 				grupos = new ArrayList<GrupoPessoa>();
 				nomeGrupos = ldapUtils.getLdapOuByUid(uid, baseDn);
+				/**
+				 * ======================================================
+				 */
 
 				logger.printTimestamp("8");
 
@@ -1488,10 +1548,6 @@ public class IntegrationService {
 				GrupoPessoaService.atualizaGrupos(trans, pessoa, grupos);
 
 				logger.printTimestamp("10");
-
-				System.out.println("Criadas: " + criadas + " / Alteradas: "
-						+ alteradas);
-				System.out.println("===\n");
 
 				if (commitCount >= HibernateUtil.HIBERNATE_BATCH_SIZE) {
 					commitCount = 0;
