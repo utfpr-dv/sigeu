@@ -12,6 +12,30 @@ import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 public class CampusService {
+
+	/**
+	 * Conta a qtde de campus
+	 */
+	public static Integer contarCampus() {
+		Transaction trans = null;
+		try {
+
+			trans = new Transaction();
+			trans.begin();
+
+			CampusDAO dao = new CampusDAO(trans);
+			int q = dao.contarCampus();
+			return q;
+		} catch (Exception e) {
+
+		} finally {
+			if (trans != null) {
+				trans.close();
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Cria novo
 	 * 
@@ -83,7 +107,8 @@ public class CampusService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Campus> pesquisar(String textoPesquisa, Instituicao instituicao) throws Exception {
+	public static List<Campus> pesquisar(String textoPesquisa,
+			Instituicao instituicao) throws Exception {
 		List<Campus> lista = null;
 
 		Transaction trans = new Transaction();
@@ -145,7 +170,8 @@ public class CampusService {
 	 * @throws EntidadePossuiRelacionamentoException
 	 * @throws Exception
 	 */
-	public static void remover(Campus i) throws EntidadePossuiRelacionamentoException, Exception {
+	public static void remover(Campus i)
+			throws EntidadePossuiRelacionamentoException, Exception {
 		Transaction trans = new Transaction();
 
 		try {
@@ -157,8 +183,10 @@ public class CampusService {
 			Hibernate.initialize(campusBd.getGrupoPessoaList());
 			Hibernate.initialize(campusBd.getPessoaList());
 
-			if (campusBd.getGrupoPessoaList().size() > 0 || campusBd.getPessoaList().size() > 0) {
-				throw new EntidadePossuiRelacionamentoException(campusBd.getNome());
+			if (campusBd.getGrupoPessoaList().size() > 0
+					|| campusBd.getPessoaList().size() > 0) {
+				throw new EntidadePossuiRelacionamentoException(
+						campusBd.getNome());
 			}
 
 			dao.remover(campusBd);

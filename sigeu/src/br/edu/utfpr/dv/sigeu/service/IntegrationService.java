@@ -70,7 +70,6 @@ import br.edu.utfpr.dv.sigeu.sort.ClassroomComparator;
 import br.edu.utfpr.dv.sigeu.sort.ReservaDataComparator;
 
 import com.adamiworks.utils.StringUtils;
-import com.adamiworks.utils.SystemOutUtils;
 import com.adamiworks.utils.ldap.LdapUtils;
 
 public class IntegrationService {
@@ -1241,6 +1240,9 @@ public class IntegrationService {
 	 * @throws Exception
 	 */
 	public static void atualizaPessoasLdap(Campus campus) throws Exception {
+		Date inicio = Calendar.getInstance().getTime();
+		Date fim = null;
+
 		int commitCount = 0;
 
 		Transaction trans = null;
@@ -1280,7 +1282,7 @@ public class IntegrationService {
 			String nomeCompleto = null;
 			String email = null;
 			String uid = null;
-			String lCampus = null;
+			// String lCampus = null;
 			String map[] = null;
 			Pessoa pessoa = null;
 			boolean update = true;
@@ -1291,23 +1293,19 @@ public class IntegrationService {
 			GrupoPessoa gp = null;
 			/**/
 
-			SystemOutUtils logger = new SystemOutUtils(false);
-
-			String varLdapCampus = ldap.getVarLdapCampus().trim().toUpperCase();
+			// String varLdapCampus =
+			// ldap.getVarLdapCampus().trim().toUpperCase();
 
 			for (String s : mapa) {
-				logger.printTimestamp("1");
 
 				attrs = s.split(LdapUtils.ENTRY_SEPARATOR);
-
-				logger.printTimestamp("2");
 
 				cnpjCpf = null;
 				matricula = null;
 				nomeCompleto = null;
 				email = null;
 				uid = null;
-				lCampus = null;
+				//lCampus = null;
 
 				for (String a : attrs) {
 					map = a.split(":");
@@ -1339,53 +1337,23 @@ public class IntegrationService {
 						uid = map[1].trim();
 					}
 
-					if (map[0].trim().toUpperCase()
-							.equals(ldap.getVarLdapCampus().toUpperCase())) {
-						lCampus = map[1].trim().toUpperCase();
-					}
+					// if (map[0].trim().toUpperCase()
+					// .equals(ldap.getVarLdapCampus().toUpperCase())) {
+					// lCampus = map[1].trim().toUpperCase();
+					// }
 				}
 
-				System.out.println(uid);
-
-				System.out.println("---> Criadas: " + criadas
-						+ " | Alteradas: " + alteradas + " | Ignorados: "
-						+ ignorados);
-
-				logger.printTimestamp("3");
-
-				logger.printTimestamp("4");
+				// System.out.println(uid);
 
 				pessoa = null;
 
 				/**
-				 * Se for cadastro de aluno e do mesmo campus não exige e-mail.
-				 * Se o e-mail for null, preenche com unknown@unknown.com
+				 * Se for cadastro de aluno ignora
 				 */
-				if (uid.matches("[A-Z|a-z]{1}[0-9].*")) {
-					if (nomeCompleto == null) {
-						ignorados++;
-						continue;
-					}
-					/**
-					 * ALUNO
-					 */
-					// if (lCampus.equals(varLdapCampus)) {
-					/**
-					 * ALUNO DO MESMO CAMPUS
-					 */
-					if (email == null || email.trim().length() == 0) {
-						email = "unknown@unknown.com";
-					}
-					// } else {
-					// /**
-					// * ALUNO DE OUTRO CAMPUS - IGNORAR
-					// */
-					// ignorados++;
-					// continue;
-					// }
-
-					cnpjCpf = (cnpjCpf == null ? "00000000000" : cnpjCpf);
-					matricula = (matricula == null ? "00000000" : matricula);
+				if (email == null || email.trim().length() == 0
+						|| !email.toLowerCase().contains(ldap.getSufixoEmail())) {
+					ignorados++;
+					continue;
 				} else {
 					/**
 					 * SERVIDOR - TAE OU PROFESSOR
@@ -1404,38 +1372,18 @@ public class IntegrationService {
 					}
 				}
 
-				// Cadastra apenas pessoas do mesmo campus através da sigla de
-				// identificação
-				// Isto poderá remover alguns servidores que foram transferidos,
-				// para tanto,
-				// será necessário que eles façam login no sistema para ter o
-				// cadastro realizado.
-				// if (ldap.getIdCampus().getSigla() != null
-				// && ldap.getIdCampus().getSigla().trim().length() > 0) {
-				//
-				// if (!ldap.getIdCampus().getSigla().toUpperCase().trim()
-				// .equals(lCampus.toUpperCase())) {
-				// continue;
-				// }
-				// }
-
 				// pessoa = PessoaService.encontrePorEmail(email);
 				pessoa = pessoaDAO.encontrePorEmail(email, campus);
-
-				logger.printTimestamp("5");
 
 				update = true;
 
 				// Atualiza dados da Pessoa/Usuário
 				if (pessoa == null) {
-					logger.printTimestamp("5.1.1");
 					pessoa = new Pessoa();
 					update = false;
 					pessoa.setAtivo(true);
 					pessoa.setSenhaMd5("00000000000000000000000000000000");
-					logger.printTimestamp("5.1.2");
 				} else {
-					logger.printTimestamp("5.2.1");
 					fieldsIgnored = 0;
 
 					if (pessoa.getCnpjCpf().trim().toUpperCase()
@@ -1464,7 +1412,6 @@ public class IntegrationService {
 						continue;
 					}
 
-					logger.printTimestamp("5.2.2");
 				}
 
 				pessoa.setCnpjCpf(cnpjCpf);
@@ -1475,22 +1422,16 @@ public class IntegrationService {
 				pessoa.setPessoaFisica(true);
 
 				if (update) {
-					logger.printTimestamp("6.1.1");
 					// PessoaService.alterar(pessoa);
 					pessoaDAO.alterar(pessoa);
 					alteradas++;
-					logger.printTimestamp("6.1.2");
 				} else {
-					logger.printTimestamp("6.2.1");
 					// PessoaService.criar(pessoa);
 					pessoaDAO.criar(pessoa);
 					criadas++;
-					logger.printTimestamp("6.2.2");
 				}
 
 				commitCount++;
-
-				logger.printTimestamp("7");
 
 				/**
 				 * ======================================================
@@ -1513,8 +1454,6 @@ public class IntegrationService {
 				 * ======================================================
 				 */
 
-				logger.printTimestamp("8");
-
 				for (String grupo : nomeGrupos) {
 					// GrupoPessoa gp =
 					// GrupoPessoaService.encontrePorDescricao(grupo);
@@ -1529,7 +1468,7 @@ public class IntegrationService {
 
 						// Grava grupo
 						trans.commit();
-						commitCount = 0;
+						// commitCount = 0;
 
 						// Abre outra transação
 						trans.begin();
@@ -1542,25 +1481,24 @@ public class IntegrationService {
 					grupos.add(gp);
 				}
 
-				logger.printTimestamp("9");
-
 				// Atualiza os grupos da pessoa
 				GrupoPessoaService.atualizaGrupos(trans, pessoa, grupos);
 
-				logger.printTimestamp("10");
-
 				if (commitCount >= HibernateUtil.HIBERNATE_BATCH_SIZE) {
+
+					System.out.println(commitCount + " registros processados.");
+					System.out.println("---> Criadas: " + criadas
+							+ " | Alteradas: " + alteradas + " | Ignorados: "
+							+ ignorados);
+
 					commitCount = 0;
 					trans.commit();
 					trans.begin();
 				}
-
-				logger.printTimestamp("11");
 			}
 
 			if (commitCount > 0) {
 				trans.commit();
-				// trans.close();
 			}
 		} catch (Exception e) {
 			throw e;
@@ -1569,5 +1507,14 @@ public class IntegrationService {
 				trans.close();
 			}
 		}
+
+		fim = Calendar.getInstance().getTime();
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+		System.out.println("============================================");
+		System.out.println("Início: " + sdf.format(inicio));
+		System.out.println("Fim...: " + sdf.format(fim));
+
 	}
 }

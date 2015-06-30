@@ -23,6 +23,7 @@ public class Config {
 	private Pessoa pessoaLogin;
 	private Properties config;
 	private boolean debugMode;
+	private int threadMax = 2;
 
 	static {
 		self = new Config();
@@ -46,6 +47,16 @@ public class Config {
 			}
 		} catch (Exception e) {
 			// ignora
+		}
+
+		try {
+			String thread = config.getProperty("thread.max").trim()
+					.toLowerCase();
+			if (thread != null) {
+				this.threadMax = Integer.valueOf(thread);
+			}
+		} catch (Exception e) {
+			this.threadMax = 2;
 		}
 	}
 
@@ -74,7 +85,8 @@ public class Config {
 	 * @param value
 	 */
 	public void setSessionVariable(String key, Object value) {
-		Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+		Map<String, Object> map = FacesContext.getCurrentInstance()
+				.getExternalContext().getSessionMap();
 		map.put(key, value);
 	}
 
@@ -85,7 +97,8 @@ public class Config {
 	 * @return
 	 */
 	public Object getSessionVariable(String key) {
-		Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+		Map<String, Object> map = FacesContext.getCurrentInstance()
+				.getExternalContext().getSessionMap();
 		return map.get(key);
 	}
 
@@ -109,8 +122,8 @@ public class Config {
 		return debugMode;
 	}
 
-	public void setDebugMode(boolean debugMode) {
-		this.debugMode = debugMode;
+	public int getThreadMax() {
+		return threadMax;
 	}
 
 }

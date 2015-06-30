@@ -76,6 +76,19 @@ public class CampusDAO extends HibernateDAO<Campus> {
 		return this.pesquisaObjetos(q, limit);
 	}
 
+	/**
+	 * Método para contar quantos campus existem cadastrados. Apenas para
+	 * inicializar o pool de conexões durante o início do servidor de
+	 * aplicações, haja vista que a tabela não terá muitos registros.
+	 * 
+	 * @return
+	 */
+	public Integer contarCampus() {
+		Integer count = ((Long) session.createQuery(
+				"select count(*) from Campus").uniqueResult()).intValue();
+		return count;
+	}
+
 	public List<Campus> pesquisa(Instituicao instituicao, int limit) {
 		return this.pesquisa(null, instituicao, limit);
 	}
@@ -83,7 +96,7 @@ public class CampusDAO extends HibernateDAO<Campus> {
 	@Override
 	public void preAlteracao(Campus o) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
