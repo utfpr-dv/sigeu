@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
+
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.LdapServerDAO;
 import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
@@ -31,6 +33,8 @@ public class LoginService {
 	public static Pessoa autentica(String email, String password)
 			throws Exception {
 
+		boolean admin = email.trim().toUpperCase().equals("ADMIN");
+
 		/*
 		 * ===================================================================
 		 * TODO - REMOVER DEPOIS QUE CONFIGURAR LOGIN POR INSTITUIÇÃO E CAMPUS
@@ -40,7 +44,7 @@ public class LoginService {
 		Campus campus = CampusService.encontrePorId(100);
 
 		// Se não é um e-mail, apenas nome, então...
-		if (!email.contains("@")) {
+		if (!admin && !email.contains("@")) {
 			email += campus.getLdapServerList().get(0).getSufixoEmail();
 		}
 
@@ -52,18 +56,31 @@ public class LoginService {
 		// Confere se autenticou por LDAP. Em caso positivo, já cadastra a
 		// pessoa no banco de dados
 		// LdapServer ldap = LoginService.getLdapByEmail(email);
-		LdapServer ldap = campus.getLdapServerList().get(0);
+		LdapServer ldap = null;
 
-		if (ldap == null) {
+		if (!admin) {
+			ldap = campus.getLdapServerList().get(0);
+		}
+
+		if (!admin && ldap == null) {
 			// Não existe servidor cadastrado
 			throw new ServidorLdapNaoCadastradoException(
 					"E-mail inválido ou Servidor LDAP não encontrado (" + email
 							+ ")");
-		} else {
-			// Define o objeto Campus do Singleton para uso
-			Config.getInstance().setCampus(ldap.getIdCampus());
+		}
 
-			boolean novo = false;
+		// Define o objeto Campus do Singleton para uso
+		if (admin) {
+			Config.getInstance().setCampus(campus);
+		} else {
+			Config.getInstance().setCampus(ldap.getIdCampus());
+		}
+
+		boolean novo = false;
+
+		if (admin) {
+			pessoa = PessoaService.encontrePorId(1);
+		} else {
 			pessoa = PessoaService.encontrePorEmail(email, campus);
 
 			if (pessoa == null) {
@@ -75,10 +92,14 @@ public class LoginService {
 					throw new UsuarioDesativadoException(email);
 				}
 			}
+		}
 
+		hash = StringUtils.generateMD5Hash(password);
+
+		if (!admin) {
 			// Servidor cadastrado, verificando senha
 			String uid = email.substring(0, email.indexOf("@"));
-			hash = StringUtils.generateMD5Hash(password);
+
 			LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(),
 					ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
 
@@ -138,7 +159,8 @@ public class LoginService {
 				trans = new Transaction();
 				trans.begin();
 				PessoaDAO pessoaDAO = new PessoaDAO(trans);
-				// Busca novamente a pessoa do banco de dados para conferir os
+				// Busca novamente a pessoa do banco de dados para conferir
+				// os
 				// grupos
 				pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
 				GrupoPessoaService.atualizaGrupos(trans, pessoa, grupos);
@@ -162,12 +184,17 @@ public class LoginService {
 			// pessoa.setPessoaLdapServer(pls);
 			// PessoaService.alterar(pessoa);
 			// }
+		} else {
+			if (!hash.equals(pessoa.getSenhaMd5())) {
+				throw new NamingException("Usuário admin senha inválida.");
+			}
 
-			// Define a pessoa logada na sessão
-			Config.getInstance().setPessoaLogin(pessoa);
-
-			return pessoa;
 		}
+		// Define a pessoa logada na sessão
+		Config.getInstance().setPessoaLogin(pessoa);
+
+		return pessoa;
+
 	}
 
 	/**

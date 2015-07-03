@@ -1,4 +1,4 @@
-package br.edu.utfpr.dv.sigeu.servlets;
+package br.edu.utfpr.dv.sigeu.servlet;
 
 import java.io.IOException;
 

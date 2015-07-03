@@ -67,15 +67,17 @@ import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateUtil;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 import br.edu.utfpr.dv.sigeu.sort.ClassroomComparator;
-import br.edu.utfpr.dv.sigeu.sort.ReservaDataComparator;
 
 import com.adamiworks.utils.StringUtils;
 import com.adamiworks.utils.ldap.LdapUtils;
 
 public class IntegrationService {
 
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
-			"dd/MM/yyyy");
+	public static final String PROFESSOR_NAO_CADASTRADO_NOME = "PROFESSOR NÃO CADASTRADO";
+	private static final String PROFESSOR_NAO_CADASTRADO_ID = "0000000000000000";
+
+	// private static SimpleDateFormat dateFormat = new SimpleDateFormat(
+	// "dd/MM/yyyy");
 
 	// private static SimpleDateFormat hourFormat = new
 	// SimpleDateFormat("HH:mm");
@@ -155,6 +157,19 @@ public class IntegrationService {
 
 		// Recupera Teachers
 		List<Teacher> teacherList = new ArrayList<Teacher>();
+
+		// -------------------------------------
+		// Add professor nao cadastrado --------
+		Teacher pnc = new Teacher();
+		pnc.setId(PROFESSOR_NAO_CADASTRADO_ID);
+		pnc.setName(PROFESSOR_NAO_CADASTRADO_NOME);
+		pnc.setShortname(PROFESSOR_NAO_CADASTRADO_NOME);
+		pnc.setGender('M');
+		pnc.setColor("#BABACA");
+		pnc.setIdTimetable(timetable);
+
+		teacherList.add(pnc);
+		// -------------------------------------
 
 		nodeList = doc.getElementsByTagName("teacher");
 
@@ -359,6 +374,19 @@ public class IntegrationService {
 		// 4 - Recupera Teachers
 		List<Teacher> teacherList = new ArrayList<Teacher>();
 
+		// -------------------------------------
+		// Add professor nao cadastrado --------
+		Teacher pnc = new Teacher();
+		pnc.setId(PROFESSOR_NAO_CADASTRADO_ID);
+		pnc.setName(PROFESSOR_NAO_CADASTRADO_NOME);
+		pnc.setShortname(PROFESSOR_NAO_CADASTRADO_NOME);
+		pnc.setGender('M');
+		pnc.setColor("#BABACA");
+		pnc.setIdTimetable(timetable);
+
+		teacherList.add(pnc);
+		// -------------------------------------
+
 		nodeList = doc.getElementsByTagName("teacher");
 
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -478,6 +506,14 @@ public class IntegrationService {
 				String subjectids = e.getAttribute("subjectid").trim();
 				String classroomids = e.getAttribute("classroomids").trim();
 				String teacherids = e.getAttribute("teacherids").trim();
+
+				// if (id.equals("7850B82A3ED95253")) {
+				// System.out.println(id);
+				// }
+
+				teacherids = (teacherids == null
+						|| teacherids.trim().length() == 0 ? PROFESSOR_NAO_CADASTRADO_ID
+						: teacherids);
 
 				if (id.length() == 0 || classids.length() == 0
 						|| subjectids.length() == 0
@@ -604,18 +640,26 @@ public class IntegrationService {
 	 */
 	public static void criaCalendarioAula(Integer idTimeTable,
 			Integer idPeriodoLetivo) throws Exception {
+
+		// Atualiza professores
+		// IntegrationService.relacionaProfessorPessoa();
+
 		Campus campus = Config.getInstance().getCampus();
 		Transaction trans = null;
 
 		try {
+			System.out.println("Iniciando transação...");
 			trans = new Transaction();
 			trans.begin();
+			System.out.println("Iniciando transação...OK");
 
 			ReservaDAO reservaDAO = new ReservaDAO(trans);
 			PeriodoLetivoDAO periodoLetivoDAO = new PeriodoLetivoDAO(trans);
 
 			PeriodoLetivo periodoLetivo = periodoLetivoDAO
 					.encontrePorId(idPeriodoLetivo);
+
+			System.out.println("Eliminando registros antigos...");
 
 			// Antes de começar, elimina todas as reservas feitas com a
 			// transação anterior, se houver.
@@ -625,12 +669,16 @@ public class IntegrationService {
 			}
 
 			trans.commit();
+			System.out.println("Eliminando registros antigos...OK");
+
+			System.out.println("Reiniciando transação...");
 			trans.begin();
 			// trans.close();
 			// //////////////////////////////////////////////////////////////
 
 			// trans = new Transaction();
 			// trans.begin();
+			System.out.println("Reiniciando transação...OK");
 
 			TimetableDAO timetableDAO = new TimetableDAO(trans);
 			ProfessorDAO professorDAO = new ProfessorDAO(trans);
@@ -647,6 +695,10 @@ public class IntegrationService {
 			// periodoLetivoDAO = new PeriodoLetivoDAO(trans);
 			// PessoaDAO pessoaDAO = new PessoaDAO(trans);
 
+			System.out.println("Eliminando registros antigos...OK");
+
+			System.out.println("Criando novo transacao do SIGEU...");
+
 			// Cria nova transação
 			transacao = TransacaoService.criar("Importação XML ASC TimeTables");
 
@@ -654,7 +706,11 @@ public class IntegrationService {
 			periodoLetivoDAO.alterar(periodoLetivo);
 
 			trans.commit();
+			System.out.println("Criando novo transacao do SIGEU...OK");
+
 			trans.begin();
+
+			System.out.println("Recuperando registros padrão...");
 
 			// Recupera categoria de sala de aula
 			CategoriaItemReserva salaDeAula = categoriaItemReservaDAO
@@ -690,6 +746,10 @@ public class IntegrationService {
 				throw new Exception("Pessoa 'ADMIN' não localizada");
 			}
 
+			System.out.println("Recuperando registros padrão...OK");
+
+			System.out.println("Criando timetable...");
+
 			Timetable timetable = timetableDAO.encontrePorId(idTimeTable);
 
 			// Inicializa lista de salas de aula e cria/atualiza
@@ -697,7 +757,15 @@ public class IntegrationService {
 			List<Classroom> listClassroom = timetable.getClassroomList();
 			List<ItemReserva> listSala = new ArrayList<ItemReserva>();
 
+			System.out.println("Criando timetable...OK");
+
+			System.out.println("Classroom sort...");
+
 			listClassroom.sort(new ClassroomComparator());
+
+			System.out.println("Classroom sort...OK");
+
+			System.out.println("Classroom looping...");
 
 			for (Classroom c : listClassroom) {
 				CategoriaItemReserva categoria = null;
@@ -735,6 +803,10 @@ public class IntegrationService {
 				listSala.add(sala);
 			}
 
+			System.out.println("Classroom looping...OK");
+
+			System.out.println("Teacher looping...");
+
 			// Inicializa lista de Professores
 			Hibernate.initialize(timetable.getTeacherList());
 			List<Teacher> listTeacher = timetable.getTeacherList();
@@ -761,6 +833,10 @@ public class IntegrationService {
 
 				listProfessor.add(p);
 			}
+
+			System.out.println("Teacher looping...OK");
+
+			System.out.println("Subject looping...");
 
 			// Inicializa a lista de Disciplinas
 			Hibernate.initialize(timetable.getSubjectList());
@@ -790,6 +866,10 @@ public class IntegrationService {
 
 				listDisciplina.add(d);
 			}
+
+			System.out.println("Subject looping...OK");
+
+			System.out.println("Clazz looping...");
 
 			// Inicializa a lista de Classe
 			Hibernate.initialize(timetable.getClazzList());
@@ -821,135 +901,155 @@ public class IntegrationService {
 				listClasse.add(c);
 			}
 
+			System.out.println("Clazz looping...OK");
+
+			System.out.println("COMMIT...");
+
 			trans.commit();
+
+			System.out.println("COMMIT...OK");
+
 			trans.begin();
-			// trans.close();
-
-			// FASE 2 //
-
-			// int total = 0;
-
-			// trans = new Transaction();
-			// trans.begin();
-
-			// lessonDAO = new LessonDAO(trans);
-			// periodDAO = new PeriodDAO(trans);
+			reservaDAO = new ReservaDAO(trans);
+			int count = 0;
+			int total = 0;
 
 			Hibernate.initialize(timetable.getCardList());
 			List<Card> listCard = timetable.getCardList();
 
-			List<Reserva> listReserva = new ArrayList<Reserva>();
+			// List<Reserva> listReserva = new ArrayList<Reserva>();
 
-			for (Card card : listCard) {
-				// total++;
+			Calendar dia = Calendar.getInstance();
+			dia.setTime(periodoLetivo.getDataInicio());
 
-				// Recupera o Lesson
-				Lesson lesson = lessonDAO.encontrePorId(idTimeTable,
-						card.getLessonid());
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-				String classes = "";
+			System.out.println("PeriodoLetivo Looping...");
 
-				// Recupera as classes do Lesson
-				List<Classe> listClasseCal = new ArrayList<Classe>();
-				String classids[] = lesson.getClassids().split(",");
-				for (String s : classids) {
-					for (Classe c : listClasse) {
-						if (s.equals(c.getCodigo())) {
-							listClasseCal.add(c);
-							classes += c.getRotulo() + " ";
-							continue;
-						}
+			/**
+			 * LOOPING FINAL ONDE AS RESERVAS SÃO CRIADAS E GRAVADAS DENTRO DO
+			 * PERÍODO ENTRE DATA INICIAL E FINAL DO PERÍODO
+			 */
+			for (int i = 0; dia.getTime().compareTo(periodoLetivo.getDataFim()) <= 1; i++) {
+				System.out.println(i + "\tData: " + sdf.format(dia.getTime()));
+
+				for (Card card : listCard) {
+					// total++;
+
+					// Recupera o Lesson
+					Lesson lesson = lessonDAO.encontrePorId(idTimeTable,
+							card.getLessonid());
+
+					if (lesson == null || lesson.getClassids() == null) {
+						System.out.println("ID_CARD=" + card.getIdCard()
+								+ " LESSONID=" + card.getLessonid()
+								+ " CLASSROOMIDS=" + card.getClassroomids());
+
+						// lesson = lessonDAO.encontrePorId(idTimeTable,
+						// card.getLessonid());
 					}
-				}
 
-				String nomeUsuario = "";
-				Professor professor = null;
-				Pessoa usuario = null; // A reserva ficará em nome de um
-										// professor apenas, independentemente
-										// de ter sobreposição de horários de
-										// mais de um professor em uma mesma
-										// sala na mesma hora
+					String classes = "";
 
-				// Recupera professores do Lesson
-				List<Professor> listProfessorCal = new ArrayList<Professor>();
-				String teachers[] = lesson.getTeacherids().split(",");
-				for (String s : teachers) {
-					for (Professor p : listProfessor) {
-						if (s.equals(p.getCodigo())) {
+					// Recupera as classes do Lesson
+					List<Classe> listClasseCal = new ArrayList<Classe>();
 
-							nomeUsuario += p.getName() + ", ";
-
-							// Encontra o registro de pessoa associado ao
-							// Professor
-							professor = professorDAO.encontrePorCodigo(campus,
-									p.getCodigo());
-
-							listProfessorCal.add(professor);
-
-							if (professor.getProfessorPessoa() != null) {
-								usuario = professor.getProfessorPessoa()
-										.getIdPessoa();
+					String classids[] = lesson.getClassids().split(",");
+					for (String s : classids) {
+						for (Classe c : listClasse) {
+							if (s.equals(c.getCodigo())) {
+								listClasseCal.add(c);
+								classes += c.getRotulo() + " ";
+								continue;
 							}
-
-							continue;
-						}
-					}
-				}
-
-				nomeUsuario = StringUtils.cutLast(nomeUsuario, 2);
-
-				// Recupera as salas registradas no card
-				String classroomids[] = card.getClassroomids().split(",");
-
-				// Navega entre as classroomid do Card
-				// IGNORAR CLASSROOMIDS DE LESSON
-				for (String classroomid : classroomids) {
-					// Sala
-					ItemReserva sala = null;
-					for (ItemReserva ir : listSala) {
-						if (ir.getCodigo().equals(classroomid)) {
-							sala = ir;
-							break;
 						}
 					}
 
-					if (sala == null) {
-						throw new Exception("Sala não encontrada [Lesson:"
-								+ lesson.getId() + "][Classroomid:"
-								+ classroomid + "]");
-					}
+					String nomeUsuario = "";
+					Professor professor = null;
+					Pessoa usuario = null; // A reserva ficará em nome de um
+											// professor apenas,
+											// independentemente
+											// de ter sobreposição de horários
+											// de
+											// mais de um professor em uma mesma
+											// sala na mesma hora
 
-					// Periodo
-					Period period = periodDAO.encontrePorNome(idTimeTable,
-							card.getPeriod());
+					// Recupera professores do Lesson
+					List<Professor> listProfessorCal = new ArrayList<Professor>();
+					String teachers[] = lesson.getTeacherids().split(",");
+					for (String s : teachers) {
+						for (Professor p : listProfessor) {
+							if (s.equals(p.getCodigo())) {
 
-					// Disciplina
-					Disciplina disciplina = null;
-					for (Disciplina d : listDisciplina) {
-						if (d.getCodigo().equals(lesson.getSubjectids())) {
-							disciplina = d;
-							break;
+								nomeUsuario = p.getName();
+
+								// Encontra o registro de Pessoa associado ao
+								// Professor
+								professor = professorDAO.encontrePorCodigo(
+										campus, p.getCodigo());
+
+								listProfessorCal.add(professor);
+
+								if (professor.getProfessorPessoa() != null) {
+									usuario = professor.getProfessorPessoa()
+											.getIdPessoa();
+								}
+
+								// continue;
+							}
 						}
 					}
 
-					if (disciplina == null) {
-						throw new Exception(
-								"Disciplina não encontrada [Lesson:"
-										+ lesson.getId() + "]");
+					// QUANDO O USUÁRIO NÃO FOR IDENTIFICADO, DEFINE-SE O
+					// USUARIO LOGADO
+					if (usuario == null) {
+						usuario = Config.getInstance().getPessoaLogin();
 					}
 
-					// ====================================================================================================
-					// Cria uma reserva para a sala de aula em cada dia da
-					// semana até o fim do semestre
-					// ====================================================================================================
-					Calendar dia = Calendar.getInstance();
-					dia.setTime(periodoLetivo.getDataInicio());
+					// nomeUsuario = StringUtils.cutLast(nomeUsuario, 2);
 
-					// reservaDAO = new ReservaDAO(trans);
+					// Recupera as salas registradas no card
+					String classroomids[] = card.getClassroomids().split(",");
 
-					// int count = 0;
+					// Navega entre as classroomid do Card
+					// IGNORAR CLASSROOMIDS DE LESSON
+					for (String classroomid : classroomids) {
+						// Sala
+						ItemReserva sala = null;
+						for (ItemReserva ir : listSala) {
+							if (ir.getCodigo().equals(classroomid)) {
+								sala = ir;
+								break;
+							}
+						}
 
-					while (true) {
+						if (sala == null) {
+							throw new Exception("Sala não encontrada [Lesson:"
+									+ lesson.getId() + "][Classroomid:"
+									+ classroomid + "]");
+						}
+
+						// Periodo
+						Period period = periodDAO.encontrePorNome(idTimeTable,
+								card.getPeriod());
+
+						// Disciplina
+						Disciplina disciplina = null;
+						for (Disciplina d : listDisciplina) {
+							if (d.getCodigo().equals(lesson.getSubjectids())) {
+								disciplina = d;
+								break;
+							}
+						}
+
+						if (disciplina == null) {
+							throw new Exception(
+									"Disciplina não encontrada [Lesson:"
+											+ lesson.getId() + "]");
+						}
+
+						// while (true) {
 						// Somente se o dia da semana for compatível
 						if (dia.get(Calendar.DAY_OF_WEEK) == DiaEnum
 								.getDiaEnumById(card.getDays()).getDia()) {
@@ -975,103 +1075,48 @@ public class IntegrationService {
 							reserva.setEmailNotificacao(usuarioAdmin.getEmail());
 							reserva.setRotulo(StringUtils.left(classes.trim(),
 									32));
-							// reserva.setCor("#BBD2D2");
-							reserva.setCor(professor.getCor());
+							reserva.setCor(professor.getCor() == null ? "#BBD2D2"
+									: professor.getCor());
 							reserva.setStatus(StatusReserva.EFETIVADA
 									.getStatus());
 
 							StringBuilder motivo = new StringBuilder();
-							// motivo.append(disciplina.getRotulo()).append("-").append(disciplina.getNome()).append("\n");
 							motivo.append(disciplina.getRotulo()).append("-")
 									.append(disciplina.getNome()).append("\n ");
 
 							for (Classe c : listClasseCal) {
-								// motivo.append(c.getRotulo()).append("-").append(c.getNome()).append("\n");
 								motivo.append(c.getNome()).append("\n ");
 							}
 
 							reserva.setMotivo(motivo.toString());
 
-							// SimpleDateFormat sdf = new SimpleDateFormat(
-							// "dd/MM/yyyy");
-							// SimpleDateFormat sdf2 = new SimpleDateFormat(
-							// "HH:mm");
-							//
-							// System.out.println("--> Reserva: ["
-							// + sdf.format(reserva.getData()) + " "
-							// + sdf2.format(reserva.getHoraInicio())
-							// + " "
-							// + reserva.getIdItemReserva().getNome()
-							// + "]");
+							reservaDAO.criar(reserva);
+							total++;
+							count++;
 
-							listReserva.add(reserva);
+							if (count >= HibernateUtil.HIBERNATE_BATCH_SIZE) {
+								trans.commit();
+								trans.begin();
+								count = 0;
 
-							// count++;
-							//
-							// if (count == 1000) {
-							// trans.commit();
-							// trans.begin();
-							// count = 0;
-							//
-							// System.out.println(total
-							// + " reservas gravadas.");
-							// }
+								System.out.println(total
+										+ " reservas gravadas.");
+							}
 						}
 
-						// Se forem os mesmos dias, encerra o laço
-						if (dia.getTime().compareTo(periodoLetivo.getDataFim()) == 0) {
-							break;
-						}
-
-						// Incrementa 1 dia
-						dia.add(Calendar.DAY_OF_MONTH, 1);
 					}
-
-					// if (count > 0) {
-					// trans.commit();
-					// trans.begin();
-					// }
-
-				}
-			}
-
-			listReserva.sort(new ReservaDataComparator());
-
-			int count = 0;
-
-			Date dateShow = null;
-			Date dateControl = null;
-
-			for (Reserva r : listReserva) {
-				count++;
-
-				dateControl = r.getData();
-
-				if (dateShow == null || !dateControl.equals(dateShow)) {
-					dateShow = dateControl;
-					System.out.println("Data: " + dateFormat.format(dateShow));
 				}
 
-				/** AQUI A RESERVA É CRIADA **/
-				reservaDAO.criar(r);
-
-				if (count == 50) {
-					trans.commit();
-					trans.begin();
-					count = 0;
-
-					// System.out.println("Data: "
-					// + dateFormat.format(r.getData()) + " "
-					// + hourFormat.format(r.getHoraInicio()) + "-"
-					// + hourFormat.format(r.getHoraFim()));
-
-				}
-
+				// Incrementa um dia
+				dia.add(Calendar.DAY_OF_MONTH, 1);
 			}
 
 			if (count > 0) {
 				trans.commit();
+				System.out.println(total + " reservas gravadas.");
 			}
+
+			System.out.println("PeriodoLetivo Looping...OK");
 
 		} catch (Exception e) {
 			throw e;
@@ -1079,8 +1124,6 @@ public class IntegrationService {
 			trans.close();
 		}
 
-		// Atualiza professores
-		IntegrationService.relacionaProfessorPessoa();
 	}
 
 	public static void relacionaProfessorPessoa() throws Exception {
@@ -1305,7 +1348,7 @@ public class IntegrationService {
 				nomeCompleto = null;
 				email = null;
 				uid = null;
-				//lCampus = null;
+				// lCampus = null;
 
 				for (String a : attrs) {
 					map = a.split(":");

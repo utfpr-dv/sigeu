@@ -3,8 +3,6 @@ package br.edu.utfpr.dv.sigeu.servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import br.edu.utfpr.dv.sigeu.service.CampusService;
-
 /**
  * Classe responsável por iniciar todos os utilitários e outras classes
  * necessárias durante o início do servidor de aplicações. Esta classe não pode
@@ -25,10 +23,10 @@ public class StartupServlet extends HttpServlet {
 		 * Cria as conexões iniciais do pool de conexões, diminuindo o tempo de
 		 * resposta no primeiro login.
 		 */
-		System.out.print("===> Iniciando pool de conexões... ");
-		int qtd = CampusService.contarCampus();
-		System.out.println("===> Pool de conexões iniciado para " + qtd
-				+ " campus");
+//		System.out.print("===> Iniciando pool de conexões... ");
+//		int qtd = CampusService.contarCampus();
+//		System.out.println("===> Pool de conexões iniciado para " + qtd
+//				+ " campus");
 	}
 
 }

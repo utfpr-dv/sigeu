@@ -10,7 +10,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.exception.DatabaseConfigException;
 
 public class HibernateUtil {
@@ -62,14 +61,14 @@ public class HibernateUtil {
 		configuration.setProperty("hibernate.connection.autocommit", "false");
 		configuration.setProperty("hibernate.dialect",
 				"org.hibernate.dialect.PostgreSQLDialect");
-		configuration.setProperty("hibernate.show_sql",
-				String.valueOf(Config.getInstance().isDebugMode()));
+		configuration.setProperty("hibernate.show_sql", "false");
 		configuration.setProperty("hibernate.order_updates", "true");
 		configuration.setProperty("hibernate.default_schema", "public");
 		configuration.setProperty("hibernate.c3p0.acquire_increment",
 				String.valueOf(poolInc));
 		configuration.setProperty("hibernate.c3p0.idle_test_period", "1200");
-		configuration.setProperty("hibernate.c3p0.max_statements", "50");
+		configuration.setProperty("hibernate.c3p0.max_statements",
+				String.valueOf(HIBERNATE_BATCH_SIZE));
 		configuration.setProperty("hibernate.c3p0.min_size",
 				String.valueOf(poolMin));
 		configuration.setProperty("hibernate.c3p0.max_size",

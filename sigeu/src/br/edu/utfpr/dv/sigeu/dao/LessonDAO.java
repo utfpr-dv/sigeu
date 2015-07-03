@@ -25,7 +25,8 @@ public class LessonDAO extends HibernateDAO<Lesson> {
 		Query q = session.createQuery(hql);
 		q.setString("id", id);
 		q.setInteger("idTimetable", idTimetable);
-		return (Lesson) q.uniqueResult();
+		Lesson lesson = (Lesson) q.uniqueResult();
+		return lesson;
 	}
 
 	@Override
@@ -42,7 +43,7 @@ public class LessonDAO extends HibernateDAO<Lesson> {
 	@Override
 	public void preAlteracao(Lesson o) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

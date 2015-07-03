@@ -18,7 +18,7 @@
 	</servlet>
 	<servlet>
 		<servlet-name>LogoffServlet</servlet-name>
-		<servlet-class>br.edu.utfpr.dv.sigeu.servlets.LogoffServlet</servlet-class>
+		<servlet-class>br.edu.utfpr.dv.sigeu.servlet.LogoffServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>StartupServlet</servlet-name>

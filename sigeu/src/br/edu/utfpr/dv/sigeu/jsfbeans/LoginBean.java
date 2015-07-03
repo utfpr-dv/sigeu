@@ -68,7 +68,7 @@ public class LoginBean extends JavaBean {
 					e);
 		} catch (NamingException e) {
 			ok = false;
-			handleException("Usuário ou senha inválidos. Tente novamente.", e);
+			handleException("Usuário ou senha inválidos.", null);
 		} catch (ServidorLdapNaoCadastradoException e) {
 			ok = false;
 			handleException(
