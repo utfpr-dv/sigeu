@@ -133,17 +133,6 @@ public class ReservaAdminBean extends JavaBean {
 
 	}
 
-	public void relacionaProfessorPessoa() {
-		try {
-			IntegrationService.importProfessoresXml(xmlFileName);
-			IntegrationService.relacionaProfessorPessoa();
-			addInfoMessage("", "Relacionamento Concluído!");
-		} catch (Exception e) {
-			e.printStackTrace();
-			addErrorMessage("", e.getMessage());
-		}
-	}
-
 	public List<PeriodoLetivo> getListaPeriodoLetivo() {
 		return listaPeriodoLetivo;
 	}

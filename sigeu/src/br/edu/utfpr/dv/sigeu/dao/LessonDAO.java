@@ -1,5 +1,7 @@
 package br.edu.utfpr.dv.sigeu.dao;
 
+import java.util.List;
+
 import org.hibernate.Query;
 
 import br.edu.utfpr.dv.sigeu.entities.Lesson;
@@ -28,7 +30,14 @@ public class LessonDAO extends HibernateDAO<Lesson> {
 		Lesson lesson = (Lesson) q.uniqueResult();
 		return lesson;
 	}
-
+	
+	public List<Lesson> encontrePorTimeTable(Integer idTimetable) {
+		String hql = "from Lesson o where o.idTimetable.idTimetable = :idTimetable";
+		Query q = session.createQuery(hql);
+		q.setInteger("idTimetable", idTimetable);
+		return this.pesquisaObjetos(q, 0);
+	}
+	
 	@Override
 	public String getNomeSequencia() {
 		return "lesson";
