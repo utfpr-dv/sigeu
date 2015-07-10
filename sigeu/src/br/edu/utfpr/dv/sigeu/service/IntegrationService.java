@@ -963,12 +963,13 @@ public class IntegrationService {
 
 										StringBuilder motivo = new StringBuilder();
 
-										motivo.append("[DISCIPLINA] ")
+										motivo.append("[DISCIPLINA ")
 												.append(disciplina.getRotulo())
 												.append(" - ")
 												.append(disciplina.getNome())
-												.append(" / [TURMA] ")
-												.append(classe.getNome());
+												.append("] / [TURMA ")
+												.append(classe.getNome())
+												.append("]");
 
 										Reserva reserva = new Reserva();
 										reserva.setImportado(true);

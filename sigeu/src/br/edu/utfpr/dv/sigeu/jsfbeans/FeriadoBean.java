@@ -1,5 +1,8 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -19,11 +22,13 @@ public class FeriadoBean extends JavaBean {
 	private String pesquisaCategoria;
 	//
 	private Feriado feriado = new Feriado();
+	private Date dataFinal = null;
 
 	public FeriadoBean() {
 		feriado = new Feriado();
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest req = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
 
 		try {
 			this.editarId = Integer.valueOf(req.getParameter("editarId"));
@@ -37,11 +42,12 @@ public class FeriadoBean extends JavaBean {
 
 				if (feriado == null) {
 					feriado = new Feriado();
-					this.addInfoMessage("Carregar"," " + this.editarId + " inexistente.");
+					this.addInfoMessage("Carregar", " " + this.editarId
+							+ " inexistente.");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				addErrorMessage("Carregar","Erro ao carregar dados");
+				addErrorMessage("Carregar", "Erro ao carregar dados");
 			}
 		}
 	}
@@ -50,19 +56,49 @@ public class FeriadoBean extends JavaBean {
 	 * Cria uma nova se o ID for nulo ou 0 ou altera uma já gravada no banco de
 	 * dados se ela já existir
 	 */
-	public void gravar() {
+	public String gravar() {
 		feriado.setIdCampus(Config.getInstance().getCampus());
 
 		try {
-			FeriadoService.persistir(feriado);
-			String msg = "Feriado " + feriado.getIdFeriado() + "-" + feriado.getDescricao() + " gravado com sucesso!";
+			if (dataFinal != null) {
+				Calendar data = Calendar.getInstance();
+				data.setTime(feriado.getData());
+
+				while (true) {
+					Feriado f = new Feriado();
+					f.setData(data.getTime());
+					f.setDescricao(feriado.getDescricao());
+					f.setIdCampus(feriado.getIdCampus());
+					f.setIdFeriado(null);
+					f.setTipo(feriado.getTipo());
+
+					// System.out.println("Gravando feriado: " +
+					// data.toString());
+
+					FeriadoService.persistir(f);
+
+					data.add(Calendar.DAY_OF_MONTH, 1);
+
+					if (data.getTime().compareTo(dataFinal) > 0) {
+						break;
+					}
+				}
+
+				dataFinal = null;
+			} else {
+				FeriadoService.persistir(feriado);
+			}
+			String msg = "Feriado " + feriado.getDescricao()
+					+ " gravado com sucesso!";
 			feriado = new Feriado();
 
-			addInfoMessage("Gravar",msg);
+			addInfoMessage("Gravar", msg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			addErrorMessage("Gravar","Erro na gravação!");
+			addErrorMessage("Gravar", "Erro na gravação!");
 		}
+		
+		return "PesquisaFeriado";
 	}
 
 	/**
@@ -70,21 +106,26 @@ public class FeriadoBean extends JavaBean {
 	 * 
 	 * @param cat
 	 */
-	public void excluir() {
+	public String excluir() {
 		if (feriado.getIdFeriado() == null) {
-			addInfoMessage("Excluir"," ainda não foi incluída no banco de dados.");
+			addInfoMessage("Excluir",
+					" ainda não foi incluída no banco de dados.");
 		} else {
 			try {
 				String old = feriado.getDescricao();
 				FeriadoService.remover(feriado);
 				feriado = new Feriado();
-				this.addInfoMessage("Excluir","Item " + old + " excluído com sucesso!");
+				this.addInfoMessage("Excluir", "Item " + old
+						+ " excluído com sucesso!");
 			} catch (EntidadePossuiRelacionamentoException e) {
-				this.addWarnMessage("Excluir","Feriado já possui relacionamentos. Solicite exclusão ao admin.");
+				this.addWarnMessage("Excluir",
+						"Feriado já possui relacionamentos. Solicite exclusão ao admin.");
 			} catch (Exception e) {
-				this.addErrorMessage("Excluir","Erro ao tentar excluir .");
+				this.addErrorMessage("Excluir", "Erro ao tentar excluir .");
 			}
 		}
+		
+		return "PesquisaFeriado";
 	}
 
 	// ///////////////////////////////
@@ -113,4 +154,11 @@ public class FeriadoBean extends JavaBean {
 		this.pesquisaCategoria = pesquisaCategoria;
 	}
 
+	public Date getDataFinal() {
+		return dataFinal;
+	}
+
+	public void setDataFinal(Date dataFinal) {
+		this.dataFinal = dataFinal;
+	}
 }

@@ -8,7 +8,6 @@ import org.hibernate.Hibernate;
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.FeriadoDAO;
 import br.edu.utfpr.dv.sigeu.entities.Feriado;
-import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 public class FeriadoService {
@@ -92,7 +91,7 @@ public class FeriadoService {
 			FeriadoDAO dao = new FeriadoDAO(trans);
 
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-				lista = dao.pesquisa(HibernateDAO.PESQUISA_LIMITE);
+				lista = dao.pesquisa(0);
 			} else {
 				lista = dao.pesquisa(Config.getInstance().getCampus(),
 						textoPesquisa, 0);
