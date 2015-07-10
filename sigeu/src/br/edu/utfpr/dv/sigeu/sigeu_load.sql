@@ -1,6 +1,3 @@
--- Inclui versão do programa
-INSERT INTO public.parametro (codigo, valor) VALUES( 'versao_database', '1.0.0' );
-
 -- altera tabelas para mudar o tipo de auto increment
 alter table public.reserva alter column id_reserva set data type integer;
 alter table public.reserva alter column id_reserva set default nextval('reserva_id_reserva_seq');
@@ -197,3 +194,6 @@ BEFORE UPDATE
 ON public.reserva
 FOR EACH ROW
 EXECUTE PROCEDURE tf_reserva_concorrente();
+
+-- Inclui versão do banco de dados
+INSERT INTO public.parametro (codigo, valor) VALUES( 'versao_database', '1.0.0' );

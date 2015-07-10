@@ -6,7 +6,7 @@
   <data-source id="DS0">
    <property key="Logical" value="SIGEU - PROD" />
    <property key="Connection Type" value="PostgreSQL" />
-   <property key="JDBC URL" value="jdbc:postgresql://200.134.18.109:5432/sigeu" />
+   <property key="JDBC URL" value="jdbc:postgresql://200.134.18.109:5432/prdsigeu" />
    <property key="UID" value="sigeu" />
    <property key="PWD" value="IdnLFb1Y" />
    <property key="ca.sqlpower.architect.etl.kettle.database" value="" />

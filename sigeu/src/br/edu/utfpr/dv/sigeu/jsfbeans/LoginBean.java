@@ -98,7 +98,7 @@ public class LoginBean extends JavaBean {
 		}
 		if (ok) {
 			if (Config.getInstance().isDebugMode()) {
-				this.addWarnMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
+				this.addErrorMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
 			}
 			return "/restrito/Home.xhtml";
 		}

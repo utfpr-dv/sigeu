@@ -265,14 +265,15 @@ public class ReservaBean extends JavaBean {
 		/** Valida período letivo atual */
 		try {
 			Calendar cc = Calendar.getInstance();
+			cc.setTime(campoData);
 			cc.set(Calendar.HOUR_OF_DAY, 00);
 			cc.set(Calendar.MINUTE, 00);
 			cc.set(Calendar.SECOND, 00);
 			cc.set(Calendar.MILLISECOND, 00);
 
-			Date hoje = cc.getTime();
+			Date dataReserva = cc.getTime();
 			PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(Config
-					.getInstance().getCampus(), hoje);
+					.getInstance().getCampus(), dataReserva);
 
 			if (pl == null) {
 				throw new Exception("Nenhum Período Letivo Cadastrado");
