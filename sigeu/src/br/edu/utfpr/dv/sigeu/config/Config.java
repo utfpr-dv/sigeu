@@ -13,6 +13,7 @@ import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 
 public class Config {
 
+	public static final String APPLICATION_URL = "http://sigeu.dv.utfpr.edu.br";
 	public static final String APPLICATION_NAME = "Sistema Integrado de Gestão Universitária";
 	public static final String APPLICATION_CODE = "SIGEU";
 	public static final String CONFIG_PATH_UPLOAD = "path.upload";

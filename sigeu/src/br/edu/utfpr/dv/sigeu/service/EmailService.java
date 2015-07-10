@@ -75,9 +75,8 @@ public class EmailService {
 			// sb.append("Este é um e-mail automático enviado pelo SIGEU - Sistema de Gestão Universitária");
 
 			sb.append("Reservado para:\n");
-			sb.append(
-					reserva.getNomeUsuario().trim()
-							.toUpperCase()).append("\n\n");
+			sb.append(reserva.getNomeUsuario().trim().toUpperCase()).append(
+					"\n\n");
 
 			sb.append(
 					reserva.getIdItemReserva().getIdCategoria().getNome()
@@ -196,9 +195,8 @@ public class EmailService {
 			motivo = motivo.replaceAll("\\n", " ");
 
 			sb.append("Estava reservado para:\n");
-			sb.append(
-					reserva.getNomeUsuario().trim()
-							.toUpperCase()).append("\n\n");
+			sb.append(reserva.getNomeUsuario().trim().toUpperCase()).append(
+					"\n\n");
 
 			sb.append(
 					reserva.getIdItemReserva().getIdCategoria().getNome()
@@ -296,8 +294,9 @@ public class EmailService {
 			sb.append(": ");
 			sb.append(itemReserva.getNome());
 			sb.append("\" que requisitam sua atenção.\n\n");
-			sb.append("Por gentileza, acesse o sistema SIGEU pelo endereço https://sigeu.dv.utfpr.edu.br:8080/sigeu e ");
-			sb.append("acesse o menu \"Reservas\", \"Autorizações\" para obter uma lista dos itens pendentes.\n\n\n\n\n");
+			sb.append("Por gentileza, acesse o sistema pelo endereço ").append(
+					Config.APPLICATION_URL);
+			sb.append(" e acesse o menu \"Reservas\", \"Autorizações\" para obter a lista das reservas pendentes.\n\n\n\n\n");
 			sb.append("Você recebeu este e-mail porque está cadastrado como responsável pelas reservas do item supracitado.\n\n");
 			sb.append("Caso haja algum engano, por gentileza entre em contato com o administrador do sistema.");
 
