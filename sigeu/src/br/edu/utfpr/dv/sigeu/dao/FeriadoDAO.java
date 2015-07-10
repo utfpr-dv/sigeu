@@ -111,6 +111,10 @@ public class FeriadoDAO extends HibernateDAO<Feriado> {
 		return null;
 	}
 
+	public List<Feriado> pesquisa(Date data) {
+		return this.pesquisa(data, data);
+	}
+
 	@Override
 	public void preAlteracao(Feriado o) {
 		o.setDescricao(o.getDescricao().toUpperCase().trim());

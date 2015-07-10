@@ -18,6 +18,8 @@ import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 @ViewScoped
 public class ReservaAdminBean extends JavaBean {
 
+	private Integer progress = 0;
+
 	private static final long serialVersionUID = 7554618101134711624L;
 
 	// Campos da importação do XML
@@ -44,21 +46,24 @@ public class ReservaAdminBean extends JavaBean {
 				"Atualização em andamento. NÃO FECHE OU MUDE DE PÁGINA ATÉ O PROCESSO SER CONCLUÍDO.");
 	}
 
-	public void atualizarCadastrosDoLdap() throws Exception {
-		Thread.sleep(1000);
+	public void atualizarCadastrosDoLdap() {
+		this.progress = 0;
 
 		try {
-			IntegrationService.atualizaPessoasLdap(Config.getInstance()
+			IntegrationService.atualizaPessoasLdap(this, Config.getInstance()
 					.getCampus());
+
 		} catch (Exception e) {
 			this.addErrorMessage("Atualização cadastral",
 					"Houve um erro durante a atualização de cadastros. Informe ao Admin.");
 			e.printStackTrace();
-			throw e;
 		}
 
-		this.addInfoMessage("Atualização cadastral",
-				"Atualização cadastral concluída!");
+		this.progress = 0;
+	}
+
+	public void atualizarCadastrosDoLdapPostMessage() {
+		addInfoMessage("LDAP", "Cadastros atualizados!");
 	}
 
 	/**
@@ -112,7 +117,7 @@ public class ReservaAdminBean extends JavaBean {
 			timetable_id = IntegrationService.importXml(xmlFileName);
 
 			try {
-				IntegrationService.criaCalendarioAula(timetable_id,
+				IntegrationService.criaCalendarioAula(this, timetable_id,
 						periodoLetivo.getIdPeriodoLetivo());
 
 				System.out.println("--> IMPORTAÇÃO DO XML FINALIZADA.");
@@ -131,6 +136,10 @@ public class ReservaAdminBean extends JavaBean {
 
 		addInfoMessage("Importação XML", "Importação realizada com sucesso!");
 
+	}
+
+	public void processaXmlAscTablesPostMessage() {
+		addWarnMessage("Importação do XML", "Importação do XML concluída.");
 	}
 
 	public List<PeriodoLetivo> getListaPeriodoLetivo() {
@@ -155,6 +164,14 @@ public class ReservaAdminBean extends JavaBean {
 
 	public void setXmlFileName(String xmlFileName) {
 		this.xmlFileName = xmlFileName;
+	}
+
+	public Integer getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Integer progress) {
+		this.progress = progress;
 	}
 
 }

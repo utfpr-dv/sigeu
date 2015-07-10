@@ -3,6 +3,8 @@ package br.edu.utfpr.dv.sigeu.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,13 +67,14 @@ import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.entities.Transacao;
 import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
+import br.edu.utfpr.dv.sigeu.jsfbeans.ReservaAdminBean;
 import br.edu.utfpr.dv.sigeu.maplist.LessonIdMapList;
 import br.edu.utfpr.dv.sigeu.maplist.PeriodNameMapList;
-import br.edu.utfpr.dv.sigeu.maplist.ProfessorCodigoMapList;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateUtil;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 import br.edu.utfpr.dv.sigeu.sort.ClassroomComparator;
 
+import com.adamiworks.utils.DateUtils;
 import com.adamiworks.utils.StringUtils;
 import com.adamiworks.utils.ldap.LdapUtils;
 
@@ -553,8 +556,8 @@ public class IntegrationService {
 	 *            Código do Periodo letivo selecionado na importação do XML
 	 * @throws Exception
 	 */
-	public static void criaCalendarioAula(Integer idTimeTable,
-			Integer idPeriodoLetivo) throws Exception {
+	public static void criaCalendarioAula(ReservaAdminBean bean,
+			Integer idTimeTable, Integer idPeriodoLetivo) throws Exception {
 
 		// Atualiza professores
 		// IntegrationService.relacionaProfessorPessoa();
@@ -824,7 +827,6 @@ public class IntegrationService {
 			trans.begin();
 			reservaDAO = new ReservaDAO(trans);
 			int count = 0;
-			int total = 0;
 
 			Hibernate.initialize(timetable.getCardList());
 			List<Card> listCard = timetable.getCardList();
@@ -836,161 +838,187 @@ public class IntegrationService {
 
 			System.out.println("PeriodoLetivo Looping...");
 
+			// Total de dias entre o intervalo
+			int totalDias = DateUtils.dateDiff(periodoLetivo.getDataInicio(),
+					periodoLetivo.getDataFim()).intValue() + 1;
+
 			/**
 			 * LOOPING FINAL ONDE AS RESERVAS SÃO CRIADAS E GRAVADAS DENTRO DO
 			 * PERÍODO ENTRE DATA INICIAL E FINAL DO PERÍODO
 			 */
-			while (true) {
-				System.out.println(total + " reservas gravadas.");
+			BigDecimal total = new BigDecimal(String.valueOf(totalDias));
+			BigDecimal row = new BigDecimal("0");
+			int progress = 0;
 
-				System.out.println("Data: " + sdf.format(dia.getTime()));
+			// while (true) {
+			for (int i = 0; i <= totalDias; i++) {
 
-				if (dia.getTime().compareTo(periodoLetivo.getDataFim()) > 0) {
-					break;
-				}
+				// Adds a line
+				row = new BigDecimal(String.valueOf(i));
 
-				for (Card card : listCard) {
-					// Somente se o dia da semana for compatível
-					if (dia.get(Calendar.DAY_OF_WEEK) == DiaEnum
-							.getDiaEnumById(card.getDays()).getDia()) {
+				progress = row.divide(total, 2, RoundingMode.HALF_DOWN)
+						.multiply(new BigDecimal("100")).intValue();
 
-						// Recupera o Lesson
-						Lesson lesson = mapListLesson.get(card.getLessonid());
+				bean.setProgress(progress);
 
-						if (lesson == null || lesson.getClassids() == null) {
-							System.out
-									.println("ID_CARD=" + card.getIdCard()
-											+ " LESSONID=" + card.getLessonid()
-											+ " CLASSROOMIDS="
-											+ card.getClassroomids());
-						}
+				System.out.println("Data: " + sdf.format(dia.getTime())
+						+ "  progresso: " + progress + "%");
 
-						// Recupera as classes do Lesson
-						Classe classe = null;
+				if (!FeriadoService.verificaFeriado(dia.getTime())) {
 
-						String classids[] = lesson.getClassids().split(",");
-						for (String classid : classids) {
-							classe = mapListClasse.get(classid);
+					if (dia.getTime().compareTo(periodoLetivo.getDataFim()) > 0) {
+						System.out.println("Período letivo encerrado");
+						break;
+					}
 
-							String nomeUsuario = "";
-							Pessoa usuario = null;
+					for (Card card : listCard) {
+						// Somente se o dia da semana for compatível
+						if (dia.get(Calendar.DAY_OF_WEEK) == DiaEnum
+								.getDiaEnumById(card.getDays()).getDia()) {
 
-							// === Recupera professores do Lesson ===
-							String teachers[] = lesson.getTeacherids().split(
-									",");
+							// Recupera o Lesson
+							Lesson lesson = mapListLesson.get(card
+									.getLessonid());
 
-							for (String s : teachers) {
+							if (lesson == null || lesson.getClassids() == null) {
+								System.out.println("ID_CARD="
+										+ card.getIdCard() + " LESSONID="
+										+ card.getLessonid() + " CLASSROOMIDS="
+										+ card.getClassroomids());
+							}
 
-								Professor p = mapListProfessor.get(s
-										.toUpperCase().trim());
+							// Recupera as classes do Lesson
+							Classe classe = null;
 
-								if (p == null) {
-									p = mapListProfessor
-											.get(PROFESSOR_NAO_CADASTRADO_ID);
-								}
+							String classids[] = lesson.getClassids().split(",");
+							for (String classid : classids) {
+								classe = mapListClasse.get(classid);
 
-								nomeUsuario = p.getName();
+								String nomeUsuario = "";
+								Pessoa usuario = null;
 
-								if (p.getProfessorPessoa() != null) {
-									usuario = p.getProfessorPessoa()
-											.getIdPessoa();
-								}
-
-								// QUANDO O USUÁRIO NÃO FOR IDENTIFICADO,
-								// DEFINE-SE O USUARIO LOGADO
-								if (usuario == null) {
-									usuario = Config.getInstance()
-											.getPessoaLogin();
-								}
-
-								// Recupera as salas registradas no card
-								String classroomids[] = card.getClassroomids()
+								// === Recupera professores do Lesson ===
+								String teachers[] = lesson.getTeacherids()
 										.split(",");
 
-								// Navega entre as classroomid do Card
-								// IGNORAR CLASSROOMIDS DE LESSON
-								for (String classroomid : classroomids) {
-									ItemReserva sala = mapListSala
-											.get(classroomid);
+								for (String s : teachers) {
 
-									if (sala == null) {
-										throw new Exception(
-												"Sala não encontrada [Lesson:"
-														+ lesson.getId()
-														+ "][Classroomid:"
-														+ classroomid + "]");
+									Professor p = mapListProfessor.get(s
+											.toUpperCase().trim());
+
+									if (p == null) {
+										p = mapListProfessor
+												.get(PROFESSOR_NAO_CADASTRADO_ID);
 									}
 
-									// Periodo
-									// Period period =
-									// periodDAO.encontrePorNome(
-									// idTimeTable, card.getPeriod());
-									Period period = mapPeriodList.get(card
-											.getPeriod());
+									nomeUsuario = p.getName();
 
-									// Disciplina
-									Disciplina disciplina = mapListDisciplina
-											.get(lesson.getSubjectids());
-
-									if (disciplina == null) {
-										throw new Exception(
-												"Disciplina não encontrada [Lesson:"
-														+ lesson.getId() + "]");
+									if (p.getProfessorPessoa() != null) {
+										usuario = p.getProfessorPessoa()
+												.getIdPessoa();
 									}
 
-									StringBuilder motivo = new StringBuilder();
+									// QUANDO O USUÁRIO NÃO FOR IDENTIFICADO,
+									// DEFINE-SE O USUARIO LOGADO
+									if (usuario == null) {
+										usuario = Config.getInstance()
+												.getPessoaLogin();
+									}
 
-									motivo.append("[DISCIPLINA] ")
-											.append(disciplina.getRotulo())
-											.append(" - ")
-											.append(disciplina.getNome())
-											.append(" / [TURMA] ")
-											.append(classe.getNome());
+									// Recupera as salas registradas no card
+									String classroomids[] = card
+											.getClassroomids().split(",");
 
-									Reserva reserva = new Reserva();
-									reserva.setImportado(true);
-									reserva.setIdTransacao(transacao);
-									reserva.setHoraGravacao(Calendar
-											.getInstance().getTime());
-									reserva.setDataGravacao(Calendar
-											.getInstance().getTime());
-									reserva.setData(dia.getTime());
-									reserva.setHoraFim(period.getEndtime());
-									reserva.setHoraInicio(period.getStarttime());
-									reserva.setIdCampus(campus);
-									reserva.setIdItemReserva(sala);
-									reserva.setIdTipoReserva(tipoReserva);
-									reserva.setIdTransacao(transacao);
-									reserva.setIdUsuario(usuario);
-									reserva.setNomeUsuario(nomeUsuario.trim()
-											.toUpperCase());
-									reserva.setIdPessoa(usuarioAdmin);
-									reserva.setIdAutorizador(usuarioAdmin);
-									reserva.setEmailNotificacao(usuarioAdmin
-											.getEmail());
-									reserva.setRotulo(StringUtils.left(
-											classe.toString(), 32));
-									reserva.setCor(p.getCor() == null ? "#BBD2D2"
-											: p.getCor());
-									reserva.setStatus(StatusReserva.EFETIVADA
-											.getStatus());
+									// Navega entre as classroomid do Card
+									// IGNORAR CLASSROOMIDS DE LESSON
+									for (String classroomid : classroomids) {
+										ItemReserva sala = mapListSala
+												.get(classroomid);
 
-									reserva.setMotivo(motivo.toString());
+										if (sala == null) {
+											throw new Exception(
+													"Sala não encontrada [Lesson:"
+															+ lesson.getId()
+															+ "][Classroomid:"
+															+ classroomid + "]");
+										}
 
-									reservaDAO.criar(reserva);
-									total++;
-									count++;
+										// Periodo
+										// Period period =
+										// periodDAO.encontrePorNome(
+										// idTimeTable, card.getPeriod());
+										Period period = mapPeriodList.get(card
+												.getPeriod());
 
-									if (count >= HibernateUtil.HIBERNATE_BATCH_SIZE) {
-										trans.commit();
-										trans.begin();
-										count = 0;
+										// Disciplina
+										Disciplina disciplina = mapListDisciplina
+												.get(lesson.getSubjectids());
 
+										if (disciplina == null) {
+											throw new Exception(
+													"Disciplina não encontrada [Lesson:"
+															+ lesson.getId()
+															+ "]");
+										}
+
+										StringBuilder motivo = new StringBuilder();
+
+										motivo.append("[DISCIPLINA] ")
+												.append(disciplina.getRotulo())
+												.append(" - ")
+												.append(disciplina.getNome())
+												.append(" / [TURMA] ")
+												.append(classe.getNome());
+
+										Reserva reserva = new Reserva();
+										reserva.setImportado(true);
+										reserva.setIdTransacao(transacao);
+										reserva.setHoraGravacao(Calendar
+												.getInstance().getTime());
+										reserva.setDataGravacao(Calendar
+												.getInstance().getTime());
+										reserva.setData(dia.getTime());
+										reserva.setHoraFim(period.getEndtime());
+										reserva.setHoraInicio(period
+												.getStarttime());
+										reserva.setIdCampus(campus);
+										reserva.setIdItemReserva(sala);
+										reserva.setIdTipoReserva(tipoReserva);
+										reserva.setIdTransacao(transacao);
+										reserva.setIdUsuario(usuario);
+										reserva.setNomeUsuario(nomeUsuario
+												.trim().toUpperCase());
+										reserva.setIdPessoa(usuarioAdmin);
+										reserva.setIdAutorizador(usuarioAdmin);
+										reserva.setEmailNotificacao(usuarioAdmin
+												.getEmail());
+										reserva.setRotulo(StringUtils.left(
+												classe.toString(), 32));
+										reserva.setCor(p.getCor() == null ? "#BBD2D2"
+												: p.getCor());
+										reserva.setStatus(StatusReserva.EFETIVADA
+												.getStatus());
+
+										reserva.setMotivo(motivo.toString());
+
+										reservaDAO.criar(reserva);
+
+										count++;
+
+										if (count >= HibernateUtil.HIBERNATE_BATCH_SIZE) {
+											trans.commit();
+											trans.begin();
+											count = 0;
+
+										}
 									}
 								}
 							}
 						}
 					}
+
+				} else {
+					System.out.println("=== Feriado");
 				}
 
 				// Incrementa um dia
@@ -1168,7 +1196,8 @@ public class IntegrationService {
 	 *            Campus a ser atualizado
 	 * @throws Exception
 	 */
-	public static void atualizaPessoasLdap(Campus campus) throws Exception {
+	public static void atualizaPessoasLdap(ReservaAdminBean bean, Campus campus)
+			throws Exception {
 		Date inicio = Calendar.getInstance().getTime();
 		Date fim = null;
 
@@ -1225,7 +1254,18 @@ public class IntegrationService {
 			// String varLdapCampus =
 			// ldap.getVarLdapCampus().trim().toUpperCase();
 
+			BigDecimal total = new BigDecimal(String.valueOf(mapa.size()));
+			BigDecimal row = new BigDecimal("0");
+			int progress = 0;
+
 			for (String s : mapa) {
+				// Adds a line
+				row = row.add(new BigDecimal("1"));
+
+				progress = row.divide(total, 2, RoundingMode.HALF_DOWN)
+						.multiply(new BigDecimal("100")).intValue();
+
+				bean.setProgress(progress);
 
 				attrs = s.split(LdapUtils.ENTRY_SEPARATOR);
 

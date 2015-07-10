@@ -13,6 +13,8 @@ import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
+import br.edu.utfpr.dv.sigeu.persistence.DatabaseConfig;
+import br.edu.utfpr.dv.sigeu.persistence.DatabaseParameter;
 import br.edu.utfpr.dv.sigeu.service.LoginService;
 import br.edu.utfpr.dv.sigeu.util.LoginFilter;
 
@@ -27,10 +29,16 @@ public class LoginBean extends JavaBean {
 	private String password;
 	private String nomeUsuario;
 
+	private String serverInfo;
+
 	private Pessoa pessoaLogin;
 
 	public String login() {
 		boolean ok = true;
+
+		this.serverInfo = "Server: "
+				+ DatabaseConfig.getInstance().getProperty(
+						DatabaseParameter.DATABASE_URL);
 
 		// int posAt = this.email.indexOf("@");
 
@@ -145,6 +153,14 @@ public class LoginBean extends JavaBean {
 
 	public void setNomeUsuario(String nomeUsuario) {
 		this.nomeUsuario = nomeUsuario;
+	}
+
+	public String getServerInfo() {
+		return serverInfo;
+	}
+
+	public void setServerInfo(String serverInfo) {
+		this.serverInfo = serverInfo;
 	}
 
 }

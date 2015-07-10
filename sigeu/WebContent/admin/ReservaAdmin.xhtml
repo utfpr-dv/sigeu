@@ -9,6 +9,8 @@
 
 	<ui:define name="corpo">
 		<h2>Administração de Reservas</h2>
+		<br />
+		<b>#{loginBean.serverInfo}</b>
 
 		<h:form id="frmPesquisaReserva" prependId="false"
 			rendered="#{loginBean.pessoaLogin.admin eq true}">
@@ -116,6 +118,14 @@
 						</p:tab>
 
 						<p:tab title="Importação XML">
+							<p:progressBar widgetVar="pbAjaxXML" ajax="true"
+								value="#{reservaAdminBean.progress}" labelTemplate="{value}%"
+								styleClass="animated" global="false">
+
+								<p:ajax event="complete"
+									listener="#{reservaAdminBean.processaXmlAscTablesPostMessage}"
+									update="messages" oncomplete="endAtualizaXML()" />
+							</p:progressBar>
 							<br />
 
 							<p:panelGrid columns="2" id="panelPeriodoLetivo">
@@ -142,19 +152,29 @@
 								update="processaXml" />
 							<br />
 							<br />
-							
+
 							<p:commandButton id="processaXml" value="Processar"
-								icon="ui-icon-check"
+								widgetVar="cbProcessaXML" icon="ui-icon-check"
 								action="#{reservaAdminBean.processaXmlAscTables}"
 								update=":messages" process="periodoLetivo @this"
-								disabled="#{reservaAdminBean.xmlFileName eq null}">
+								disabled="#{reservaAdminBean.xmlFileName eq null}"
+								onclick="startAtualizaXML()">
 								<p:ajax
 									listener="#{reservaAdminBean.processaXmlAscTablesPreMessage}" />
 							</p:commandButton>
-							
+
 						</p:tab>
 
 						<p:tab title="Importação LDAP">
+							<p:progressBar widgetVar="pbAjaxLdap" ajax="true"
+								value="#{reservaAdminBean.progress}" labelTemplate="{value}%"
+								styleClass="animated" global="false">
+
+								<p:ajax event="complete"
+									listener="#{reservaAdminBean.atualizarCadastrosDoLdapPostMessage}"
+									update="messages" oncomplete="endAtualizaLdap()" />
+							</p:progressBar>
+
 							<br />
 							<h:outputText
 								value="Clique no botão para importar os dados de cadastro de pessoas do servidor LDAP" />
@@ -163,7 +183,8 @@
 							<p:commandButton value="Atualiza do LDAP" icon="ui-icon-search"
 								style="width:120px"
 								action="#{reservaAdminBean.atualizarCadastrosDoLdap}"
-								update="@form" process="@this">
+								update="@form" process="@this" widgetVar="cbAtualizaLdap"
+								onclick="startAtualizaLdap()">
 								<p:ajax
 									listener="#{reservaAdminBean.atualizarCadastrosDoLdapPreMessage}" />
 								<p:confirm header="Atualiza do LDAP"
@@ -226,9 +247,32 @@
 				<p:commandButton value="Sim" type="button"
 					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
 				<p:commandButton value="Não" type="button"
-					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close"
+					onclick="endAtualizaLdap()" />
 			</p:confirmDialog>
 		</h:form>
+
+		<script>
+			function startAtualizaLdap() {
+				PF('cbAtualizaLdap').disable();
+				PF('pbAjaxLdap').start();
+			}
+
+			function endAtualizaLdap() {
+				PF('cbAtualizaLdap').enable();
+				PF('pbAjaxLdap').stop();
+			}
+
+			function startAtualizaXML() {
+				PF('cbProcessaXML').disable();
+				PF('pbAjaxXML').start();
+			}
+
+			function endAtualizaXML() {
+				PF('cbProcessaXML').enable();
+				PF('pbAjaxXML').stop();
+			}
+		</script>
 	</ui:define>
 
 </ui:composition>

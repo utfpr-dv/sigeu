@@ -80,7 +80,8 @@ public class FeriadoService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Feriado> pesquisar(String textoPesquisa) throws Exception {
+	public static List<Feriado> pesquisar(String textoPesquisa)
+			throws Exception {
 		List<Feriado> lista = null;
 
 		Transaction trans = new Transaction();
@@ -93,7 +94,8 @@ public class FeriadoService {
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
 				lista = dao.pesquisa(HibernateDAO.PESQUISA_LIMITE);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(), textoPesquisa, 0);
+				lista = dao.pesquisa(Config.getInstance().getCampus(),
+						textoPesquisa, 0);
 			}
 
 			if (lista != null) {
@@ -164,7 +166,8 @@ public class FeriadoService {
 		}
 	}
 
-	public static List<Feriado> pesquisarPorData(Date dataInicial, Date dataFinal) throws Exception {
+	public static List<Feriado> pesquisarPorData(Date dataInicial,
+			Date dataFinal) throws Exception {
 		List<Feriado> lista = null;
 
 		Transaction trans = new Transaction();
@@ -185,11 +188,41 @@ public class FeriadoService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception(e);
+			throw e;
 		} finally {
 			trans.close();
 		}
 
 		return lista;
 	}
+
+	/**
+	 * Confere se a data passada como parâmetro é um feriado.
+	 * 
+	 * @param data
+	 *            Data a ser conferida
+	 * @return Retorna true se ao menos um feriado for encontrado na data.
+	 */
+	public static boolean verificaFeriado(Date data) {
+		List<Feriado> lista = null;
+
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+
+			FeriadoDAO dao = new FeriadoDAO(trans);
+
+			lista = dao.pesquisa(data);
+
+			return (lista != null && lista.size() > 0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			trans.close();
+		}
+	}
+
 }
