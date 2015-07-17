@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.GrupoPessoa;
@@ -121,15 +120,15 @@ public class PessoaService {
 		return p;
 	}
 
-	public static Pessoa encontrePorCnpjCpf(String cnpjCpf) throws Exception {
+	public static Pessoa encontrePorCnpjCpf(Campus campus, String cnpjCpf)
+			throws Exception {
 		Transaction trans = new Transaction();
 		trans.begin();
 
 		PessoaDAO dao = new PessoaDAO(trans);
 		Pessoa p;
 		try {
-			p = dao.encontrePorCnpjCpf(Config.getInstance().getCampus(),
-					cnpjCpf);
+			p = dao.encontrePorCnpjCpf(campus, cnpjCpf);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -147,7 +146,8 @@ public class PessoaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Pessoa> pesquisar(String textoPesquisa) throws Exception {
+	public static List<Pessoa> pesquisar(Campus campus, String textoPesquisa)
+			throws Exception {
 		List<Pessoa> lista = null;
 
 		Transaction trans = new Transaction();
@@ -157,11 +157,9 @@ public class PessoaService {
 
 			PessoaDAO dao = new PessoaDAO(trans);
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-				lista = dao.pesquisa(Config.getInstance().getCampus(),
-						HibernateDAO.PESQUISA_LIMITE);
+				lista = dao.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(),
-						textoPesquisa, 0);
+				lista = dao.pesquisa(campus, textoPesquisa, 0);
 			}
 
 			if (lista != null) {
@@ -189,8 +187,8 @@ public class PessoaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Pessoa> pesquisar(String query, boolean ativo, int limit)
-			throws Exception {
+	public static List<Pessoa> pesquisar(Campus campus, String query,
+			boolean ativo, int limit) throws Exception {
 		List<Pessoa> lista = null;
 
 		Transaction trans = new Transaction();
@@ -204,11 +202,9 @@ public class PessoaService {
 				if (limit == 0) {
 					limit = HibernateDAO.PESQUISA_LIMITE;
 				}
-				lista = dao.pesquisa(Config.getInstance().getCampus(), ativo,
-						limit);
+				lista = dao.pesquisa(campus, ativo, limit);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(), query,
-						ativo, limit);
+				lista = dao.pesquisa(campus, query, ativo, limit);
 			}
 
 			if (lista != null) {
@@ -238,8 +234,8 @@ public class PessoaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Pessoa> pesquisar(String query, boolean ativo,
-			String grupo, int limit) throws Exception {
+	public static List<Pessoa> pesquisar(Campus campus, String query,
+			boolean ativo, String grupo, int limit) throws Exception {
 		List<Pessoa> lista = null;
 		List<Pessoa> listaRetorno = null;
 
@@ -254,11 +250,9 @@ public class PessoaService {
 				if (limit == 0) {
 					limit = HibernateDAO.PESQUISA_LIMITE;
 				}
-				lista = dao.pesquisa(Config.getInstance().getCampus(), ativo,
-						limit);
+				lista = dao.pesquisa(campus, ativo, limit);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(), query,
-						ativo, limit);
+				lista = dao.pesquisa(campus, query, ativo, limit);
 			}
 
 			if (lista != null) {

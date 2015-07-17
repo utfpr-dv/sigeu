@@ -1,15 +1,15 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 
 import br.edu.utfpr.dv.sigeu.entities.Instituicao;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.service.InstituicaoService;
 
-@ManagedBean(name = "instituicaoBean")
+@ManagedBean
 @ViewScoped
 public class InstituicaoBean extends JavaBean {
 

@@ -1,16 +1,18 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 
-@ManagedBean(name = "pessoaBean")
+@ManagedBean
 @ViewScoped
 public class PessoaBean extends JavaBean {
+	//@Inject
+	//private LoginBean loginBean;
 
 	private static final long serialVersionUID = 7309144685247380621L;
 	private int editarId = 0;

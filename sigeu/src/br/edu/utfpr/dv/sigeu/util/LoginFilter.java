@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public class LoginFilter implements Filter {
 
-	public static final String SESSION_USUARIO_AUTENTICADO = "email_usuario";
+	public static final String SESSION_EMAIL_LOGIN = "email_usuario";
+	public static final String SESSION_PESSOA_LOGIN = "pessoa_login";
+	public static final String SESSION_CAMPUS = "campus";
 
 	@Override
 	public void destroy() {
@@ -27,26 +29,12 @@ public class LoginFilter implements Filter {
 		String email = null;
 		HttpServletRequest requestHttp = ((HttpServletRequest) request);
 
-		// String url = "";
-		// String queryString = "";
-
-		// if (request instanceof HttpServletRequest) {
-		// url = ((HttpServletRequest) request).getRequestURL().toString();
-		// queryString = ((HttpServletRequest) request).getQueryString();
-		// }
-
-		// System.out.println("URL: " + url);
-
-		// System.out.println("LoginFilter: " + requestHttp.getRequestURI());
-
 		Object emailSessao = requestHttp.getSession().getAttribute(
-				SESSION_USUARIO_AUTENTICADO);
+				SESSION_EMAIL_LOGIN);
 
 		if (emailSessao != null) {
 			email = (String) emailSessao;
 		}
-
-		// System.out.println("E-mail registrado é: " + email);
 
 		loginOk = (email != null && email.trim().length() > 0);
 

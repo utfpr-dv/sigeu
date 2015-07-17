@@ -13,7 +13,7 @@
 		<b>#{loginBean.serverInfo}</b>
 
 		<h:form id="frmPesquisaReserva" prependId="false"
-			rendered="#{loginBean.pessoaLogin.admin eq true}">
+			rendered="#{loginBean.pessoaLogin.idPessoa eq 1}">
 			<p:tabView style="margin-top:15px">
 				<p:tab id="tabPesquisa" title="Informações da Reserva"
 					rendered="#{reservaBean.showTab eq 1}">

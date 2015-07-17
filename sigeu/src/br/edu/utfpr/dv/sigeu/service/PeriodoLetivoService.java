@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.PeriodoLetivoDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
@@ -91,7 +90,7 @@ public class PeriodoLetivoService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<PeriodoLetivo> pesquisar(String textoPesquisa)
+	public static List<PeriodoLetivo> pesquisar(Campus campus, String textoPesquisa)
 			throws Exception {
 		List<PeriodoLetivo> lista = null;
 
@@ -105,7 +104,7 @@ public class PeriodoLetivoService {
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
 				lista = dao.pesquisa(HibernateDAO.PESQUISA_LIMITE);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(),
+				lista = dao.pesquisa(campus,
 						textoPesquisa, 0);
 			}
 
@@ -196,7 +195,7 @@ public class PeriodoLetivoService {
 
 			PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
 
-			lista = dao.pesquisa(Config.getInstance().getCampus());
+			lista = dao.pesquisa(campus);
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -2,7 +2,6 @@ package br.edu.utfpr.dv.sigeu.dao;
 
 import org.hibernate.Query;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Disciplina;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
@@ -26,7 +25,7 @@ public class DisciplinaDAO extends HibernateDAO<Disciplina> {
 		String hql = "from Disciplina o where o.codigo = :codigo and o.idCampus.idCampus = :idCampus";
 		Query q = session.createQuery(hql);
 		q.setString("codigo", codigo);
-		q.setInteger("idCampus", Config.getInstance().getCampus().getIdCampus());
+		q.setInteger("idCampus", campus.getIdCampus());
 		return (Disciplina) q.uniqueResult();
 	}
 
@@ -34,7 +33,7 @@ public class DisciplinaDAO extends HibernateDAO<Disciplina> {
 		String hql = "from Disciplina o where o.nome = :nome and o.idCampus.idCampus = :idCampus";
 		Query q = session.createQuery(hql);
 		q.setString("nome", nome);
-		q.setInteger("idCampus", Config.getInstance().getCampus().getIdCampus());
+		q.setInteger("idCampus", campus.getIdCampus());
 		return (Disciplina) q.uniqueResult();
 	}
 
@@ -42,7 +41,7 @@ public class DisciplinaDAO extends HibernateDAO<Disciplina> {
 		String hql = "from Disciplina o where o.rotulo = :rotulo and o.idCampus.idCampus = :idCampus";
 		Query q = session.createQuery(hql);
 		q.setString("rotulo", rotulo);
-		q.setInteger("idCampus", Config.getInstance().getCampus().getIdCampus());
+		q.setInteger("idCampus", campus.getIdCampus());
 		return (Disciplina) q.uniqueResult();
 	}
 

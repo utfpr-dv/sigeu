@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.GrupoPessoaDAO;
 import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.GrupoPessoa;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
@@ -67,7 +67,7 @@ public class GrupoPessoaService {
 		GrupoPessoaDAO grupoPessoaDAO = new GrupoPessoaDAO(trans);
 
 		// Busca novamente do banco de dados
-		//pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
+		// pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
 
 		List<GrupoPessoa> gruposCadastrados = pessoa.getGrupoPessoaList();
 		// List<GrupoPessoa> listaVazia = new ArrayList<GrupoPessoa>();
@@ -120,7 +120,7 @@ public class GrupoPessoaService {
 					// i--;
 				}
 			}
-			
+
 			pessoa.setGrupoPessoaList(null);
 			pessoaDAO.alterar(pessoa);
 
@@ -175,15 +175,14 @@ public class GrupoPessoaService {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public static GrupoPessoa encontrePorDescricao(String descricao)
-			throws IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, SQLException {
+	public static GrupoPessoa encontrePorDescricao(Campus campus,
+			String descricao) throws IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, SQLException {
 		Transaction trans = new Transaction();
 		trans.begin();
 
 		GrupoPessoaDAO dao = new GrupoPessoaDAO(trans);
-		GrupoPessoa gp = dao.encontrePorDescricao(Config.getInstance()
-				.getCampus(), descricao);
+		GrupoPessoa gp = dao.encontrePorDescricao(campus, descricao);
 
 		if (gp != null) {
 			Hibernate.initialize(gp.getIdCampus());

@@ -2,15 +2,19 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 
-@ManagedBean(name = "pesquisaPeriodoLetivoBean")
+@ManagedBean
 @ViewScoped
 public class PesquisaPeriodoLetivoBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
+	
 	private static final long serialVersionUID = -7338998125000395663L;
 
 	//
@@ -22,7 +26,7 @@ public class PesquisaPeriodoLetivoBean extends JavaBean {
 	public PesquisaPeriodoLetivoBean() {
 		try {
 			String nullS = null;
-			lista = PeriodoLetivoService.pesquisar(nullS);
+			lista = PeriodoLetivoService.pesquisar(loginBean.getCampus(), nullS);
 		} catch (Exception e) {
 		}
 	}
@@ -32,7 +36,7 @@ public class PesquisaPeriodoLetivoBean extends JavaBean {
 	 */
 	public void pesquisa() {
 		try {
-			this.lista = PeriodoLetivoService.pesquisar(textoPesquisa);
+			this.lista = PeriodoLetivoService.pesquisar(loginBean.getCampus(), textoPesquisa);
 		} catch (Exception e) {
 			e.printStackTrace();
 			addErrorMessage("Pesquisa", "Erro na pesquisa");

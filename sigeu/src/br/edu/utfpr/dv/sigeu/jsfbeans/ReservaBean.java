@@ -9,8 +9,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
@@ -31,12 +31,12 @@ import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.StringUtils;
 
-@ManagedBean(name = "reservaBean")
+@ManagedBean
 @ViewScoped
 public class ReservaBean extends JavaBean {
 
-	// @ManagedProperty(value = "#{loginBean}")
-	// private LoginBean loginBean;
+	@Inject
+	private LoginBean loginBean;
 
 	private static final long serialVersionUID = 7141232111444710485L;
 
@@ -114,7 +114,7 @@ public class ReservaBean extends JavaBean {
 
 		try {
 			listaCategoriaItemReserva = CategoriaItemReservaService.pesquisar(
-					query, true);
+					loginBean.getCampus(), query, true);
 
 			if (listaCategoriaItemReserva != null
 					&& listaCategoriaItemReserva.size() > 0) {
@@ -154,7 +154,7 @@ public class ReservaBean extends JavaBean {
 
 		try {
 			listaItemReserva = ItemReservaService.pesquisar(
-					categoriaItemReserva, query, true);
+					loginBean.getCampus(), categoriaItemReserva, query, true);
 
 			if (listaItemReserva != null && listaItemReserva.size() > 0) {
 				for (ItemReserva i : listaItemReserva) {
@@ -187,7 +187,8 @@ public class ReservaBean extends JavaBean {
 		usuario = null;
 
 		try {
-			listaUsuario = PessoaService.pesquisar(query, true, 14);
+			listaUsuario = PessoaService.pesquisar(loginBean.getCampus(),
+					query, true, 14);
 
 			if (listaUsuario != null && listaUsuario.size() > 0) {
 				for (Pessoa p : listaUsuario) {
@@ -272,8 +273,8 @@ public class ReservaBean extends JavaBean {
 			cc.set(Calendar.MILLISECOND, 00);
 
 			Date dataReserva = cc.getTime();
-			PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(Config
-					.getInstance().getCampus(), dataReserva);
+			PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(
+					loginBean.getCampus(), dataReserva);
 
 			if (pl == null) {
 				throw new Exception("Nenhum Período Letivo Cadastrado");
@@ -335,7 +336,8 @@ public class ReservaBean extends JavaBean {
 
 							// Preenche a lista de itens disponíveis
 							listaItemDisponivel = ReservaService
-									.pesquisaItemReservaDisponivel(campoData,
+									.pesquisaItemReservaDisponivel(
+											loginBean.getCampus(), campoData,
 											campoHoraInicial, campoHoraFinal,
 											categoriaItemReserva, itemReserva);
 
@@ -348,9 +350,9 @@ public class ReservaBean extends JavaBean {
 							// Preenche lista das minhas reservas
 							this.listaMinhasReservas = ReservaService
 									.pesquisaReservasEfetivadasDoUsuario(
-											pessoaLogin, campoData,
-											categoriaItemReserva, itemReserva,
-											campoImportadas);
+											loginBean.getCampus(), pessoaLogin,
+											campoData, categoriaItemReserva,
+											itemReserva, campoImportadas);
 
 							// Rola entre a lista de itens disponíveis para
 							// checar
@@ -360,6 +362,8 @@ public class ReservaBean extends JavaBean {
 									.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
 								listaItemDisponivel = ReservaService
 										.removeItensNaoDisponiveisParaReservaRecorrente(
+												loginBean.getCampus(),
+												loginBean.getPessoaLogin(),
 												campoData, campoHoraInicial,
 												campoHoraFinal,
 												repeticaoReservaEnum,
@@ -408,9 +412,10 @@ public class ReservaBean extends JavaBean {
 				// Preenche a lista de todas as reservas conforme filtros
 				try {
 					this.listaTodasReservas = ReservaService
-							.pesquisaReservasEfetivadas(campoData,
-									campoHoraInicial, campoHoraFinal,
-									categoriaItemReserva, itemReserva);
+							.pesquisaReservasEfetivadas(loginBean.getCampus(),
+									campoData, campoHoraInicial,
+									campoHoraFinal, categoriaItemReserva,
+									itemReserva);
 				} catch (Exception e) {
 					addErrorMessage("Pesquisa", "A pequisa falhou.");
 					addErrorMessage("Pesquisa", e.getMessage());
@@ -434,12 +439,12 @@ public class ReservaBean extends JavaBean {
 		reserva.setData(campoData);
 		reserva.setHoraFim(campoHoraFinal);
 		reserva.setHoraInicio(campoHoraInicial);
-		reserva.setIdCampus(Config.getInstance().getCampus());
+		reserva.setIdCampus(loginBean.getCampus());
 		reserva.setIdPessoa(pessoaLogin);
 		reserva.setIdItemReserva(itemReservaGravacao);
 		reserva.setMotivo(motivo);
 
-		if (Config.getInstance().getPessoaLogin().getAdmin()) {
+		if (loginBean.getPessoaLogin().getAdmin()) {
 			if (usuario == null) {
 				/** Quando o usuário informado não existe */
 
@@ -494,7 +499,8 @@ public class ReservaBean extends JavaBean {
 						"Já foi feita uma reserva para este recurso na data informada que conflita com o horário desejado. Verifique!");
 			} else {
 				try {
-					ReservaService.criar(reserva);
+					ReservaService.criar(loginBean.getCampus(),
+							loginBean.getPessoaLogin(), reserva);
 
 					StatusReserva statusReserva = null;
 
@@ -514,7 +520,8 @@ public class ReservaBean extends JavaBean {
 
 					case EFETIVADA:
 						// Envia e-mail de confirmação
-						EmailService.enviaEmailConfirmacao(reserva);
+						EmailService.enviaEmailConfirmacao(
+								loginBean.getCampus(), reserva);
 
 						addInfoMessage("Reserva", "Reserva de "
 								+ itemReservaGravacao.getNome()
@@ -554,7 +561,8 @@ public class ReservaBean extends JavaBean {
 	 */
 	private void gravaReservaSemanal(Reserva reserva) {
 		try {
-			List<Reserva> lista = ReservaService.criarRecorrente(reserva,
+			List<Reserva> lista = ReservaService.criarRecorrente(
+					loginBean.getCampus(), loginBean.getPessoaLogin(), reserva,
 					repeticaoReservaEnum, campoDataFimRepete);
 
 			StatusReserva statusReserva = null;
@@ -573,7 +581,8 @@ public class ReservaBean extends JavaBean {
 				break;
 			case EFETIVADA:
 				// Envia e-mail de confirmação das reservas
-				EmailService.enviaEmailConfirmacao(lista);
+				EmailService
+						.enviaEmailConfirmacao(loginBean.getCampus(), lista);
 
 				addInfoMessage("Reserva",
 						"Reserva de " + itemReservaGravacao.getNome()
@@ -654,8 +663,9 @@ public class ReservaBean extends JavaBean {
 
 			try {
 				listaCategoriaItemReserva = CategoriaItemReservaService
-						.pesquisar(null, true);
-				listaTipoReserva = TipoReservaService.pesquisar(null, true);
+						.pesquisar(loginBean.getCampus(), null, true);
+				listaTipoReserva = TipoReservaService.pesquisar(
+						loginBean.getCampus(), null, true);
 
 				// System.out.println("Lista de Período Letivo: " +
 				// listaPeriodoLetivo.size());
@@ -687,9 +697,8 @@ public class ReservaBean extends JavaBean {
 		// RequestContext.getCurrentInstance().openDialog("CancelaReserva",
 		// options, args);
 		// System.out.println("Passo 2");
-		listaReservaVO = ReservaService
-				.listaReservaPorTransacao(Config.getInstance().getCampus(), r
-						.getIdTransacao().getIdTransacao());
+		listaReservaVO = ReservaService.listaReservaPorTransacao(
+				loginBean.getCampus(), r.getIdTransacao().getIdTransacao());
 		this.showTab = 3;
 	}
 
@@ -729,7 +738,8 @@ public class ReservaBean extends JavaBean {
 				}
 
 				try {
-					EmailService.enviaEmailCancelamento(listExcluir,
+					EmailService.enviaEmailCancelamento(loginBean.getCampus(),
+							loginBean.getPessoaLogin(), listExcluir,
 							motivoCancelamento);
 				} catch (Exception e) {
 					addErrorMessage("Erro",
@@ -1043,12 +1053,12 @@ public class ReservaBean extends JavaBean {
 		this.campoImportadas = campoImportadas;
 	}
 
-	// public LoginBean getLoginBean() {
-	// return loginBean;
-	// }
-	//
-	// public void setLoginBean(LoginBean loginBean) {
-	// this.loginBean = loginBean;
-	// }
+	public LoginBean getLoginBean() {
+		return loginBean;
+	}
+
+	public void setLoginBean(LoginBean loginBean) {
+		this.loginBean = loginBean;
+	}
 
 }

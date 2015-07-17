@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.CategoriaItemReservaDAO;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
@@ -80,7 +80,7 @@ public class CategoriaItemReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<CategoriaItemReserva> pesquisar(String textoPesquisa, Boolean ativo) throws Exception {
+	public static List<CategoriaItemReserva> pesquisar(Campus campus, String textoPesquisa, Boolean ativo) throws Exception {
 		List<CategoriaItemReserva> lista = null;
 		Transaction trans = new Transaction();
 
@@ -88,7 +88,7 @@ public class CategoriaItemReservaService {
 			trans.begin();
 			CategoriaItemReservaDAO dao = new CategoriaItemReservaDAO(trans);
 
-			lista = dao.pesquisa(Config.getInstance().getCampus(), textoPesquisa, ativo, 0);
+			lista = dao.pesquisa(campus, textoPesquisa, ativo, 0);
 
 			if (lista != null) {
 				for (CategoriaItemReserva c : lista) {

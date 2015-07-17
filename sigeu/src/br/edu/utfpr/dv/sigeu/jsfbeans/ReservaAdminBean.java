@@ -2,21 +2,23 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.service.IntegrationService;
 import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 
-@ManagedBean(name = "reservaAdminBean")
+@ManagedBean
 @ViewScoped
 public class ReservaAdminBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
 
 	private Integer progress = 0;
 
@@ -30,8 +32,7 @@ public class ReservaAdminBean extends JavaBean {
 	public ReservaAdminBean() {
 		super();
 		try {
-			listaPeriodoLetivo = PeriodoLetivoService.pesquisar(Config
-					.getInstance().getCampus());
+			listaPeriodoLetivo = PeriodoLetivoService.pesquisar(loginBean.getCampus());
 		} catch (Exception e) {
 			addErrorMessage("Carregar Periodos",
 					"Erro ao carregar períodos letivos.");
@@ -50,8 +51,7 @@ public class ReservaAdminBean extends JavaBean {
 		this.progress = 0;
 
 		try {
-			IntegrationService.atualizaPessoasLdap(this, Config.getInstance()
-					.getCampus());
+			IntegrationService.atualizaPessoasLdap(this, loginBean.getCampus());
 
 		} catch (Exception e) {
 			this.addErrorMessage("Atualização cadastral",
@@ -114,10 +114,12 @@ public class ReservaAdminBean extends JavaBean {
 		this.clearMessages();
 		Integer timetable_id = 0;
 		try {
-			timetable_id = IntegrationService.importXml(xmlFileName);
+			timetable_id = IntegrationService.importXml(loginBean.getCampus(),
+					xmlFileName);
 
 			try {
-				IntegrationService.criaCalendarioAula(this, timetable_id,
+				IntegrationService.criaCalendarioAula(loginBean.getCampus(),
+						loginBean.getPessoaLogin(), this, timetable_id,
 						periodoLetivo.getIdPeriodoLetivo());
 
 				System.out.println("--> IMPORTAÇÃO DO XML FINALIZADA.");

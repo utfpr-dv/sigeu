@@ -26,7 +26,7 @@ public class LogoffServlet extends HttpServlet {
 	}
 
 	private void logoff(HttpServletRequest req, HttpServletResponse resp) {
-		req.getSession().removeAttribute(LoginFilter.SESSION_USUARIO_AUTENTICADO);
+		req.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
 		String url = req.getContextPath();
 
 		// Set response content type

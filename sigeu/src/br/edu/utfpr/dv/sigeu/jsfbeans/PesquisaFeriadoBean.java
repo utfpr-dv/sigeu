@@ -3,15 +3,19 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 
 import br.edu.utfpr.dv.sigeu.entities.Feriado;
 import br.edu.utfpr.dv.sigeu.service.FeriadoService;
 
-@ManagedBean(name = "pesquisaFeriadoBean")
+@ManagedBean
 @ViewScoped
 public class PesquisaFeriadoBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
+	
 	private static final long serialVersionUID = -7338998125882395663L;
 
 	//
@@ -24,7 +28,7 @@ public class PesquisaFeriadoBean extends JavaBean {
 
 	public PesquisaFeriadoBean() {
 		try {
-			lista = FeriadoService.pesquisar(null);
+			lista = FeriadoService.pesquisar(loginBean.getCampus(), null);
 			//this.addInfoMessage("Pesquisa", "Exibindo  " + HibernateDAO.PESQUISA_LIMITE + " itens. Pesquise utilizando parâmetros para obter mais registros.");
 		} catch (Exception e) {
 			//this.addErrorMessage("Pesquisa", "Erro ao realizar pesquisa inicial. Entre em contato com o Admin.");
@@ -36,7 +40,7 @@ public class PesquisaFeriadoBean extends JavaBean {
 	 */
 	public void pesquisa() {
 		try {
-			this.lista = FeriadoService.pesquisar(textoPesquisa);
+			this.lista = FeriadoService.pesquisar(loginBean.getCampus(), textoPesquisa);
 		} catch (Exception e) {
 			e.printStackTrace();
 			addErrorMessage("Pesquisa", "Erro na pesquisa");

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
@@ -18,9 +18,11 @@ import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.DateUtils;
 
-@ManagedBean(name = "autorizaReservaBean")
+@ManagedBean
 @ViewScoped
 public class AutorizaReservaBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
 
 	private static final long serialVersionUID = 3379394482374794722L;
 
@@ -31,7 +33,7 @@ public class AutorizaReservaBean extends JavaBean {
 	 * Constructor
 	 */
 	public AutorizaReservaBean() {
-		this.autorizador = Config.getInstance().getPessoaLogin();
+		this.autorizador = loginBean.getPessoaLogin();
 		this.atualizaLista();
 	}
 
@@ -39,8 +41,8 @@ public class AutorizaReservaBean extends JavaBean {
 	 * Busca as reservas pendentes do banco de dados
 	 */
 	public void atualizaLista() {
-		this.listaReservaVO = ReservaService
-				.listaReservasPendentes(autorizador);
+		this.listaReservaVO = ReservaService.listaReservasPendentes(
+				loginBean.getCampus(), autorizador);
 	}
 
 	/**
@@ -66,8 +68,9 @@ public class AutorizaReservaBean extends JavaBean {
 
 		if (listaReservas.size() > 0) {
 			try {
-				ReservaService
-						.alterar(listaReservas, "Autorização de reservas");
+				ReservaService.alterar(loginBean.getCampus(),
+						loginBean.getPessoaLogin(), listaReservas,
+						"Autorização de reservas");
 
 				addInfoMessage("Autorização",
 						"Todas as autorizações e cancelamentos foram gravadas com sucesso!");
@@ -84,7 +87,8 @@ public class AutorizaReservaBean extends JavaBean {
 
 		// Se chegou até aqui, manda o e-mail de confirmação
 		try {
-			EmailService.enviaEmailConfirmacao(listaReservas);
+			EmailService.enviaEmailConfirmacao(loginBean.getCampus(),
+					listaReservas);
 		} catch (Exception e) {
 			addErrorMessage("Email", "Erro ao mandar e-mails de confirmação.");
 			addErrorMessage("Email", e.getMessage());
@@ -93,11 +97,11 @@ public class AutorizaReservaBean extends JavaBean {
 		// Se chegou até aqui, manda o e-mail de cancelamento das reservas
 		// canceladas
 		try {
-			EmailService.enviaEmailCancelamento(listaReservas,
+			EmailService.enviaEmailCancelamento(loginBean.getCampus(),
+					loginBean.getPessoaLogin(), listaReservas,
 					"Reserva não autorizada. Entre em contato com "
-							+ Config.getInstance().getPessoaLogin()
-									.getNomeCompleto() + " ("
-							+ Config.getInstance().getPessoaLogin().getEmail()
+							+ loginBean.getPessoaLogin().getNomeCompleto()
+							+ " (" + loginBean.getPessoaLogin().getEmail()
 							+ ")");
 		} catch (Exception e) {
 			addErrorMessage("Email", "Erro ao mandar e-mails de Cancelamento.");

@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.FeriadoDAO;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Feriado;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
@@ -79,7 +79,7 @@ public class FeriadoService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Feriado> pesquisar(String textoPesquisa)
+	public static List<Feriado> pesquisar(Campus campus, String textoPesquisa)
 			throws Exception {
 		List<Feriado> lista = null;
 
@@ -93,7 +93,7 @@ public class FeriadoService {
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
 				lista = dao.pesquisa(0);
 			} else {
-				lista = dao.pesquisa(Config.getInstance().getCampus(),
+				lista = dao.pesquisa(campus,
 						textoPesquisa, 0);
 			}
 

@@ -89,14 +89,15 @@ public class IntegrationService {
 	// private static SimpleDateFormat hourFormat = new
 	// SimpleDateFormat("HH:mm");
 
-	public static void deleteAllPreviousTimetables() throws Exception {
+	public static void deleteAllPreviousTimetables(Campus campus)
+			throws Exception {
 		Transaction transaction = null;
 
 		try {
 			transaction = new Transaction();
 			transaction.begin();
 			TimetableDAO ttDAO = new TimetableDAO(transaction);
-			ttDAO.deleteAllPreviousTimetables(Config.getInstance().getCampus());
+			ttDAO.deleteAllPreviousTimetables(campus);
 			transaction.commit();
 		} catch (Exception e) {
 			throw e;
@@ -115,8 +116,17 @@ public class IntegrationService {
 	 */
 	public static void writeUploadFile(String fileName, byte[] data)
 			throws IOException {
-		String pathUpload = Config.getInstance().getConfig(
-				Config.CONFIG_PATH_UPLOAD);
+
+		String pathUpload = null;
+
+		if (Config.getInstance().isDebugMode()) {
+			pathUpload = Config.getInstance().getConfig(
+					"dev." + Config.CONFIG_PATH_UPLOAD);
+		} else {
+			pathUpload = Config.getInstance().getConfig(
+					Config.CONFIG_PATH_UPLOAD);
+		}
+
 		fileName = pathUpload + File.separator + fileName;
 
 		File file = new File(fileName);
@@ -136,9 +146,10 @@ public class IntegrationService {
 	 * @param xmlFileName
 	 * @throws Exception
 	 */
-	public static Integer importXml(String xmlFileName) throws Exception {
+	public static Integer importXml(Campus campus, String xmlFileName)
+			throws Exception {
 		// Remove todas as importações anteriores
-		IntegrationService.deleteAllPreviousTimetables();
+		IntegrationService.deleteAllPreviousTimetables(campus);
 
 		String fileName = Config.getInstance().getConfig(
 				Config.CONFIG_PATH_UPLOAD)
@@ -159,7 +170,7 @@ public class IntegrationService {
 		Timetable timetable = new Timetable();
 		timetable.setNomeArquivo(xmlFile.getName());
 		timetable.setDataCarregamento(Calendar.getInstance().getTime());
-		timetable.setIdCampus(Config.getInstance().getCampus());
+		timetable.setIdCampus(campus);
 
 		// Declaração de objetos
 		NodeList nodeList = null;
@@ -454,8 +465,6 @@ public class IntegrationService {
 			}
 		}
 
-		Campus campus = Config.getInstance().getCampus();
-
 		// Inicia gravação de objetos
 		Transaction trans = new Transaction();
 
@@ -538,7 +547,7 @@ public class IntegrationService {
 
 		// Relaciona professores
 		System.out.println("Relaciona Professor Pessoa...");
-		IntegrationService.relacionaProfessorPessoa();
+		IntegrationService.relacionaProfessorPessoa(campus);
 		System.out.println("Relaciona Professor Pessoa... OK");
 
 		return timetable.getIdTimetable();
@@ -556,13 +565,13 @@ public class IntegrationService {
 	 *            Código do Periodo letivo selecionado na importação do XML
 	 * @throws Exception
 	 */
-	public static void criaCalendarioAula(ReservaAdminBean bean,
-			Integer idTimeTable, Integer idPeriodoLetivo) throws Exception {
+	public static void criaCalendarioAula(Campus campus, Pessoa pessoaLogin,
+			ReservaAdminBean bean, Integer idTimeTable, Integer idPeriodoLetivo)
+			throws Exception {
 
 		// Atualiza professores
 		// IntegrationService.relacionaProfessorPessoa();
 
-		Campus campus = Config.getInstance().getCampus();
 		Transaction trans = null;
 
 		try {
@@ -609,7 +618,8 @@ public class IntegrationService {
 			System.out.println("Criando novo transacao do SIGEU...");
 
 			// Cria nova transação
-			transacao = TransacaoService.criar("Importação XML ASC TimeTables");
+			transacao = TransacaoService.criar(campus, pessoaLogin,
+					"Importação XML ASC TimeTables");
 
 			periodoLetivo.setIdTransacaoReserva(transacao);
 			periodoLetivoDAO.alterar(periodoLetivo);
@@ -635,7 +645,7 @@ public class IntegrationService {
 
 			// Responsável pelas reservas
 			// Pessoa usuarioAdmin = pessoaDAO.encontrePorId(1);
-			Pessoa usuarioAdmin = Config.getInstance().getPessoaLogin();
+			Pessoa usuarioAdmin = pessoaLogin;
 
 			if (salaDeAula == null) {
 				throw new Exception(
@@ -921,8 +931,7 @@ public class IntegrationService {
 									// QUANDO O USUÁRIO NÃO FOR IDENTIFICADO,
 									// DEFINE-SE O USUARIO LOGADO
 									if (usuario == null) {
-										usuario = Config.getInstance()
-												.getPessoaLogin();
+										usuario = pessoaLogin;
 									}
 
 									// Recupera as salas registradas no card
@@ -1041,10 +1050,8 @@ public class IntegrationService {
 
 	}
 
-	public static void relacionaProfessorPessoa() throws Exception {
+	public static void relacionaProfessorPessoa(Campus campus) throws Exception {
 		// Relaciona professores a Pessoa
-		Campus campus = Config.getInstance().getCampus();
-
 		Transaction trans = null;
 		try {
 			trans = new Transaction();
@@ -1055,8 +1062,7 @@ public class IntegrationService {
 			ProfessorPessoaDAO professorPessoaDAO = new ProfessorPessoaDAO(
 					trans);
 
-			List<Pessoa> listPessoa = pessoaDAO.pesquisa(Config.getInstance()
-					.getCampus(), null, 0);
+			List<Pessoa> listPessoa = pessoaDAO.pesquisa(campus, null, 0);
 			// List<Pessoa> listPessoa = pessoaDAO.pesquisaPorGrupo(Config
 			// .getInstance().getCampus(), "PROFESSORES", 0);
 			List<Professor> listProfessor = professorDAO.pesquisaTodos(campus);

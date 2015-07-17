@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.ItemReservaDAO;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
@@ -58,7 +58,8 @@ public class ItemReservaService {
 
 			// Anula o código de patrimônio se forem inseridos apenas espaços em
 			// branco
-			if (item.getPatrimonio() != null && item.getPatrimonio().trim().length() == 0) {
+			if (item.getPatrimonio() != null
+					&& item.getPatrimonio().trim().length() == 0) {
 				item.setPatrimonio(null);
 			} else {
 				item.setPatrimonio(item.getPatrimonio().toUpperCase().trim());
@@ -89,8 +90,9 @@ public class ItemReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<ItemReserva> pesquisar(String textoPesquisa, Boolean ativo) throws Exception {
-		return ItemReservaService.pesquisar(null, textoPesquisa, ativo);
+	public static List<ItemReserva> pesquisar(Campus campus,
+			String textoPesquisa, Boolean ativo) throws Exception {
+		return ItemReservaService.pesquisar(campus, null, textoPesquisa, ativo);
 	}
 
 	/**
@@ -140,7 +142,8 @@ public class ItemReservaService {
 			}
 
 			if (existente.getReservaList().size() > 0) {
-				throw new EntidadePossuiRelacionamentoException(existente.getNome());
+				throw new EntidadePossuiRelacionamentoException(
+						existente.getNome());
 			}
 
 			dao.remover(existente);
@@ -153,7 +156,9 @@ public class ItemReservaService {
 		}
 	}
 
-	public static List<ItemReserva> pesquisar(CategoriaItemReserva categoriaItemReserva, String textoPesquisa, Boolean ativo) throws Exception {
+	public static List<ItemReserva> pesquisar(Campus campus,
+			CategoriaItemReserva categoriaItemReserva, String textoPesquisa,
+			Boolean ativo) throws Exception {
 		List<ItemReserva> lista = null;
 
 		Transaction trans = new Transaction();
@@ -163,7 +168,8 @@ public class ItemReservaService {
 
 			ItemReservaDAO dao = new ItemReservaDAO(trans);
 
-			lista = dao.pesquisa(Config.getInstance().getCampus(), categoriaItemReserva, textoPesquisa, ativo, 0);
+			lista = dao.pesquisa(campus, categoriaItemReserva, textoPesquisa,
+					ativo, 0);
 
 			if (lista != null) {
 				for (ItemReserva c : lista) {

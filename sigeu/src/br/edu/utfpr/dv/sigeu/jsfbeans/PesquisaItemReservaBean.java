@@ -3,17 +3,22 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 
-@ManagedBean(name = "pesquisaItemReservaBean")
+@ManagedBean
 @ViewScoped
 public class PesquisaItemReservaBean extends JavaBean {
+	
+	@Inject
+	private LoginBean loginBean;
+	
 	private static final long serialVersionUID = -7332998125885395663L;
 
 	//
@@ -31,7 +36,7 @@ public class PesquisaItemReservaBean extends JavaBean {
 
 	public PesquisaItemReservaBean() {
 		try {
-			lista = ItemReservaService.pesquisar(null, null);
+			lista = ItemReservaService.pesquisar(loginBean.getCampus(), null, null);
 			// this.addInfoMessage("Pesquisar", "Exibindo  " +
 			// HibernateDAO.PESQUISA_LIMITE +
 			// " itens. Pesquise utilizando parâmetros para obter mais registros.");
@@ -46,7 +51,7 @@ public class PesquisaItemReservaBean extends JavaBean {
 	 */
 	public void pesquisa() {
 		try {
-			this.lista = ItemReservaService.pesquisar(textoPesquisa, null);
+			this.lista = ItemReservaService.pesquisar(loginBean.getCampus(), textoPesquisa, null);
 
 			// RequestContext.getCurrentInstance().update("frmPesquisa");
 			// RequestContext.getCurrentInstance().openDialog("PesquisaItemReservaModal");
@@ -96,7 +101,7 @@ public class PesquisaItemReservaBean extends JavaBean {
 
 		if (query != null && query.trim().length() > 0) {
 			try {
-				listaPessoa = PessoaService.pesquisar(query, true, 14);
+				listaPessoa = PessoaService.pesquisar(loginBean.getCampus(), query, true, 14);
 
 				if (listaPessoa != null && listaPessoa.size() > 0) {
 					for (Pessoa p : listaPessoa) {

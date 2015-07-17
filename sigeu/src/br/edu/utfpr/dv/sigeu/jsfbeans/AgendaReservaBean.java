@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
 
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
@@ -15,20 +16,20 @@ import br.edu.utfpr.dv.sigeu.entities.Period;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
-import br.edu.utfpr.dv.sigeu.exception.DestinatarioInexistenteException;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
-import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
 import br.edu.utfpr.dv.sigeu.vo.PeriodoReservaVO;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.DateUtils;
 import com.adamiworks.utils.StringUtils;
 
-@ManagedBean(name = "agendaReservaBean")
+@ManagedBean
 @ViewScoped
 public class AgendaReservaBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
 
 	private static final long serialVersionUID = -2936780347819989712L;
 
@@ -58,7 +59,7 @@ public class AgendaReservaBean extends JavaBean {
 	 */
 	private void carrega() {
 		try {
-			listaPeriod = ReservaService.getAllPeriods();
+			listaPeriod = ReservaService.getAllPeriods(loginBean.getCampus());
 			data = Calendar.getInstance().getTime();
 			formatHora = new SimpleDateFormat("HH:mm");
 			formatData = new SimpleDateFormat("dd/MM/yyyy");
@@ -77,7 +78,8 @@ public class AgendaReservaBean extends JavaBean {
 				horarioVO.setHorario(period.getOrdem(), h.toString());
 			}
 
-			listaTipoReserva = TipoReservaService.pesquisar(null, true);
+			listaTipoReserva = TipoReservaService.pesquisar(
+					loginBean.getCampus(), null, true);
 		} catch (Exception e) {
 			addErrorMessage("Iniciar", "Erro ao carregar tela!");
 			e.printStackTrace();
@@ -95,7 +97,8 @@ public class AgendaReservaBean extends JavaBean {
 		listaItemReserva = null;
 
 		try {
-			listaItemReserva = ItemReservaService.pesquisar(query, true);
+			listaItemReserva = ItemReservaService.pesquisar(
+					loginBean.getCampus(), query, true);
 
 			if (listaItemReserva != null && listaItemReserva.size() > 0) {
 				for (ItemReserva i : listaItemReserva) {
@@ -149,7 +152,7 @@ public class AgendaReservaBean extends JavaBean {
 
 			try {
 				CategoriaItemReserva categoria = null;
-				
+
 				if (itemReserva != null) {
 					categoria = itemReserva.getIdCategoria();
 				}
@@ -157,7 +160,8 @@ public class AgendaReservaBean extends JavaBean {
 				listaReservaVO = new ArrayList<ReservaVO>();
 
 				listaReserva = ReservaService.pesquisaReservasEfetivadasDoDia(
-						data, tipoReserva, categoria, itemReserva, nomeUsuario);
+						loginBean.getCampus(), data, tipoReserva, categoria,
+						itemReserva, nomeUsuario);
 
 				if (listaReserva.size() > 0) {
 					reservaParaAgenda();
@@ -257,26 +261,6 @@ public class AgendaReservaBean extends JavaBean {
 			}
 		}
 		System.out.println("---> Recursos: " + listaPeriodoReservaVO.size());
-	}
-
-	/**
-	 * Método de teste para envio de e-mails
-	 */
-	@Deprecated
-	public void sendMail() {
-		MensagemEmail email = new MensagemEmail();
-
-		String msg = "<html><body><br/><h2>Confirmação de Reservas<h2><table><tr><td><b>DATA<b><td><td><b>DIA DA SEMANA<b><td><td><b>RECURSO<b><td><td><b>HORÁRIO<b><td><td><b>USUÁRIO<b><td><td><b>TIPO<b><td><td><b>MOTIVO<b><td><tr><tr><td><b>17/04/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>24/04/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>01/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>08/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>15/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>22/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>29/05/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>05/06/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>12/06/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>19/06/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><tr><td><b>26/06/2015<b><td><td>Sexta-Feira<td><td>Sala de Aula<td><td>08:00hs - 09:00hs<td><td>RENATA DA SILVA DESSBESEL<td><td>Aula de Reposição<td><td>Aula de reposição de matemática (indução de inteiros, cálculo diferencial integral entre outros). (TESTE)<td><tr><table><br/><br/><h3>SIGEU - Sistema Integrado de Gestão Universitária<h3><body></html>";
-
-		try {
-			email.criaMensagemHtml("tiagoadami@utfpr.edu.br",
-					"derdi-dv@utfpr.edu.br", "Texto Simples", msg);
-			email.enviaMensagens();
-		} catch (DestinatarioInexistenteException e1) {
-			e1.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public List<Reserva> getListaReserva() {

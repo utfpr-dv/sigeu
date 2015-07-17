@@ -2,13 +2,13 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.bean.ManagedBean;
 
 import br.edu.utfpr.dv.sigeu.entities.LdapServer;
 import br.edu.utfpr.dv.sigeu.service.LdapServerService;
 
-@ManagedBean(name = "pesquisaLdapServerBean")
+@ManagedBean
 @ViewScoped
 public class PesquisaLdapServerBean extends JavaBean {
 

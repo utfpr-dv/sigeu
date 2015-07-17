@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.hibernate.Query;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Timetable;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
@@ -18,9 +17,8 @@ public class TimetableDAO extends HibernateDAO<Timetable> {
 
 	@Override
 	public Timetable encontrePorId(Integer id) {
-		String hql = "from Timetable o where o.idCampus = :idCampus and o.idTimetable = :id";
+		String hql = "from Timetable o where o.idTimetable = :id";
 		Query q = session.createQuery(hql);
-		q.setInteger("idCampus", Config.getInstance().getCampus().getIdCampus());
 		q.setInteger("id", id);
 		return (Timetable) q.uniqueResult();
 	}
@@ -39,7 +37,7 @@ public class TimetableDAO extends HibernateDAO<Timetable> {
 	public List<Timetable> getAll(Campus campus) {
 		String hql = "from Timetable o where o.idCampus = :idCampus";
 		Query q = session.createQuery(hql);
-		q.setInteger("idCampus", Config.getInstance().getCampus().getIdCampus());
+		q.setInteger("idCampus", campus.getIdCampus());
 		return this.pesquisaObjetos(q, 0);
 	}
 
@@ -99,6 +97,6 @@ public class TimetableDAO extends HibernateDAO<Timetable> {
 	@Override
 	public void preAlteracao(Timetable o) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -2,13 +2,13 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.bean.ManagedBean;
 
 import br.edu.utfpr.dv.sigeu.entities.Instituicao;
 import br.edu.utfpr.dv.sigeu.service.InstituicaoService;
 
-@ManagedBean(name = "pesquisaInstituicaoBean")
+@ManagedBean
 @ViewScoped
 public class PesquisaInstituicaoBean extends JavaBean {
 	private static final long serialVersionUID = -7332998115885395433L;

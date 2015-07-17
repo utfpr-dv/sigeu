@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import br.edu.utfpr.dv.sigeu.config.Config;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
@@ -23,8 +24,9 @@ public class EmailService {
 	 * @param reserva
 	 * @throws Exception
 	 */
-	public static void enviaEmailConfirmacao(Reserva reserva) throws Exception {
-		MensagemEmail email = new MensagemEmail();
+	public static void enviaEmailConfirmacao(Campus campus, Reserva reserva)
+			throws Exception {
+		MensagemEmail email = new MensagemEmail(campus);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
@@ -133,14 +135,14 @@ public class EmailService {
 	 * @param listaReservas
 	 * @throws Exception
 	 */
-	public static void enviaEmailConfirmacao(List<Reserva> listaReservas)
-			throws Exception {
+	public static void enviaEmailConfirmacao(Campus campus,
+			List<Reserva> listaReservas) throws Exception {
 		Collections.sort(listaReservas, new ReservaDataComparator());
 
 		for (Reserva reserva2 : listaReservas) {
 			if (reserva2.getStatus()
 					.equals(StatusReserva.EFETIVADA.getStatus())) {
-				EmailService.enviaEmailConfirmacao(reserva2);
+				EmailService.enviaEmailConfirmacao(campus, reserva2);
 			}
 		}
 	}
@@ -152,13 +154,14 @@ public class EmailService {
 	 * @param motivoCancelamento
 	 * @throws Exception
 	 */
-	public static void enviaEmailCancelamento(Reserva reserva,
-			String motivoCancelamento) throws Exception {
-		MensagemEmail email = new MensagemEmail();
+	public static void enviaEmailCancelamento(Campus campus,
+			Pessoa pessoaLogin, Reserva reserva, String motivoCancelamento)
+			throws Exception {
+		MensagemEmail email = new MensagemEmail(campus);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-		Pessoa pessoa = Config.getInstance().getPessoaLogin();
+		Pessoa pessoa = pessoaLogin;
 
 		// Collections.sort(reserva, new ReservaDataComparator());
 
@@ -258,15 +261,16 @@ public class EmailService {
 	 * @param motivoCancelamento
 	 * @throws Exception
 	 */
-	public static void enviaEmailCancelamento(List<Reserva> listaReservas,
+	public static void enviaEmailCancelamento(Campus campus,
+			Pessoa pessoaLogin, List<Reserva> listaReservas,
 			String motivoCancelamento) throws Exception {
 		Collections.sort(listaReservas, new ReservaDataComparator());
 
 		for (Reserva reserva2 : listaReservas) {
 			if (reserva2.getStatus()
 					.equals(StatusReserva.CANCELADA.getStatus())) {
-				EmailService.enviaEmailCancelamento(reserva2,
-						motivoCancelamento);
+				EmailService.enviaEmailCancelamento(campus, pessoaLogin,
+						reserva2, motivoCancelamento);
 			}
 		}
 	}
@@ -277,7 +281,7 @@ public class EmailService {
 	 * @param autorizador
 	 * @param itemReserva
 	 */
-	public static void enviaEmailAutorizador(Pessoa autorizador,
+	public static void enviaEmailAutorizador(Campus campus, Pessoa autorizador,
 			ItemReserva itemReserva) {
 		try {
 			String emailAutorizador = autorizador.getEmail();
@@ -300,7 +304,7 @@ public class EmailService {
 			sb.append("Você recebeu este e-mail porque está cadastrado como responsável pelas reservas do item supracitado.\n\n");
 			sb.append("Caso haja algum engano, por gentileza entre em contato com o administrador do sistema.");
 
-			MensagemEmail email = new MensagemEmail();
+			MensagemEmail email = new MensagemEmail(campus);
 
 			// Envia mensagem para o autorizador
 			email.criaMensagemTextoSimples(emailAutorizador, null, assunto,

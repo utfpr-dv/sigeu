@@ -5,22 +5,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.context.RequestContext;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.service.EmailService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
-@ManagedBean(name = "cancelaReservaBean")
+@ManagedBean
 @ViewScoped
 public class CancelaReservaBean extends JavaBean {
+
+	@Inject
+	private LoginBean loginBean;
 
 	private static final long serialVersionUID = 6166875342336109321L;
 
@@ -61,8 +64,8 @@ public class CancelaReservaBean extends JavaBean {
 	 * @param idTransacao
 	 */
 	private void carregaLista(Integer idTransacao) {
-		listaReservaVO = ReservaService.listaReservaPorTransacao(Config
-				.getInstance().getCampus(), idTransacao);
+		listaReservaVO = ReservaService.listaReservaPorTransacao(
+				loginBean.getCampus(), idTransacao);
 		// System.out.println(">>> Carregou " + listaReservaVO.size() +
 		// " reservas");
 	}
@@ -93,7 +96,8 @@ public class CancelaReservaBean extends JavaBean {
 			}
 
 			try {
-				EmailService.enviaEmailCancelamento(listExcluir,
+				EmailService.enviaEmailCancelamento(loginBean.getCampus(),
+						loginBean.getPessoaLogin(), listExcluir,
 						motivoCancelamento);
 			} catch (Exception e) {
 				addErrorMessage("Erro",

@@ -1,18 +1,22 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 
-@ManagedBean(name = "periodoLetivoBean")
+@ManagedBean
 @ViewScoped
 public class PeriodoLetivoBean extends JavaBean {
+
+	@Inject
+	private LoginBean loginBean;
+	
 	private static final long serialVersionUID = -7332998125045395663L;
 
 	private Integer editarId = null;
@@ -22,7 +26,8 @@ public class PeriodoLetivoBean extends JavaBean {
 	public PeriodoLetivoBean() {
 		periodoLetivo = new PeriodoLetivo();
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest req = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
 
 		try {
 			this.editarId = Integer.valueOf(req.getParameter("editarId"));
@@ -32,11 +37,13 @@ public class PeriodoLetivoBean extends JavaBean {
 
 		if (this.editarId != null) {
 			try {
-				periodoLetivo = PeriodoLetivoService.encontrePorId(this.editarId);
+				periodoLetivo = PeriodoLetivoService
+						.encontrePorId(this.editarId);
 
 				if (periodoLetivo == null) {
 					periodoLetivo = new PeriodoLetivo();
-					this.addInfoMessage("Carregar", " " + this.editarId + " inexistente.");
+					this.addInfoMessage("Carregar", " " + this.editarId
+							+ " inexistente.");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -50,11 +57,12 @@ public class PeriodoLetivoBean extends JavaBean {
 	 * dados se ela já existir
 	 */
 	public void gravar() {
-		periodoLetivo.setIdCampus(Config.getInstance().getCampus());
+		periodoLetivo.setIdCampus(loginBean.getCampus());
 
 		try {
 			PeriodoLetivoService.persistir(periodoLetivo);
-			String msg = "PeriodoLetivo " + periodoLetivo.getIdPeriodoLetivo() + "-" + periodoLetivo.getNome() + " gravado com sucesso!";
+			String msg = "PeriodoLetivo " + periodoLetivo.getIdPeriodoLetivo()
+					+ "-" + periodoLetivo.getNome() + " gravado com sucesso!";
 			periodoLetivo = new PeriodoLetivo();
 
 			addInfoMessage("Gravar", msg);
@@ -71,15 +79,18 @@ public class PeriodoLetivoBean extends JavaBean {
 	 */
 	public void excluir() {
 		if (periodoLetivo.getIdPeriodoLetivo() == null) {
-			addInfoMessage("Excluir", "Período Letivo ainda não foi incluído no banco de dados.");
+			addInfoMessage("Excluir",
+					"Período Letivo ainda não foi incluído no banco de dados.");
 		} else {
 			try {
 				String old = periodoLetivo.getNome();
 				PeriodoLetivoService.remover(periodoLetivo);
 				periodoLetivo = new PeriodoLetivo();
-				this.addInfoMessage("Excluir", "Período Letivo " + old + " excluído com sucesso!");
+				this.addInfoMessage("Excluir", "Período Letivo " + old
+						+ " excluído com sucesso!");
 			} catch (EntidadePossuiRelacionamentoException e) {
-				this.addWarnMessage("Excluir", "Período Letivo já possui relacionamentos. Solicite exclusão ao admin.");
+				this.addWarnMessage("Excluir",
+						"Período Letivo já possui relacionamentos. Solicite exclusão ao admin.");
 			} catch (Exception e) {
 				this.addErrorMessage("Excluir", "Erro ao tentar excluir .");
 			}

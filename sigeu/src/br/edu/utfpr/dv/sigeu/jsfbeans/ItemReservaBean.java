@@ -3,21 +3,24 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.service.CategoriaItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 
-@ManagedBean(name = "itemReservaBean")
+@ManagedBean
 @ViewScoped
 public class ItemReservaBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
+	
 	private static final long serialVersionUID = -7332998125885395663L;
 
 	private Integer editarId = null;
@@ -63,7 +66,7 @@ public class ItemReservaBean extends JavaBean {
 	 * dados se ela já existir
 	 */
 	public void gravar() {
-		itemReserva.setIdCampus(Config.getInstance().getCampus());
+		itemReserva.setIdCampus(loginBean.getCampus());
 
 		try {
 			ItemReservaService.persistir(itemReserva);
@@ -121,7 +124,7 @@ public class ItemReservaBean extends JavaBean {
 		listaCategoria = null;
 
 		try {
-			listaCategoria = CategoriaItemReservaService.pesquisar(query, true);
+			listaCategoria = CategoriaItemReservaService.pesquisar(loginBean.getCampus(), query, true);
 
 			for (CategoriaItemReserva i : listaCategoria) {
 				list.add(i.getNome());

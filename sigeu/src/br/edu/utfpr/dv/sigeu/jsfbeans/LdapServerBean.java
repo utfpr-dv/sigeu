@@ -3,9 +3,9 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 
 import br.edu.utfpr.dv.sigeu.entities.Campus;
@@ -16,7 +16,7 @@ import br.edu.utfpr.dv.sigeu.service.CampusService;
 import br.edu.utfpr.dv.sigeu.service.InstituicaoService;
 import br.edu.utfpr.dv.sigeu.service.LdapServerService;
 
-@ManagedBean(name = "ldapServerBean")
+@ManagedBean
 @ViewScoped
 public class LdapServerBean extends JavaBean {
 

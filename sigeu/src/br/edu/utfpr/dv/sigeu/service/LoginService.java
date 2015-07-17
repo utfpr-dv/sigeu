@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.naming.NamingException;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.LdapServerDAO;
 import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
@@ -69,13 +68,6 @@ public class LoginService {
 							+ ")");
 		}
 
-		// Define o objeto Campus do Singleton para uso
-		if (admin) {
-			Config.getInstance().setCampus(campus);
-		} else {
-			Config.getInstance().setCampus(ldap.getIdCampus());
-		}
-
 		boolean novo = false;
 
 		if (admin) {
@@ -132,7 +124,8 @@ public class LoginService {
 			List<String> nomeGrupos = ldapUtils.getLdapOuByUid(uid, baseDn);
 
 			for (String s : nomeGrupos) {
-				GrupoPessoa gp = GrupoPessoaService.encontrePorDescricao(s);
+				GrupoPessoa gp = GrupoPessoaService.encontrePorDescricao(
+						campus, s);
 
 				if (gp == null) {
 					gp = new GrupoPessoa();
@@ -190,8 +183,6 @@ public class LoginService {
 			}
 
 		}
-		// Define a pessoa logada na sessão
-		Config.getInstance().setPessoaLogin(pessoa);
 
 		return pessoa;
 

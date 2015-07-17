@@ -2,15 +2,19 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
 
-@ManagedBean(name = "pesquisaTipoReservaBean")
+@ManagedBean
 @ViewScoped
 public class PesquisaTipoReservaBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
+	
 	private static final long serialVersionUID = -7332998125885395663L;
 
 	//
@@ -21,7 +25,7 @@ public class PesquisaTipoReservaBean extends JavaBean {
 
 	public PesquisaTipoReservaBean() {
 		try {
-			listaTipoReserva = TipoReservaService.pesquisar(null, null);
+			listaTipoReserva = TipoReservaService.pesquisar(loginBean.getCampus(), null, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -32,7 +36,7 @@ public class PesquisaTipoReservaBean extends JavaBean {
 	 */
 	public void pesquisa() {
 		try {
-			this.listaTipoReserva = TipoReservaService.pesquisar(textoPesquisa, null);
+			this.listaTipoReserva = TipoReservaService.pesquisar(loginBean.getCampus(), textoPesquisa, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			addErrorMessage("Pesquisar","Erro na pesquisa");

@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.ProfessorDAO;
 import br.edu.utfpr.dv.sigeu.dao.ProfessorPessoaDAO;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Professor;
 import br.edu.utfpr.dv.sigeu.entities.ProfessorPessoa;
@@ -21,7 +21,7 @@ public class ProfessorService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Professor> pesquisar(String textoPesquisa)
+	public static List<Professor> pesquisar(Campus campus, String textoPesquisa)
 			throws Exception {
 		List<Professor> lista = null;
 
@@ -31,8 +31,7 @@ public class ProfessorService {
 			trans.begin();
 
 			ProfessorDAO dao = new ProfessorDAO(trans);
-			lista = dao.pesquisa(Config.getInstance().getCampus(),
-					textoPesquisa);
+			lista = dao.pesquisa(campus, textoPesquisa);
 
 			if (lista != null && lista.size() > 0) {
 				for (Professor p : lista) {

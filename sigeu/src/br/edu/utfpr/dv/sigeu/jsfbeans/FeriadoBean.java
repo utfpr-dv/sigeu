@@ -3,19 +3,22 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Feriado;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.service.FeriadoService;
 
-@ManagedBean(name = "feriadoBean")
+@ManagedBean
 @ViewScoped
 public class FeriadoBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
+	
 	private static final long serialVersionUID = -7332998125885395663L;
 
 	private Integer editarId = null;
@@ -57,7 +60,7 @@ public class FeriadoBean extends JavaBean {
 	 * dados se ela já existir
 	 */
 	public String gravar() {
-		feriado.setIdCampus(Config.getInstance().getCampus());
+		feriado.setIdCampus(loginBean.getCampus());
 
 		try {
 			if (dataFinal != null) {

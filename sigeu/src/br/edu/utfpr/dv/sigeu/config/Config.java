@@ -8,20 +8,16 @@ import javax.faces.context.FacesContext;
 
 import com.adamiworks.utils.FileUtils;
 
-import br.edu.utfpr.dv.sigeu.entities.Campus;
-import br.edu.utfpr.dv.sigeu.entities.Pessoa;
-
 public class Config {
 
 	public static final String APPLICATION_URL = "http://sigeu.dv.utfpr.edu.br";
 	public static final String APPLICATION_NAME = "Sistema Integrado de Gestão Universitária";
 	public static final String APPLICATION_CODE = "SIGEU";
 	public static final String CONFIG_PATH_UPLOAD = "path.upload";
+	public static final String CONFIG_FILE = "sigeu.properties";
 	//
 	private static Config self;
 	//
-	private Campus campus;
-	private Pessoa pessoaLogin;
 	private Properties config;
 	private boolean debugMode;
 	private int threadMax = 2;
@@ -33,7 +29,7 @@ public class Config {
 	private Config() {
 		// Lê arquivo de configurações
 		try {
-			config = FileUtils.getPropertiesFromClasspath("sigeu.properties");
+			config = FileUtils.getPropertiesFromClasspath(CONFIG_FILE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -101,22 +97,6 @@ public class Config {
 		Map<String, Object> map = FacesContext.getCurrentInstance()
 				.getExternalContext().getSessionMap();
 		return map.get(key);
-	}
-
-	public Campus getCampus() {
-		return campus;
-	}
-
-	public void setCampus(Campus campus) {
-		this.campus = campus;
-	}
-
-	public Pessoa getPessoaLogin() {
-		return pessoaLogin;
-	}
-
-	public void setPessoaLogin(Pessoa pessoaLogin) {
-		this.pessoaLogin = pessoaLogin;
 	}
 
 	public boolean isDebugMode() {

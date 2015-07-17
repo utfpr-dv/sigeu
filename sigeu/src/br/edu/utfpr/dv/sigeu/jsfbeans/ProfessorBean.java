@@ -3,9 +3,10 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
@@ -13,9 +14,11 @@ import br.edu.utfpr.dv.sigeu.entities.Professor;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 import br.edu.utfpr.dv.sigeu.service.ProfessorService;
 
-@ManagedBean(name = "professorBean")
+@ManagedBean
 @ViewScoped
 public class ProfessorBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
 
 	private static final long serialVersionUID = -4044653509641476L;
 	private Integer editarId = null;
@@ -99,7 +102,7 @@ public class ProfessorBean extends JavaBean {
 			// listaPessoa = PessoaService
 			// .pesquisar(query, true, "PROFESSORES", 0);
 
-			listaPessoa = PessoaService.pesquisar(query, true, 0);
+			listaPessoa = PessoaService.pesquisar(loginBean.getCampus(), query, true, 0);
 
 			if (listaPessoa != null && listaPessoa.size() > 0) {
 				for (Pessoa i : listaPessoa) {

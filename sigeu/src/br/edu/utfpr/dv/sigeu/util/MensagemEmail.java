@@ -3,7 +3,7 @@ package br.edu.utfpr.dv.sigeu.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.MailServer;
 import br.edu.utfpr.dv.sigeu.exception.DestinatarioInexistenteException;
 import br.edu.utfpr.dv.sigeu.service.MailServerService;
@@ -15,12 +15,15 @@ import com.adamiworks.utils.mailsender.MailSenderMessage;
 
 public class MensagemEmail {
 
-	private static final byte[] MAIL_KEY_PASSWORD = { -112, 78, -12, 45, -13, 51, -84, 8 };
+	private static final byte[] MAIL_KEY_PASSWORD = { -112, 78, -12, 45, -13,
+			51, -84, 8 };
 
 	private List<MailSenderMessage> mensagens;
 
-	public MensagemEmail() {
-		//
+	private Campus campus;
+
+	public MensagemEmail(Campus campus) {
+		this.campus = campus;
 	}
 
 	/**
@@ -33,7 +36,8 @@ public class MensagemEmail {
 	 * @param conteudo
 	 * @throws DestinatarioInexistenteException
 	 */
-	public void criaMensagemTextoSimples(String to, String cc, String assunto, String conteudo) throws DestinatarioInexistenteException {
+	public void criaMensagemTextoSimples(String to, String cc, String assunto,
+			String conteudo) throws DestinatarioInexistenteException {
 		String aTo[] = new String[] { to };
 		String aCc[] = new String[] { cc };
 		this.criaMensagem(aTo, aCc, null, assunto, conteudo, false, null);
@@ -49,7 +53,8 @@ public class MensagemEmail {
 	 * @param html
 	 * @throws DestinatarioInexistenteException
 	 */
-	public void criaMensagemHtml(String to, String cc, String assunto, String html) throws DestinatarioInexistenteException {
+	public void criaMensagemHtml(String to, String cc, String assunto,
+			String html) throws DestinatarioInexistenteException {
 		String aTo[] = new String[] { to };
 		String aCc[] = new String[] { cc };
 		this.criaMensagem(aTo, aCc, null, assunto, html, true, null);
@@ -68,7 +73,9 @@ public class MensagemEmail {
 	 * @param pathArquivosAnexos
 	 * @throws DestinatarioInexistenteException
 	 */
-	public void criaMensagem(String to[], String cc[], String bcc[], String assunto, String conteudo, boolean conteudoHtml, List<String> pathArquivosAnexos)
+	public void criaMensagem(String to[], String cc[], String bcc[],
+			String assunto, String conteudo, boolean conteudoHtml,
+			List<String> pathArquivosAnexos)
 			throws DestinatarioInexistenteException {
 		if (to == null && cc == null && bcc == null) {
 			throw new DestinatarioInexistenteException();
@@ -131,11 +138,14 @@ public class MensagemEmail {
 		try {
 			cu = new CryptoUtils(CryptoMode.DES, MAIL_KEY_PASSWORD);
 
-			MailServer server = MailServerService.encontrePorCampus(Config.getInstance().getCampus());
+			MailServer server = MailServerService.encontrePorCampus(campus);
 			String password = cu.decrypt(server.getPassword());
 
-			MailSender sender = new MailSender(server.getAuthenticationRequired(), server.getHost(), server.getPort(), server.getSsl(), server.getStarttls(),
-					server.getPlainTextOverTls(), server.getFromEmail(), server.getUserName(), password);
+			MailSender sender = new MailSender(
+					server.getAuthenticationRequired(), server.getHost(),
+					server.getPort(), server.getSsl(), server.getStarttls(),
+					server.getPlainTextOverTls(), server.getFromEmail(),
+					server.getUserName(), password);
 
 			for (MailSenderMessage message : mensagens) {
 				sender.addMessage(message);

@@ -2,15 +2,18 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.faces.bean.ManagedBean;
 
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 
-@ManagedBean(name = "pesquisaPessoaBean")
+@ManagedBean
 @ViewScoped
 public class PesquisaPessoaBean extends JavaBean {
+	@Inject
+	private LoginBean loginBean;
 
 	private static final long serialVersionUID = -6452041264020252302L;
 	//
@@ -21,7 +24,7 @@ public class PesquisaPessoaBean extends JavaBean {
 
 	public PesquisaPessoaBean() {
 		try {
-			lista = PessoaService.pesquisar(null);
+			lista = PessoaService.pesquisar(loginBean.getCampus(), null);
 			//this.addInfoMessage("Pesquisar", "Exibindo  " + HibernateDAO.PESQUISA_LIMITE + " itens. Pesquise utilizando parâmetros para obter mais registros.");
 		} catch (Exception e) {
 			//this.addErrorMessage("Pesquisar", "Erro ao realizar pesquisa inicial. Entre em contato com o Admin.");
@@ -33,7 +36,7 @@ public class PesquisaPessoaBean extends JavaBean {
 	 */
 	public void pesquisa() {
 		try {
-			this.lista = PessoaService.pesquisar(textoPesquisa);
+			this.lista = PessoaService.pesquisar(loginBean.getCampus(), textoPesquisa);
 		} catch (Exception e) {
 			e.printStackTrace();
 			addErrorMessage("Pesquisar", "Erro na pesquisa");

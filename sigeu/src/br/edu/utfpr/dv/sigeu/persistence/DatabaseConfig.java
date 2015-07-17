@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import br.edu.utfpr.dv.sigeu.config.Config;
+
 import com.adamiworks.utils.FileUtils;
 
 /**
@@ -17,11 +19,9 @@ import com.adamiworks.utils.FileUtils;
  */
 public class DatabaseConfig {
 	private static DatabaseConfig self;
-	public static final String CONFIG_FOLDER = "config";
-	public static final String DATABASE_CONFIG_FILENAME = "database.properties";
 
 	//
-	//private String appPath;
+	// private String appPath;
 	private Properties databaseProperties;
 
 	//
@@ -33,39 +33,14 @@ public class DatabaseConfig {
 	 * @throws FileNotFoundException
 	 */
 	private DatabaseConfig() {
-		// // Identifica o local do projeto
-		// StringBuilder sbAppPath = new StringBuilder();
-		//
-		// if (OSUtils.currentInstance().isWindows()) {
-		// Map<String, String> env = System.getenv();
-		// String pf = env.get("ProgramFiles");
-		// sbAppPath.append(pf).append(File.separator).append(Config.APPLICATION_CODE);
-		// } else if (OSUtils.currentInstance().isMac()) {
-		// sbAppPath.append(File.separator).append("Applications").append(File.separator).append(Config.APPLICATION_CODE);
-		// } else if (OSUtils.currentInstance().isUnix() ||
-		// OSUtils.currentInstance().isSolaris()) {
-		// sbAppPath.append(File.separator).append("etc").append(File.separator).append(Config.APPLICATION_CODE);
-		// }
-		//
-		// this.appPath = sbAppPath.toString();
-		//
-
-		// Carrega arquivo de configurações de banco de dados
-		// File databaseConfigFile = new File(appPath + File.separator +
-		// CONFIG_FOLDER + File.separator + DATABASE_CONFIG_FILENAME);
-		// File databaseConfigFile = new File("database.properties");
-		// databaseProperties = new Properties();
-
 		try {
-			databaseProperties = FileUtils.getPropertiesFromClasspath("database.properties");
-			// databaseProperties.load(new FileInputStream(databaseConfigFile));
+			databaseProperties = FileUtils
+					.getPropertiesFromClasspath(Config.CONFIG_FILE);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//
-
 	}
 
 	/**
@@ -100,6 +75,10 @@ public class DatabaseConfig {
 	 * @return
 	 */
 	public String getProperty(DatabaseParameter p) {
+		if (Config.getInstance().isDebugMode()) {
+			return this.databaseProperties.getProperty("dev."
+					+ p.getParameter());
+		}
 		return this.databaseProperties.getProperty(p.getParameter());
 	}
 

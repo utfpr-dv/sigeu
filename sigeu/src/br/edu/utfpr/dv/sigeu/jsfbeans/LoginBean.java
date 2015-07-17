@@ -1,8 +1,8 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import javax.naming.CommunicationException;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.hibernate.exception.GenericJDBCException;
 
 import br.edu.utfpr.dv.sigeu.config.Config;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
@@ -20,8 +21,12 @@ import br.edu.utfpr.dv.sigeu.util.LoginFilter;
 
 import com.adamiworks.utils.StringUtils;
 
-@ManagedBean(name = "loginBean")
+@Named
 @SessionScoped
+/*
+ * ATENÇÃO: Quando se usa named Bean precisa ser
+ * javax.enterprise.context.SessionScoped
+ */
 public class LoginBean extends JavaBean {
 	private static final long serialVersionUID = 6545494024577623349L;
 
@@ -33,19 +38,18 @@ public class LoginBean extends JavaBean {
 
 	private Pessoa pessoaLogin;
 
+	// Usado quando for escolher outro campus diferente do campus de cadastro da
+	// pessoa
+	private Campus campus;
+
 	public String login() {
 		boolean ok = true;
+
+		System.out.println(email + "/" + password);
 
 		this.serverInfo = "Server: "
 				+ DatabaseConfig.getInstance().getProperty(
 						DatabaseParameter.DATABASE_URL);
-
-		// int posAt = this.email.indexOf("@");
-
-		// if (posAt < 0 || posAt == 0 || posAt == email.length() - 1) {
-		// this.addErrorMessage("E-Mail", "[" + email
-		// + "] não é um endereço de e-mail válido.");
-		// } else {
 
 		try {
 			pessoaLogin = LoginService.autentica(email, password);
@@ -63,10 +67,15 @@ public class LoginBean extends JavaBean {
 					HttpServletRequest request = (HttpServletRequest) FacesContext
 							.getCurrentInstance().getExternalContext()
 							.getRequest();
-					request.getSession().setAttribute(
-							LoginFilter.SESSION_USUARIO_AUTENTICADO, email);
 
-					// FacesContext.getCurrentInstance().getExternalContext().redirect("/restrito/Home.xhtml");
+					request.getSession().setAttribute(
+							LoginFilter.SESSION_EMAIL_LOGIN, email);
+
+					request.getSession().setAttribute(
+							LoginFilter.SESSION_PESSOA_LOGIN, pessoaLogin);
+
+					// TODO - Por enquanto campus é o mesmo da pessoa de login
+					campus = pessoaLogin.getIdCampus();
 				}
 			}
 		} catch (CommunicationException e) {
@@ -111,8 +120,7 @@ public class LoginBean extends JavaBean {
 		HttpServletRequest request = (HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest();
 
-		request.getSession().removeAttribute(
-				LoginFilter.SESSION_USUARIO_AUTENTICADO);
+		request.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
 
 		return "/Logoff";
 	}
@@ -161,6 +169,14 @@ public class LoginBean extends JavaBean {
 
 	public void setServerInfo(String serverInfo) {
 		this.serverInfo = serverInfo;
+	}
+
+	public Campus getCampus() {
+		return campus;
+	}
+
+	public void setCampus(Campus campus) {
+		this.campus = campus;
 	}
 
 }

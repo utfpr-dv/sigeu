@@ -11,7 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.edu.utfpr.dv.sigeu.config.Config;
+import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 
 public class AdminFilter implements Filter {
 
@@ -29,18 +29,16 @@ public class AdminFilter implements Filter {
 		HttpServletRequest requestHttp = ((HttpServletRequest) request);
 
 		String uri = "";
-		// String queryString = "";
+		Pessoa pessoaLogin = null;
 
 		if (request instanceof HttpServletRequest) {
 			uri = requestHttp.getRequestURI();
-			// url = ((HttpServletRequest) request).getRequestURL().toString();
-			// queryString = ((HttpServletRequest) request).getQueryString();
+			pessoaLogin = (Pessoa) requestHttp.getSession().getAttribute(
+					LoginFilter.SESSION_PESSOA_LOGIN);
 		}
 
-		// System.out.println("URI: " + uri);
-
 		if (uri.startsWith("/sigeu/admin/")) {
-			loginOk = Config.getInstance().getPessoaLogin().getAdmin();
+			loginOk = pessoaLogin.getAdmin();
 		} else {
 			loginOk = true;
 		}
