@@ -2,14 +2,15 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class PesquisaPeriodoLetivoBean extends JavaBean {
 	@Inject

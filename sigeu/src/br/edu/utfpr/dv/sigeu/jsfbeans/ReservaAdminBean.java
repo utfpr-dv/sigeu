@@ -2,11 +2,11 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 
 import org.apache.commons.io.IOUtils;
+import org.omnifaces.cdi.ViewScoped;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -14,7 +14,7 @@ import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.service.IntegrationService;
 import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class ReservaAdminBean extends JavaBean {
 	@Inject

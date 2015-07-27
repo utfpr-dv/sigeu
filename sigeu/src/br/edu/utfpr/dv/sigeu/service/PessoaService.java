@@ -110,6 +110,13 @@ public class PessoaService {
 		Pessoa p;
 		try {
 			p = dao.encontrePorEmail(email, campus);
+
+			if (p != null) {
+				Hibernate.initialize(p.getIdCampus());
+				Hibernate.initialize(p.getIdCampus().getIdInstituicao());
+				Hibernate.initialize(p.getGrupoPessoaList());
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

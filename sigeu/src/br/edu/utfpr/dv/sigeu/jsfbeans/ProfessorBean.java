@@ -3,18 +3,19 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Professor;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 import br.edu.utfpr.dv.sigeu.service.ProfessorService;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class ProfessorBean extends JavaBean {
 	@Inject

@@ -6,10 +6,10 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
@@ -31,7 +31,7 @@ import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.StringUtils;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class ReservaBean extends JavaBean {
 
@@ -74,8 +74,6 @@ public class ReservaBean extends JavaBean {
 	private List<TipoReserva> listaTipoReserva;
 	private RepeticaoReservaEnum repeticaoReservaEnum;
 
-	@ManagedProperty(value = "#{loginBean.pessoaLogin}")
-	private Pessoa pessoaLogin;
 	//
 	// Objetos de controle dos campos de autocompletar
 	private List<CategoriaItemReserva> listaCategoriaItemReserva;
@@ -88,14 +86,12 @@ public class ReservaBean extends JavaBean {
 
 	public ReservaBean() {
 		super();
-		// System.out.println("----> ReservaBean CONSTRUCTOR");
-		this.limpa(true, true);
 	}
 
 	@PostConstruct
-	public void teste() {
-		// System.out.println("ADMIN = " +
-		// loginBean.getPessoaLogin().getAdmin());
+	public void init() {
+		System.out.println("E-mail: " + loginBean.getEmail());
+		this.limpa(true, true);
 	}
 
 	public String reservar() {
@@ -350,7 +346,8 @@ public class ReservaBean extends JavaBean {
 							// Preenche lista das minhas reservas
 							this.listaMinhasReservas = ReservaService
 									.pesquisaReservasEfetivadasDoUsuario(
-											loginBean.getCampus(), pessoaLogin,
+											loginBean.getCampus(),
+											loginBean.getPessoaLogin(),
 											campoData, categoriaItemReserva,
 											itemReserva, campoImportadas);
 
@@ -440,7 +437,7 @@ public class ReservaBean extends JavaBean {
 		reserva.setHoraFim(campoHoraFinal);
 		reserva.setHoraInicio(campoHoraInicial);
 		reserva.setIdCampus(loginBean.getCampus());
-		reserva.setIdPessoa(pessoaLogin);
+		reserva.setIdPessoa(loginBean.getPessoaLogin());
 		reserva.setIdItemReserva(itemReservaGravacao);
 		reserva.setMotivo(motivo);
 
@@ -450,7 +447,7 @@ public class ReservaBean extends JavaBean {
 
 				// addWarnMessage("Usuário",
 				// "Informe o usuário da reserva (quem irá utilizar).");
-				reserva.setIdUsuario(pessoaLogin);
+				reserva.setIdUsuario(loginBean.getPessoaLogin());
 				reserva.setNomeUsuario(campoUsuario);
 			} else {
 				reserva.setIdUsuario(usuario);
@@ -466,9 +463,9 @@ public class ReservaBean extends JavaBean {
 			}
 			reserva.setEmailNotificacao(emailNotificacao);
 		} else {
-			reserva.setIdUsuario(pessoaLogin);
-			reserva.setNomeUsuario(pessoaLogin.getNomeCompleto());
-			reserva.setEmailNotificacao(pessoaLogin.getEmail());
+			reserva.setIdUsuario(loginBean.getPessoaLogin());
+			reserva.setNomeUsuario(loginBean.getPessoaLogin().getNomeCompleto());
+			reserva.setEmailNotificacao(loginBean.getPessoaLogin().getEmail());
 		}
 
 		reserva.setIdTipoReserva(tipoReserva);
@@ -874,14 +871,6 @@ public class ReservaBean extends JavaBean {
 
 	public void setListaItemDisponivel(List<ItemReserva> listaItemDisponivel) {
 		this.listaItemDisponivel = listaItemDisponivel;
-	}
-
-	public Pessoa getPessoaLogin() {
-		return pessoaLogin;
-	}
-
-	public void setPessoaLogin(Pessoa pessoaLogin) {
-		this.pessoaLogin = pessoaLogin;
 	}
 
 	public String getMotivo() {

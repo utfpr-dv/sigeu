@@ -1,14 +1,15 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.service.PessoaService;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class PessoaBean extends JavaBean {
 	//@Inject

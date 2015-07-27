@@ -3,11 +3,12 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
@@ -15,7 +16,7 @@ import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.service.CategoriaItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class ItemReservaBean extends JavaBean {
 	@Inject

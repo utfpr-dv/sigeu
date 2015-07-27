@@ -2,16 +2,16 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 
 import org.hibernate.Hibernate;
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.service.CategoriaItemReservaService;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class PesquisaCategoriaItemReservaBean extends JavaBean {
 	@Inject

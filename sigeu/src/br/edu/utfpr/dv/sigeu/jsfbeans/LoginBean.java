@@ -45,8 +45,6 @@ public class LoginBean extends JavaBean {
 	public String login() {
 		boolean ok = true;
 
-		System.out.println(email + "/" + password);
-
 		this.serverInfo = "Server: "
 				+ DatabaseConfig.getInstance().getProperty(
 						DatabaseParameter.DATABASE_URL);
@@ -64,6 +62,9 @@ public class LoginBean extends JavaBean {
 				} else {
 					this.setNomeUsuario(pessoaLogin.getNomeCompleto());
 
+					// TODO - Por enquanto campus é o mesmo da pessoa de login
+					campus = pessoaLogin.getIdCampus();
+
 					HttpServletRequest request = (HttpServletRequest) FacesContext
 							.getCurrentInstance().getExternalContext()
 							.getRequest();
@@ -74,8 +75,9 @@ public class LoginBean extends JavaBean {
 					request.getSession().setAttribute(
 							LoginFilter.SESSION_PESSOA_LOGIN, pessoaLogin);
 
-					// TODO - Por enquanto campus é o mesmo da pessoa de login
-					campus = pessoaLogin.getIdCampus();
+					request.getSession().setAttribute(
+							LoginFilter.SESSION_CAMPUS, campus);
+
 				}
 			}
 		} catch (CommunicationException e) {

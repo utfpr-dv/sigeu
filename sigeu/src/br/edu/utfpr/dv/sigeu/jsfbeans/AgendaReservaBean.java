@@ -6,9 +6,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
@@ -25,7 +26,7 @@ import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 import com.adamiworks.utils.DateUtils;
 import com.adamiworks.utils.StringUtils;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class AgendaReservaBean extends JavaBean {
 	@Inject

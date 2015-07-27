@@ -184,6 +184,9 @@ public class LoginService {
 
 		}
 
+		// Busca novamente do banco para preencher atributos faltantes
+		pessoa = PessoaService.encontrePorId(pessoa.getIdPessoa());
+
 		return pessoa;
 
 	}

@@ -2,13 +2,16 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
-import javax.faces.bean.ViewScoped;
-import javax.faces.bean.ManagedBean;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.Instituicao;
 import br.edu.utfpr.dv.sigeu.service.InstituicaoService;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class PesquisaInstituicaoBean extends JavaBean {
 	private static final long serialVersionUID = -7332998115885395433L;
@@ -19,12 +22,24 @@ public class PesquisaInstituicaoBean extends JavaBean {
 
 	//
 
+	@Inject
+	private LoginBean loginBean;
+
+	@PostConstruct
+	public void init() {
+		System.out.println("=====> PostConstruct");
+		System.out.println("=====> E-mail: " + loginBean.getEmail());
+	}
+
 	public PesquisaInstituicaoBean() {
 		try {
 			lista = InstituicaoService.pesquisar(null);
-			//this.addInfoMessage("Pesquisa", "Exibindo  " + HibernateDAO.PESQUISA_LIMITE + " itens. Pesquise utilizando parâmetros para obter mais registros.");
+			// this.addInfoMessage("Pesquisa", "Exibindo  " +
+			// HibernateDAO.PESQUISA_LIMITE +
+			// " itens. Pesquise utilizando parâmetros para obter mais registros.");
 		} catch (Exception e) {
-			//this.addErrorMessage("Pesquisa", "Erro ao realizar pesquisa inicial. Entre em contato com o Admin.");
+			// this.addErrorMessage("Pesquisa",
+			// "Erro ao realizar pesquisa inicial. Entre em contato com o Admin.");
 		}
 	}
 
@@ -51,4 +66,13 @@ public class PesquisaInstituicaoBean extends JavaBean {
 	public void setTextoPesquisa(String textoPesquisa) {
 		this.textoPesquisa = textoPesquisa;
 	}
+
+	public LoginBean getLoginBean() {
+		return loginBean;
+	}
+
+	public void setLoginBean(LoginBean loginBean) {
+		this.loginBean = loginBean;
+	}
+
 }

@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
@@ -18,7 +19,7 @@ import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 import com.adamiworks.utils.DateUtils;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class AutorizaReservaBean extends JavaBean {
 	@Inject

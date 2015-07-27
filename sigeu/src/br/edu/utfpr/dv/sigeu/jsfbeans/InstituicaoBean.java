@@ -1,15 +1,18 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
-import javax.faces.bean.ViewScoped;
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+
+import org.omnifaces.cdi.ViewScoped;
 
 import br.edu.utfpr.dv.sigeu.entities.Instituicao;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.service.InstituicaoService;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class InstituicaoBean extends JavaBean {
 
@@ -18,11 +21,21 @@ public class InstituicaoBean extends JavaBean {
 	//
 	private Instituicao instituicao = new Instituicao();
 
+	@Inject
+	private LoginBean loginBean;
+
+	@PostConstruct
+	public void init() {
+		System.out.println("=====> PostConstruct");
+		System.out.println("=====> E-mail: " + loginBean.getEmail());
+	}
+
 	public InstituicaoBean() {
 		instituicao = new Instituicao();
 		instituicao.setAtivo(true);
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest req = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
 
 		try {
 			this.editarId = Integer.valueOf(req.getParameter("editarId"));
@@ -32,15 +45,17 @@ public class InstituicaoBean extends JavaBean {
 
 		if (this.editarId != null) {
 			try {
-				this.instituicao = InstituicaoService.encontrePorId(this.editarId);
+				this.instituicao = InstituicaoService
+						.encontrePorId(this.editarId);
 
 				if (this.instituicao == null) {
 					this.instituicao = new Instituicao();
-					this.addInfoMessage("Carregar","Instituicao " + this.editarId + " inexistente.");
+					this.addInfoMessage("Carregar", "Instituicao "
+							+ this.editarId + " inexistente.");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				addErrorMessage("Carregar","Erro ao carregar dados");
+				addErrorMessage("Carregar", "Erro ao carregar dados");
 			}
 		}
 	}
@@ -50,7 +65,8 @@ public class InstituicaoBean extends JavaBean {
 	 * já gravada no banco de dados se ela já existir
 	 */
 	public void gravar() {
-		boolean novo = (instituicao.getIdInstituicao() == null || this.instituicao.getIdInstituicao() == 0);
+		boolean novo = (instituicao.getIdInstituicao() == null || this.instituicao
+				.getIdInstituicao() == 0);
 
 		try {
 			if (!novo) {
@@ -59,18 +75,20 @@ public class InstituicaoBean extends JavaBean {
 				InstituicaoService.criar(instituicao);
 			}
 
-			String label = instituicao.getIdInstituicao() + "-" + instituicao.getSigla();
+			String label = instituicao.getIdInstituicao() + "-"
+					+ instituicao.getSigla();
 
 			this.instituicao = new Instituicao();
 			instituicao.setAtivo(true);
 
-			addInfoMessage("Gravar","Instituição " + label + " gravada com sucesso!");
+			addInfoMessage("Gravar", "Instituição " + label
+					+ " gravada com sucesso!");
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			addErrorMessage("Gravar","Erro na gravação!");
+			addErrorMessage("Gravar", "Erro na gravação!");
 		} finally {
-			if(novo){
+			if (novo) {
 				this.instituicao.setIdInstituicao(null);
 			}
 		}
@@ -83,17 +101,21 @@ public class InstituicaoBean extends JavaBean {
 	 */
 	public void excluir() {
 		if (this.instituicao.getIdInstituicao() == null) {
-			addInfoMessage("Excluir","Instituição ainda não foi incluída no banco de dados.");
+			addInfoMessage("Excluir",
+					"Instituição ainda não foi incluída no banco de dados.");
 		} else {
 			try {
 				String old = this.instituicao.getSigla();
 				InstituicaoService.remover(instituicao);
 				this.instituicao = new Instituicao();
-				this.addInfoMessage("Excluir","Instituicao " + old + " excluída com sucesso!");
+				this.addInfoMessage("Excluir", "Instituicao " + old
+						+ " excluída com sucesso!");
 			} catch (EntidadePossuiRelacionamentoException e) {
-				this.addWarnMessage("Excluir","Instituicao já possui relacionamentos. Solicite exclusão ao admin.");
+				this.addWarnMessage("Excluir",
+						"Instituicao já possui relacionamentos. Solicite exclusão ao admin.");
 			} catch (Exception e) {
-				this.addErrorMessage("Excluir","Erro ao tentar excluir instituicao.");
+				this.addErrorMessage("Excluir",
+						"Erro ao tentar excluir instituicao.");
 			}
 		}
 	}
@@ -115,4 +137,13 @@ public class InstituicaoBean extends JavaBean {
 	public void setEditarId(Integer editarId) {
 		this.editarId = editarId;
 	}
+
+	public LoginBean getLoginBean() {
+		return loginBean;
+	}
+
+	public void setLoginBean(LoginBean loginBean) {
+		this.loginBean = loginBean;
+	}
+
 }

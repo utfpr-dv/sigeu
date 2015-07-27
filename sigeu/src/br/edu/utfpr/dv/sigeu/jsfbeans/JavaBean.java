@@ -11,7 +11,7 @@ import javax.faces.context.FacesContext;
 import org.primefaces.context.RequestContext;
 
 public abstract class JavaBean implements Serializable {
-	private static final long serialVersionUID = 6369877882984182908L;
+	private static final long serialVersionUID = -2L;
 
 	/**
 	 * Adiciona uma nova mensagem de erro para ser exibida na página

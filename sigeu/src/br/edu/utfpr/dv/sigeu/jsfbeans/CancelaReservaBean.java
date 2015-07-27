@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.omnifaces.cdi.ViewScoped;
 import org.primefaces.context.RequestContext;
 
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
@@ -18,7 +18,7 @@ import br.edu.utfpr.dv.sigeu.service.EmailService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class CancelaReservaBean extends JavaBean {
 
