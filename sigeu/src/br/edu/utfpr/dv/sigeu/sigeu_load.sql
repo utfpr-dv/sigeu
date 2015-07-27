@@ -128,13 +128,13 @@ DECLARE
 BEGIN
 	IF (NEW.status = 'E') THEN
 		SELECT
-			data_fim 
+			COALESCE(data_fim,NEW.data) 
 		INTO
 			d_data_pl
 		FROM 
 			periodo_letivo 
 		WHERE 
-			current_date 
+			NEW.data 
 		BETWEEN 
 			data_inicio AND data_fim;
 	
