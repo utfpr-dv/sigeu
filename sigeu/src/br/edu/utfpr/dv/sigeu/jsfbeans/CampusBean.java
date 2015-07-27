@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -27,12 +28,14 @@ public class CampusBean extends JavaBean {
 	//
 	private Campus campus = new Campus();
 
-	public CampusBean() {
+	@PostConstruct
+	public void init() {
 		campus = new Campus();
 		campus.setAtivo(true);
 		campus.setIdInstituicao(new Instituicao());
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest req = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
 
 		try {
 			this.editarId = Integer.valueOf(req.getParameter("editarId"));
@@ -46,9 +49,11 @@ public class CampusBean extends JavaBean {
 
 				if (this.campus == null) {
 					this.campus = new Campus();
-					this.addInfoMessage("Carregar", "Campus " + this.editarId + " inexistente.");
+					this.addInfoMessage("Carregar", "Campus " + this.editarId
+							+ " inexistente.");
 				} else {
-					this.pesquisaInstituicao = campus.getIdInstituicao().getSigla();
+					this.pesquisaInstituicao = campus.getIdInstituicao()
+							.getSigla();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -62,9 +67,11 @@ public class CampusBean extends JavaBean {
 	 * gravada no banco de dados se ela já existir
 	 */
 	public void gravar() {
-		boolean novo = (campus.getIdCampus() == null || this.campus.getIdCampus() == 0);
+		boolean novo = (campus.getIdCampus() == null || this.campus
+				.getIdCampus() == 0);
 
-		if (this.getCampus().getIdInstituicao() == null || this.getCampus().getIdInstituicao().getIdInstituicao() == null) {
+		if (this.getCampus().getIdInstituicao() == null
+				|| this.getCampus().getIdInstituicao().getIdInstituicao() == null) {
 			addWarnMessage("Gravar", "Instituição não selecionada.");
 		} else {
 
@@ -81,7 +88,8 @@ public class CampusBean extends JavaBean {
 				this.campus.setAtivo(true);
 				this.campus.setIdInstituicao(new Instituicao());
 
-				addInfoMessage("Gravar", "Campus " + label + " " + (novo ? "criado" : "alterado") + " com sucesso!");
+				addInfoMessage("Gravar", "Campus " + label + " "
+						+ (novo ? "criado" : "alterado") + " com sucesso!");
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -101,17 +109,21 @@ public class CampusBean extends JavaBean {
 	 */
 	public void excluir() {
 		if (this.campus.getIdCampus() == null) {
-			addInfoMessage("Excluir", "Campus ainda não foi incluído no banco de dados.");
+			addInfoMessage("Excluir",
+					"Campus ainda não foi incluído no banco de dados.");
 		} else {
 			try {
 				String old = this.campus.getSigla();
 				CampusService.remover(campus);
 				this.campus = new Campus();
-				this.addInfoMessage("Excluir", "Campus " + old + " excluído com sucesso!");
+				this.addInfoMessage("Excluir", "Campus " + old
+						+ " excluído com sucesso!");
 			} catch (EntidadePossuiRelacionamentoException e) {
-				this.addWarnMessage("Excluir", "Campus já possui relacionamentos. Solicite exclusão ao admin.");
+				this.addWarnMessage("Excluir",
+						"Campus já possui relacionamentos. Solicite exclusão ao admin.");
 			} catch (Exception e) {
-				this.addErrorMessage("Excluir", "Erro ao tentar excluir campus.");
+				this.addErrorMessage("Excluir",
+						"Erro ao tentar excluir campus.");
 			}
 		}
 	}
@@ -135,7 +147,8 @@ public class CampusBean extends JavaBean {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.addErrorMessage("Selecionar", "Erro na pesquisa de siglas de instituições");
+			this.addErrorMessage("Selecionar",
+					"Erro na pesquisa de siglas de instituições");
 			return list;
 		}
 
@@ -146,7 +159,10 @@ public class CampusBean extends JavaBean {
 		for (Instituicao i : listaInstituicao) {
 			if (pesquisaInstituicao.equals(i.getSigla() + " - " + i.getNome())) {
 				campus.setIdInstituicao(i);
-				addInfoMessage("Selecionar", "Instituição selecionada: " + i.getSigla() + " - " + i.getNome());
+				addInfoMessage(
+						"Selecionar",
+						"Instituição selecionada: " + i.getSigla() + " - "
+								+ i.getNome());
 				break;
 			}
 		}

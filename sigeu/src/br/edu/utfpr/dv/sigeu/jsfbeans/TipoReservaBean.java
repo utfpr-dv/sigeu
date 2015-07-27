@@ -1,5 +1,6 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,7 +24,8 @@ public class TipoReservaBean extends JavaBean {
 	//
 	private TipoReserva tipoReserva = new TipoReserva();
 
-	public TipoReservaBean() {
+	@PostConstruct
+	public void init() {
 		tipoReserva = new TipoReserva();
 		tipoReserva.setAtivo(true);
 

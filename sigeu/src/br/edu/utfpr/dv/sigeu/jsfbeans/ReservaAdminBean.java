@@ -2,6 +2,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -29,10 +30,11 @@ public class ReservaAdminBean extends JavaBean {
 	private PeriodoLetivo periodoLetivo;
 	private String xmlFileName;
 
-	public ReservaAdminBean() {
-		super();
+	@PostConstruct
+	public void init() {
 		try {
-			listaPeriodoLetivo = PeriodoLetivoService.pesquisar(loginBean.getCampus());
+			listaPeriodoLetivo = PeriodoLetivoService.pesquisar(loginBean
+					.getCampus());
 		} catch (Exception e) {
 			addErrorMessage("Carregar Periodos",
 					"Erro ao carregar períodos letivos.");

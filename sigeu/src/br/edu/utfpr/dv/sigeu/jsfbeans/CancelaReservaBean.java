@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,9 +31,8 @@ public class CancelaReservaBean extends JavaBean {
 	private List<ReservaVO> listaReservaVO;
 	private String motivoCancelamento;
 
-	public CancelaReservaBean() {
-		super();
-
+	@PostConstruct
+	public void init() {
 		HttpServletRequest req = (HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest();
 		String trans = null;

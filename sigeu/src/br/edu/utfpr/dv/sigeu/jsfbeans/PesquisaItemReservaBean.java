@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -35,7 +36,8 @@ public class PesquisaItemReservaBean extends JavaBean {
 
 	//
 
-	public PesquisaItemReservaBean() {
+	@PostConstruct
+	public void init() {
 		try {
 			lista = ItemReservaService.pesquisar(loginBean.getCampus(), null, null);
 			// this.addInfoMessage("Pesquisar", "Exibindo  " +

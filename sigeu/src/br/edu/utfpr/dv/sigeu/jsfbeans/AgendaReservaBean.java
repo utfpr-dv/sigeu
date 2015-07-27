@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -51,14 +52,8 @@ public class AgendaReservaBean extends JavaBean {
 	private PeriodoReservaVO horarioVO;
 	private String nomeUsuario;
 
-	public AgendaReservaBean() {
-		this.carrega();
-	}
-
-	/**
-	 * Método interno para carregar os
-	 */
-	private void carrega() {
+	@PostConstruct
+	public void init() {
 		try {
 			listaPeriod = ReservaService.getAllPeriods(loginBean.getCampus());
 			data = Calendar.getInstance().getTime();

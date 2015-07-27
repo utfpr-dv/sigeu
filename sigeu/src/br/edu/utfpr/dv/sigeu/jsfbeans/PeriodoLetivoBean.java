@@ -1,5 +1,6 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,7 +25,8 @@ public class PeriodoLetivoBean extends JavaBean {
 	//
 	private PeriodoLetivo periodoLetivo = new PeriodoLetivo();
 
-	public PeriodoLetivoBean() {
+	@PostConstruct
+	public void init() {
 		periodoLetivo = new PeriodoLetivo();
 
 		HttpServletRequest req = (HttpServletRequest) FacesContext

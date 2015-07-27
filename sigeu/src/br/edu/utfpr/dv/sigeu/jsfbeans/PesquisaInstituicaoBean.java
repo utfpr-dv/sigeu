@@ -27,11 +27,6 @@ public class PesquisaInstituicaoBean extends JavaBean {
 
 	@PostConstruct
 	public void init() {
-		System.out.println("=====> PostConstruct");
-		System.out.println("=====> E-mail: " + loginBean.getEmail());
-	}
-
-	public PesquisaInstituicaoBean() {
 		try {
 			lista = InstituicaoService.pesquisar(null);
 			// this.addInfoMessage("Pesquisa", "Exibindo  " +

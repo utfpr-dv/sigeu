@@ -84,10 +84,6 @@ public class ReservaBean extends JavaBean {
 	private List<ReservaVO> listaReservaVO;
 	private String motivoCancelamento;
 
-	public ReservaBean() {
-		super();
-	}
-
 	@PostConstruct
 	public void init() {
 		System.out.println("E-mail: " + loginBean.getEmail());

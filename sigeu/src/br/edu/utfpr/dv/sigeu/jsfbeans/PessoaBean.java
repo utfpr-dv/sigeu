@@ -1,5 +1,6 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,8 @@ public class PessoaBean extends JavaBean {
 	//
 	private Pessoa pessoa = new Pessoa();
 
-	public PessoaBean() {
+	@PostConstruct
+	public void init() {
 		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 		try {

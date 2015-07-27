@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,7 +29,8 @@ public class ProfessorBean extends JavaBean {
 	private Professor professor = new Professor();
 	private List<Pessoa> listaPessoa;
 
-	public ProfessorBean() {
+	@PostConstruct
+	public void init() {
 		pesquisaPessoa = "";
 		professor = new Professor();
 

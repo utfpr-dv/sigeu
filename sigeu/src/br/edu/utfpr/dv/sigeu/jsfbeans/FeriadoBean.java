@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,7 +29,8 @@ public class FeriadoBean extends JavaBean {
 	private Feriado feriado = new Feriado();
 	private Date dataFinal = null;
 
-	public FeriadoBean() {
+	@PostConstruct
+	public void init() {
 		feriado = new Feriado();
 
 		HttpServletRequest req = (HttpServletRequest) FacesContext

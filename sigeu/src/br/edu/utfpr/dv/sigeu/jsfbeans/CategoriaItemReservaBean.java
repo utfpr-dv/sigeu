@@ -1,5 +1,6 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,7 +24,8 @@ public class CategoriaItemReservaBean extends JavaBean {
 	//
 	private CategoriaItemReserva categoria = new CategoriaItemReserva();
 
-	public CategoriaItemReservaBean() {
+	@PostConstruct
+	public void init() {
 		categoria = new CategoriaItemReserva();
 		categoria.setAtivo(true);
 

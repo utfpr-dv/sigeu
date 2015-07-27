@@ -26,11 +26,6 @@ public class InstituicaoBean extends JavaBean {
 
 	@PostConstruct
 	public void init() {
-		System.out.println("=====> PostConstruct");
-		System.out.println("=====> E-mail: " + loginBean.getEmail());
-	}
-
-	public InstituicaoBean() {
 		instituicao = new Instituicao();
 		instituicao.setAtivo(true);
 

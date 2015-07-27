@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -27,7 +28,8 @@ public class PesquisaFeriadoBean extends JavaBean {
 
 	//
 
-	public PesquisaFeriadoBean() {
+	@PostConstruct
+	public void init() {
 		try {
 			lista = FeriadoService.pesquisar(loginBean.getCampus(), null);
 			//this.addInfoMessage("Pesquisa", "Exibindo  " + HibernateDAO.PESQUISA_LIMITE + " itens. Pesquise utilizando parâmetros para obter mais registros.");

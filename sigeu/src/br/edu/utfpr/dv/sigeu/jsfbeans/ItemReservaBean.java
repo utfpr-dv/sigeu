@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,7 +31,8 @@ public class ItemReservaBean extends JavaBean {
 	//
 	private ItemReserva itemReserva = new ItemReserva();
 
-	public ItemReservaBean() {
+	@PostConstruct
+	public void init() {
 		itemReserva = new ItemReserva();
 		itemReserva.setAtivo(true);
 

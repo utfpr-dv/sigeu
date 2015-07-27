@@ -2,6 +2,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -24,7 +25,8 @@ public class PesquisaProfessorBean extends JavaBean {
 
 	//
 
-	public PesquisaProfessorBean() {
+	@PostConstruct
+	public void init() {
 		try {
 			lista = ProfessorService.pesquisar(loginBean.getCampus(), null);
 			//this.addInfoMessage("Pesquisar", "Exibindo  " + HibernateDAO.PESQUISA_LIMITE + " itens. Pesquise utilizando parâmetros para obter mais registros.");

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -30,10 +31,8 @@ public class AutorizaReservaBean extends JavaBean {
 	private List<ReservaVO> listaReservaVO;
 	private Pessoa autorizador;
 
-	/**
-	 * Constructor
-	 */
-	public AutorizaReservaBean() {
+	@PostConstruct
+	public void init(){
 		this.autorizador = loginBean.getPessoaLogin();
 		this.atualizaLista();
 	}

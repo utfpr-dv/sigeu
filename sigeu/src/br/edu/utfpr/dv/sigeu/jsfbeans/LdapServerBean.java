@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +36,8 @@ public class LdapServerBean extends JavaBean {
 	//
 	private LdapServer ldapServer = new LdapServer();
 
-	public LdapServerBean() {
+	@PostConstruct
+	public void init() {
 		ldapServer = new LdapServer();
 		ldapServer.setAtivo(true);
 		// ldapServer.setIdCampus(new Campus());

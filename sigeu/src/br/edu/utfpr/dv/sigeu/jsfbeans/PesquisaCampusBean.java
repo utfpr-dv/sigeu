@@ -2,6 +2,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 
 import org.omnifaces.cdi.ViewScoped;
@@ -20,7 +21,8 @@ public class PesquisaCampusBean extends JavaBean {
 
 	//
 
-	public PesquisaCampusBean() {
+	@PostConstruct
+	public void init() {
 		try {
 			lista = CampusService.pesquisar(null);
 			//this.addInfoMessage("Pesquisar", "Exibindo  " + HibernateDAO.PESQUISA_LIMITE + " itens. Pesquise utilizando parâmetros para obter mais registros.");

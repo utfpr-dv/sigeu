@@ -2,6 +2,7 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -25,7 +26,8 @@ public class PesquisaCategoriaItemReservaBean extends JavaBean {
 
 	//
 
-	public PesquisaCategoriaItemReservaBean() {
+	@PostConstruct
+	public void init() {
 		try {
 			listaCategoria = CategoriaItemReservaService.pesquisar(
 					loginBean.getCampus(), null, null);
