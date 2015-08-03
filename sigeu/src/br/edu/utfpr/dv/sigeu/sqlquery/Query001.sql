@@ -8,7 +8,8 @@ FROM
         item.id_campus = campus.id_campus AND
         categoria.id_campus = campus.id_campus
 WHERE
-        campus.id_campus = :idCampus
+		item.ativo = true
+    AND campus.id_campus = :idCampus
     AND categoria.id_categoria = :idCategoria
     AND (item.id_item_reserva = :idItemReserva OR :idItemReserva = 0)
     AND NOT EXISTS(

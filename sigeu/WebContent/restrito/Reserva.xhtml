@@ -3,7 +3,9 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jstl/core">
+
 	<ui:define name="titulo">SIGEU: Reserva</ui:define>
 	<ui:define name="corpo">
 		<h:form id="frmPesquisaReserva" prependId="false">
@@ -37,11 +39,21 @@
 							<p:tooltip id="toolTipFinal" for="final"
 								value="Hora final do período de reserva." />
 
-							<p:outputLabel value="Importadas" for="campoImportadas" />
-							<p:selectBooleanCheckbox id="campoImportadas"
-								value="#{reservaBean.campoImportadas}" />
-							<p:tooltip id="toolTipCampoImportadas" for="campoImportadas"
-								value="Se marcado exibe também as reservas importadas do sistema acadêmico na aba 'Minhas Reservas'." />
+
+
+							<c:if test="#{loginBean.pessoaLogin.admin eq true}">
+								<p:outputLabel value="Importadas" for="campoImportadas" />
+								<p:selectBooleanCheckbox id="campoImportadas"
+									value="#{reservaBean.campoImportadas}" />
+								<p:tooltip id="toolTipCampoImportadas" for="campoImportadas"
+									value="Se marcado exibe também as reservas importadas do sistema acadêmico na aba 'Minhas Reservas'." />
+							</c:if>
+
+							<c:if test="#{loginBean.pessoaLogin.admin eq false}">
+								<p:outputLabel value="" />
+								<p:outputLabel value="" />
+								<p:outputLabel value="" />
+							</c:if>
 
 							<p:outputLabel value="Categoria" for="categoria" />
 							<p:selectOneMenu id="categoria"
