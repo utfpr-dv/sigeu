@@ -152,7 +152,8 @@ public class IntegrationService {
 		IntegrationService.deleteAllPreviousTimetables(campus);
 
 		String fileName = Config.getInstance().getConfig(
-				Config.CONFIG_PATH_UPLOAD)
+				(Config.getInstance().isDebugMode() ? "dev." : "")
+						+ Config.CONFIG_PATH_UPLOAD)
 				+ File.separator + xmlFileName;
 
 		System.out.println("Importando arquivo XML: " + fileName);
