@@ -566,7 +566,7 @@ public class IntegrationService {
 	 *            Código do Periodo letivo selecionado na importação do XML
 	 * @throws Exception
 	 */
-	public static void criaCalendarioAula(Campus campus, Pessoa pessoaLogin,
+	public static void geraReservasDoXml(Campus campus, Pessoa pessoaLogin,
 			ReservaAdminBean bean, Integer idTimeTable, Integer idPeriodoLetivo)
 			throws Exception {
 
@@ -690,9 +690,18 @@ public class IntegrationService {
 					categoria = salaDeAula;
 				}
 
+				if(c.getShortname().trim().toUpperCase().equals("B4-S4")){
+					System.out.println(c.getShortname());
+				}
+				
 				ItemReserva sala = itemReservaDAO
 						.encontrePorDescricaoECategoria(campus, categoria,
 								c.getName());
+
+				if (sala == null) {
+					sala = itemReservaDAO.encontrePorRotuloECategoria(campus,
+							categoria, c.getShortname());
+				}
 
 				if (sala == null) {
 					sala = new ItemReserva();

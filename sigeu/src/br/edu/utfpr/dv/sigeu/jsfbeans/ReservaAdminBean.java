@@ -120,7 +120,7 @@ public class ReservaAdminBean extends JavaBean {
 					xmlFileName);
 
 			try {
-				IntegrationService.criaCalendarioAula(loginBean.getCampus(),
+				IntegrationService.geraReservasDoXml(loginBean.getCampus(),
 						loginBean.getPessoaLogin(), this, timetable_id,
 						periodoLetivo.getIdPeriodoLetivo());
 

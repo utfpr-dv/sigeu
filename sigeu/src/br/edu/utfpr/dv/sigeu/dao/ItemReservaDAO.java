@@ -58,6 +58,17 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return (ItemReserva) q.uniqueResult();
 	}
 
+	public ItemReserva encontrePorRotuloECategoria(Campus campus,
+			CategoriaItemReserva categoria, String rotulo) {
+		String hql = "from ItemReserva o where upper(o.rotulo) = upper(:des) AND o.idCampus.idCampus = :idCampus AND ";
+		hql += "o.idCategoria.idCategoria = :idCategoria";
+		Query q = session.createQuery(hql);
+		q.setInteger("idCampus", campus.getIdCampus());
+		q.setInteger("idCategoria", categoria.getIdCategoria());
+		q.setString("des", rotulo);
+		return (ItemReserva) q.uniqueResult();
+	}
+
 	public ItemReserva encontrePorDescricaoECategoria(Campus campus,
 			Integer categoria, String descricao) {
 		String hql = "from ItemReserva o where upper(o.nome) = upper(:des) AND o.idCampus.idCampus = :idCampus AND ";
