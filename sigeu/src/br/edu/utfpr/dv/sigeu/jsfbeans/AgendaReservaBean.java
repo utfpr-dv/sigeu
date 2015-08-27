@@ -37,6 +37,7 @@ public class AgendaReservaBean extends JavaBean {
 
 	private String campoItem;
 	private Date data;
+	private Date data2;
 
 	private ItemReserva itemReserva;
 	private List<Reserva> listaReserva;
@@ -57,6 +58,7 @@ public class AgendaReservaBean extends JavaBean {
 		try {
 			listaPeriod = ReservaService.getAllPeriods(loginBean.getCampus());
 			data = Calendar.getInstance().getTime();
+			data2 = Calendar.getInstance().getTime();
 			formatHora = new SimpleDateFormat("HH:mm");
 			formatData = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -135,8 +137,8 @@ public class AgendaReservaBean extends JavaBean {
 	 * Pesquisa todas as reservas de um determinado dia
 	 */
 	public void pesquisa() {
-		if (data == null) {
-			this.addWarnMessage("Data", "Data inválida!");
+		if (data == null || data2 == null) {
+			this.addErrorMessage("Período", "Período inválido!");
 		} else {
 			if (campoItem == null || campoItem.trim().length() == 0) {
 				itemReserva = null;
@@ -155,9 +157,9 @@ public class AgendaReservaBean extends JavaBean {
 
 				listaReservaVO = new ArrayList<ReservaVO>();
 
-				listaReserva = ReservaService.pesquisaReservasEfetivadasDoDia(
-						loginBean.getCampus(), data, tipoReserva, categoria,
-						itemReserva, nomeUsuario);
+				listaReserva = ReservaService.pesquisaReservasEfetivadas(
+						loginBean.getCampus(), data, data2, tipoReserva,
+						categoria, itemReserva, nomeUsuario);
 
 				if (listaReserva.size() > 0) {
 					reservaParaAgenda();
@@ -354,6 +356,14 @@ public class AgendaReservaBean extends JavaBean {
 
 	public void setNomeUsuario(String nomeUsuario) {
 		this.nomeUsuario = nomeUsuario;
+	}
+
+	public Date getData2() {
+		return data2;
+	}
+
+	public void setData2(Date data2) {
+		this.data2 = data2;
 	}
 
 }

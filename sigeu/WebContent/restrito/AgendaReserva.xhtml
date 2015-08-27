@@ -12,13 +12,18 @@
 			<p:tab id="tabPesquisa" title="Agenda de Reservas">
 				<h:form id="frmAgendaReserva" prependId="false">
 					<div style="margin: 0 auto; text-align: center">
-						<p:panelGrid columns="8" style="margin: 0 auto">
-							<p:outputLabel value="   Data" for="data" />
+						<p:panelGrid columns="10" style="margin: 0 auto">
+							<p:outputLabel value="Período de" for="data" />
 							<p:calendar label="Data da Reserva" id="data"
 								value="#{agendaReservaBean.data}" showOn="button" size="10"
 								pattern="dd/MM/yyyy" mask="true" required="true"
 								requiredMessage="Preencha a data" locale="pt" />
 
+							<p:outputLabel value="até" for="data2" />
+							<p:calendar label="Data da Reserva" id="data2"
+								value="#{agendaReservaBean.data2}" showOn="button" size="10"
+								pattern="dd/MM/yyyy" mask="true" required="true"
+								requiredMessage="Preencha a data" locale="pt" />
 
 							<p:outputLabel value="  Tipo" for="item" />
 							<p:selectOneMenu id="tipoReserva"
@@ -78,6 +83,11 @@
 						<p:column headerText="Usuário"
 							style="text-align: center; width: 200px">
 							<h:outputText value="#{r.usuarioReserva}" />
+						</p:column>
+
+						<p:column headerText="Data"
+							style="text-align: center;  width: 80px">
+							<h:outputText value="#{r.dataReserva}" />
 						</p:column>
 
 						<p:column headerText="Horário"

@@ -374,7 +374,7 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Reserva> pesquisaReservasEfetivadasDoDia(Campus campus,
+	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus,
 			Date data, TipoReserva tipoReserva, CategoriaItemReserva categoria,
 			ItemReserva item, String usuario) throws Exception {
 		Transaction trans = new Transaction();
@@ -386,6 +386,41 @@ public class ReservaService {
 			List<Reserva> lista = dao.pesquisaReserva(campus,
 					StatusReserva.EFETIVADA, data, tipoReserva, categoria,
 					item, usuario);
+
+			if (lista != null && lista.size() > 0) {
+				for (Reserva r : lista) {
+					// Hibernate.initialize(r.getIdItemReserva());
+					Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+					Hibernate.initialize(r.getIdTipoReserva());
+					Hibernate.initialize(r.getIdUsuario());
+					Hibernate.initialize(r.getIdPessoa());
+					Hibernate.initialize(r.getIdTransacao());
+				}
+			}
+
+			return lista;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			trans.close();
+		}
+	}
+
+	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus,
+			Date data, Date data2, TipoReserva tipoReserva,
+			CategoriaItemReserva categoria, ItemReserva item, String usuario)
+			throws Exception {
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+			ReservaDAO dao = new ReservaDAO(trans);
+
+			List<Reserva> lista = dao.pesquisaReserva(campus,
+					StatusReserva.EFETIVADA, data, data2, tipoReserva,
+					categoria, item, usuario);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {

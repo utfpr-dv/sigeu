@@ -65,6 +65,13 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		}
 	}
 
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
+			Date data, TipoReserva tipoReserva, CategoriaItemReserva categoria,
+			ItemReserva item, String nomeUsuario) {
+		return this.pesquisaReserva(campus, status, data, data, tipoReserva,
+				categoria, item, nomeUsuario);
+	}
+
 	/**
 	 * Lista todas as reservas do dia
 	 * 
@@ -78,8 +85,8 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * @return
 	 */
 	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
-			Date data, TipoReserva tipoReserva, CategoriaItemReserva categoria,
-			ItemReserva item, String nomeUsuario) {
+			Date data, Date data2, TipoReserva tipoReserva,
+			CategoriaItemReserva categoria, ItemReserva item, String nomeUsuario) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
@@ -100,8 +107,8 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		if (nomeUsuario != null && nomeUsuario.trim().length() > 0) {
 			hql.append("o.nomeUsuario like :nomeUsuario AND ");
 		}
-		hql.append("o.data = :data ");
-		hql.append("ORDER BY i.nome, o.data ASC, o.horaInicio ASC, o.horaFim ASC ");
+		hql.append("o.data BETWEEN :data AND :data2 ");
+		hql.append("ORDER BY o.data ASC, o.horaInicio ASC, o.horaFim ASC, i.nome ");
 
 		Query q = session.createQuery(hql.toString());
 		q.setInteger("idCampus", campus.getIdCampus());
@@ -117,6 +124,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 					+ "%");
 		}
 		q.setDate("data", data);
+		q.setDate("data2", data2);
 		if (tipoReserva != null) {
 			q.setInteger("idTipoReserva", tipoReserva.getIdTipoReserva());
 		}
