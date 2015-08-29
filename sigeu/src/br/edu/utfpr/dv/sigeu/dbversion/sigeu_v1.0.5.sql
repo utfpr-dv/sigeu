@@ -149,3 +149,89 @@ $BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
 select sp_preenche_datas();
+
+DROP TRIGGER tr_reserva_concorrente_ins ON RESERVA;
+
+DROP TRIGGER tr_reserva_concorrente_upd ON  RESERVA;
+
+-- TRIGGER FUNCTION PARA EVITAR RESERVAS DUPLICADAS
+CREATE OR REPLACE FUNCTION tf_reserva_concorrente() 
+RETURNS TRIGGER AS
+$BODY$
+DECLARE 
+	i_id_periodo_letivo INTEGER;
+	i_count INTEGER;
+	d_data_pl DATE;
+	s_item VARCHAR(500);
+BEGIN
+	IF (NEW.status = 'E') THEN
+		SELECT
+			COALESCE(data_fim,NEW.data) 
+		INTO
+			d_data_pl
+		FROM 
+			periodo_letivo 
+		WHERE 
+			NEW.data 
+		BETWEEN 
+			data_inicio AND data_fim;
+	
+		IF NEW.data > d_data_pl THEN
+			RAISE 'Reservas para % além do término do período letivo atual %', NEW.data, d_data_pl;
+		END IF;
+			
+		SELECT
+			pl.id_periodo_letivo
+		INTO
+			i_id_periodo_letivo
+		FROM
+			public.periodo_letivo pl
+		WHERE
+				pl.id_transacao_reserva = NEW.id_transacao
+			AND	pl.id_campus = NEW.id_campus;
+		
+		IF (i_id_periodo_letivo IS NULL) THEN
+			SELECT
+				count(r2.id_reserva) AS cnt
+			INTO
+				i_count
+			FROM
+				public.reserva r2
+			WHERE
+				    r2.data = NEW.data
+				AND r2.status = 'E'
+				AND r2.id_campus = NEW.id_campus
+				AND r2.id_item_reserva = NEW.id_item_reserva
+				AND (
+					( NEW.hora_inicio >= r2.hora_inicio AND NEW.hora_inicio < r2.hora_fim ) OR
+					( NEW.hora_fim > r2.hora_inicio AND NEW.hora_fim <= r2.hora_fim ) OR
+					( NEW.hora_inicio <= r2.hora_inicio AND NEW.hora_fim > r2.hora_fim ) OR
+					( NEW.hora_inicio > r2.hora_inicio AND NEW.hora_fim <= r2.hora_fim )
+				)
+				AND r2.id_reserva <> NEW.id_reserva;
+			
+			IF i_count > 0 THEN
+				SELECT nome INTO s_item FROM item_reserva WHERE id_item_reserva = NEW.id_item_reserva;
+				RAISE 'Reserva % duplicada para item: % - % em % de % a %', NEW.id_reserva, NEW.id_item_reserva, s_item, NEW.data, NEW.hora_inicio, NEW.hora_fim USING ERRCODE = 'unique_violation';
+			END IF;
+		END IF;
+	END IF;
+
+	RETURN NEW;
+END 
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+-- TRIGGER INSERT
+CREATE TRIGGER tr_reserva_concorrente_ins
+BEFORE INSERT
+ON public.reserva
+FOR EACH ROW
+EXECUTE PROCEDURE tf_reserva_concorrente();
+
+-- TRIGGER UPDATE
+CREATE TRIGGER tr_reserva_concorrente_upd
+BEFORE UPDATE
+ON public.reserva
+FOR EACH ROW
+EXECUTE PROCEDURE tf_reserva_concorrente();

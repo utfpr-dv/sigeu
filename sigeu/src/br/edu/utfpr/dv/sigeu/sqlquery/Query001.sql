@@ -31,7 +31,9 @@ WHERE
            AND reserva2.id_item_reserva = item.id_item_reserva
             AND (
                 ( :horaInicio >= reserva2.hora_inicio AND :horaInicio < reserva2.hora_fim ) OR
-                ( :horaFim > reserva2.hora_inicio AND :horaFim <= reserva2.hora_fim )
+                ( :horaFim > reserva2.hora_inicio AND :horaFim <= reserva2.hora_fim ) OR
+                ( :horaInicio <= reserva2.hora_inicio AND :horaFim > reserva2.hora_fim ) OR
+                ( :horaInicio > reserva2.hora_inicio AND :horaFim <= reserva2.hora_fim )
                 )
     )
 ORDER BY
