@@ -330,4 +330,31 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		}
 	}
 
+	public List<Reserva> pesquisaReserva(Campus campus, Integer idTransacao) {
+		StringBuilder hql = new StringBuilder();
+		hql.append("SELECT o ");
+		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.pessoaList p ");
+		hql.append("WHERE c.idCampus = :idCampus ");
+		hql.append("AND o.idTransacao = :idTransacao ");
+		hql.append("ORDER BY o.data ASC, o.horaInicio ASC, o.horaFim ASC ");
+
+		Query q = session.createQuery(hql.toString());
+		q.setInteger("idCampus", campus.getIdCampus());
+		q.setInteger("idTransacao", idTransacao);
+
+		List<Reserva> list = this.pesquisaObjetos(q, 0);
+
+		for (Reserva r : list) {
+			Hibernate.initialize(r.getIdItemReserva());
+			Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+			Hibernate.initialize(r.getIdPessoa());
+			Hibernate.initialize(r.getIdTransacao());
+			Hibernate.initialize(r.getIdTipoReserva());
+			Hibernate.initialize(r.getIdCampus());
+			Hibernate.initialize(r.getIdUsuario());
+		}
+
+		return list;
+	}
+
 }

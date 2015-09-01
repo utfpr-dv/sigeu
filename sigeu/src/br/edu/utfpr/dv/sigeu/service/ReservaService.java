@@ -939,4 +939,23 @@ public class ReservaService {
 		}
 	}
 
+	public static List<Reserva> pesquisaPorTransacao(Campus campus,
+			Integer idTransacao) {
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+			ReservaDAO dao = new ReservaDAO(trans);
+
+			List<Reserva> lista = dao.pesquisaReserva(campus, idTransacao);
+			return lista;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			trans.close();
+		}
+	}
+
 }
