@@ -15,6 +15,7 @@ public class Config {
 	public static final String APPLICATION_CODE = "SIGEU";
 	public static final String CONFIG_PATH_UPLOAD = "path.upload";
 	public static final String CONFIG_FILE = "sigeu.properties";
+	public static final String NOME_GRUPO_EXTERNO = "EXTERNO";
 	//
 	private static Config self;
 	//

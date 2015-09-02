@@ -1,8 +1,11 @@
 package br.edu.utfpr.dv.sigeu.vo;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class PeriodoReservaVO {
+public class PeriodoReservaVO implements Serializable {
+	private static final long serialVersionUID = -6545997839475340725L;
+
 	private Integer idReserva;
 	private Date data;
 	private String diaDaSemana;

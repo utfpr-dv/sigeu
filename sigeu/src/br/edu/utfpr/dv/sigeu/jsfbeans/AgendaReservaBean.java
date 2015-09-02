@@ -261,6 +261,12 @@ public class AgendaReservaBean extends JavaBean {
 		System.out.println("---> Recursos: " + listaPeriodoReservaVO.size());
 	}
 
+	public void checkPeriodo() {
+		if (this.data.compareTo(this.data2) > 0) {
+			this.data2 = this.data;
+		}
+	}
+
 	public List<Reserva> getListaReserva() {
 		return listaReserva;
 	}

@@ -16,14 +16,12 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "instituicao")
 @NamedQueries({
     @NamedQuery(name = "Instituicao.findAll", query = "SELECT i FROM Instituicao i")})
 public class Instituicao implements Serializable {
@@ -33,13 +31,10 @@ public class Instituicao implements Serializable {
     @Column(name = "id_instituicao")
     private Integer idInstituicao;
     @Basic(optional = false)
-    @Column(name = "sigla")
     private String sigla;
     @Basic(optional = false)
-    @Column(name = "nome")
     private String nome;
     @Basic(optional = false)
-    @Column(name = "ativo")
     private boolean ativo;
     @Column(name = "url_logo")
     private String urlLogo;

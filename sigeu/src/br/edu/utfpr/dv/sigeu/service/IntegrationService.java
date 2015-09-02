@@ -119,13 +119,12 @@ public class IntegrationService {
 
 		String pathUpload = null;
 
-		if (Config.getInstance().isDebugMode()) {
-			pathUpload = Config.getInstance().getConfig(
-					"dev." + Config.CONFIG_PATH_UPLOAD);
-		} else {
-			pathUpload = Config.getInstance().getConfig(
-					Config.CONFIG_PATH_UPLOAD);
-		}
+		// if (Config.getInstance().isDebugMode()) {
+		// pathUpload = Config.getInstance().getConfig(
+		// "dev." + Config.CONFIG_PATH_UPLOAD);
+		// } else {
+		pathUpload = Config.getInstance().getConfig(Config.CONFIG_PATH_UPLOAD);
+		// }
 
 		fileName = pathUpload + File.separator + fileName;
 
@@ -151,10 +150,13 @@ public class IntegrationService {
 		// Remove todas as importações anteriores
 		IntegrationService.deleteAllPreviousTimetables(campus);
 
+		// String fileName = Config.getInstance().getConfig(
+		// (Config.getInstance().isDebugMode() ? "dev." : "")
+		// + Config.CONFIG_PATH_UPLOAD)
+		// + File.separator + xmlFileName;
+
 		String fileName = Config.getInstance().getConfig(
-				(Config.getInstance().isDebugMode() ? "dev." : "")
-						+ Config.CONFIG_PATH_UPLOAD)
-				+ File.separator + xmlFileName;
+		Config.CONFIG_PATH_UPLOAD) + File.separator + xmlFileName;
 
 		System.out.println("Importando arquivo XML: " + fileName);
 
@@ -690,10 +692,10 @@ public class IntegrationService {
 					categoria = salaDeAula;
 				}
 
-				if(c.getShortname().trim().toUpperCase().equals("B4-S4")){
+				if (c.getShortname().trim().toUpperCase().equals("B4-S4")) {
 					System.out.println(c.getShortname());
 				}
-				
+
 				ItemReserva sala = itemReservaDAO
 						.encontrePorDescricaoECategoria(campus, categoria,
 								c.getName());

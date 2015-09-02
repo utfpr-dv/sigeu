@@ -75,10 +75,10 @@ public class DatabaseConfig {
 	 * @return
 	 */
 	public String getProperty(DatabaseParameter p) {
-		if (Config.getInstance().isDebugMode()) {
-			return this.databaseProperties.getProperty("dev."
-					+ p.getParameter());
-		}
+		// if (Config.getInstance().isDebugMode()) {
+		// return this.databaseProperties.getProperty("dev."
+		// + p.getParameter());
+		// }
 		return this.databaseProperties.getProperty(p.getParameter());
 	}
 

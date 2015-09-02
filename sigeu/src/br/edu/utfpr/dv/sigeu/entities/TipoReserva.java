@@ -35,10 +35,8 @@ public class TipoReserva implements Serializable {
     @Column(name = "id_tipo_reserva")
     private Integer idTipoReserva;
     @Basic(optional = false)
-    @Column(name = "descricao")
     private String descricao;
     @Basic(optional = false)
-    @Column(name = "ativo")
     private boolean ativo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idTipoReserva", fetch = FetchType.LAZY)
     private List<Reserva> reservaList;

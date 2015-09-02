@@ -18,23 +18,23 @@
 							columnClasses="gridLabel, gridColumn, gridTip, gridLabel, gridColumn, gridTip, gridLabel, gridColumn, gridTip,  gridLabel, gridColumn, gridTip">
 							<p:outputLabel value="Data" for="data" />
 							<p:calendar label="Data da Reserva" id="data"
-								value="#{reservaBean.campoData}" showOn="button" size="10"
-								pattern="dd/MM/yyyy" mask="true" required="true"
+								value="#{reservaBean.campoData}" size="10" pattern="dd/MM/yyyy"
+								mask="true" required="true"
 								requiredMessage="Preencha a data da reserva" />
 							<p:tooltip id="toolTipData" for="data" value="Data da reserva." />
 
 							<p:outputLabel value="Hora Inicial" for="inicio" />
 							<p:calendar label="Hora Inicial" id="inicio"
-								value="#{reservaBean.campoHoraInicial}" showOn="button" size="2"
-								pattern="HH:mm" timeOnly="true" mask="false" required="true"
+								value="#{reservaBean.campoHoraInicial}" size="2" pattern="HH:mm"
+								timeOnly="true" mask="false" required="true"
 								requiredMessage="Preencha a hora inicial e final da reserva" />
 							<p:tooltip id="toolTipInicio" for="inicio"
 								value="Hora inicial do período de reserva." />
 
 							<p:outputLabel value="Hora Final" for="final" />
 							<p:calendar label="Hora Final" id="final"
-								value="#{reservaBean.campoHoraFinal}" showOn="button" size="2"
-								pattern="HH:mm" timeOnly="true" mask="false" required="true"
+								value="#{reservaBean.campoHoraFinal}" size="2" pattern="HH:mm"
+								timeOnly="true" mask="false" required="true"
 								requiredMessage="Preencha a hora inicial e final da reserva" />
 							<p:tooltip id="toolTipFinal" for="final"
 								value="Hora final do período de reserva." />
@@ -89,7 +89,7 @@
 							<p:outputLabel value="Data Limite" for="dataRepete" />
 							<p:calendar label="Data fim de repetição" id="dataRepete"
 								widgetVar="dataRepete" value="#{reservaBean.campoDataFimRepete}"
-								showOn="button" size="10" pattern="dd/MM/yyyy" mask="true"
+								size="10" pattern="dd/MM/yyyy" mask="true"
 								requiredMessage="Preencha a data limite para repetição de reservas" />
 							<p:tooltip id="toolTipDataRepete" for="dataRepete"
 								value="Data limite para recorrência de reservas. As reservas recorrentes não ultrapassam esta data." />
@@ -210,28 +210,28 @@
 
 						<p:outputLabel value="Data da Reserva" for="dataG" />
 						<p:calendar label="Data da Reserva" id="dataG"
-							value="#{reservaBean.campoData}" showOn="button" size="10"
-							pattern="dd/MM/yyyy" mask="true" required="true"
-							requiredMessage="Preencha a data da reserva" disabled="true" />
+							value="#{reservaBean.campoData}" size="10" pattern="dd/MM/yyyy"
+							mask="true" required="true" disabled="true"
+							requiredMessage="Preencha a data da reserva" readonly="true" />
 						<p:outputLabel value="Horário" for="inicioG" />
 						<p:calendar label="Hora inicial" id="inicioG"
-							value="#{reservaBean.campoHoraInicial}" showOn="button" size="10"
-							pattern="HH:mm" timeOnly="true" mask="false" required="true"
+							value="#{reservaBean.campoHoraInicial}" size="10" pattern="HH:mm"
+							timeOnly="true" mask="false"
 							requiredMessage="Preencha a hora inicial e final da reserva"
-							disabled="true" />
+							readonly="true" disabled="true" />
 						<p:outputLabel value="até" for="finalG" />
 						<p:calendar label="Hora inicial" id="finalG"
-							value="#{reservaBean.campoHoraFinal}" showOn="button" size="10"
-							pattern="HH:mm" timeOnly="true" mask="false" required="true"
+							value="#{reservaBean.campoHoraFinal}" size="10" pattern="HH:mm"
+							timeOnly="true" mask="false"
 							requiredMessage="Preencha a hora inicial e final da reserva"
-							disabled="true" />
+							readonly="true" disabled="true" />
 						<p:outputLabel value="Recorrência" />
 						<p:outputLabel
 							value="#{reservaBean.repeticaoReservaEnum.descricao}" />
 						<p:outputLabel value="Recorrente até" />
 						<p:calendar label="Data recorrente" id="dataLimiteG"
-							value="#{reservaBean.campoDataFimRepete}" showOn="button"
-							size="10" pattern="dd/MM/yyyy" mask="false" required="true"
+							value="#{reservaBean.campoDataFimRepete}" size="10"
+							pattern="dd/MM/yyyy" mask="false" required="true" readonly="true"
 							disabled="true" />
 						<p:outputLabel value="Motivo" for="motivoG" />
 						<p:inputTextarea id="motivoG" value="#{reservaBean.motivo}"

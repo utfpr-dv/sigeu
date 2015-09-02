@@ -17,14 +17,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "professor")
 @NamedQueries({
     @NamedQuery(name = "Professor.findAll", query = "SELECT p FROM Professor p")})
 public class Professor implements Serializable {
@@ -33,15 +31,11 @@ public class Professor implements Serializable {
     @Basic(optional = false)
     @Column(name = "id_professor")
     private Integer idProfessor;
-    @Column(name = "codigo")
     private String codigo;
     @Basic(optional = false)
-    @Column(name = "name")
     private String name;
     @Basic(optional = false)
-    @Column(name = "genero")
     private Character genero;
-    @Column(name = "cor")
     private String cor;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "professor", fetch = FetchType.LAZY)
     private ProfessorPessoa professorPessoa;

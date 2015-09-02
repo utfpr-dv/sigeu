@@ -8,6 +8,7 @@ package br.edu.utfpr.dv.sigeu.entities;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,6 +19,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -35,13 +37,14 @@ public class GrupoPessoa implements Serializable {
     @Column(name = "id_grupo_pessoa")
     private Integer idGrupoPessoa;
     @Basic(optional = false)
-    @Column(name = "nome")
     private String nome;
     @JoinTable(name = "pessoa_grupo_pessoa", joinColumns = {
         @JoinColumn(name = "id_grupo_pessoa", referencedColumnName = "id_grupo_pessoa")}, inverseJoinColumns = {
         @JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa")})
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Pessoa> pessoaList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idGrupoPessoa", fetch = FetchType.LAZY)
+    private List<UriPermissao> uriPermissaoList;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Campus idCampus;
@@ -80,6 +83,14 @@ public class GrupoPessoa implements Serializable {
 
     public void setPessoaList(List<Pessoa> pessoaList) {
         this.pessoaList = pessoaList;
+    }
+
+    public List<UriPermissao> getUriPermissaoList() {
+        return uriPermissaoList;
+    }
+
+    public void setUriPermissaoList(List<UriPermissao> uriPermissaoList) {
+        this.uriPermissaoList = uriPermissaoList;
     }
 
     public Campus getIdCampus() {

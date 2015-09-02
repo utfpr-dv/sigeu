@@ -19,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -28,7 +27,6 @@ import javax.persistence.TemporalType;
  * @author Tiago
  */
 @Entity
-@Table(name = "transacao")
 @NamedQueries({
     @NamedQuery(name = "Transacao.findAll", query = "SELECT t FROM Transacao t")})
 public class Transacao implements Serializable {
@@ -42,7 +40,6 @@ public class Transacao implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataHora;
     @Basic(optional = false)
-    @Column(name = "descricao")
     private String descricao;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

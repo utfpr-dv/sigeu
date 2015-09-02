@@ -37,19 +37,13 @@ public class ItemReserva implements Serializable {
     @Column(name = "id_item_reserva")
     private Integer idItemReserva;
     @Basic(optional = false)
-    @Column(name = "nome")
     private String nome;
     @Basic(optional = false)
-    @Column(name = "rotulo")
     private String rotulo;
-    @Column(name = "patrimonio")
     private String patrimonio;
-    @Column(name = "detalhes")
     private String detalhes;
     @Basic(optional = false)
-    @Column(name = "ativo")
     private boolean ativo;
-    @Column(name = "codigo")
     private String codigo;
     @JoinTable(name = "autorizacao_item_reserva", joinColumns = {
         @JoinColumn(name = "id_item_reserva", referencedColumnName = "id_item_reserva")}, inverseJoinColumns = {

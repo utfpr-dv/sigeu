@@ -15,14 +15,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "disciplina")
 @NamedQueries({
     @NamedQuery(name = "Disciplina.findAll", query = "SELECT d FROM Disciplina d")})
 public class Disciplina implements Serializable {
@@ -31,13 +29,10 @@ public class Disciplina implements Serializable {
     @Basic(optional = false)
     @Column(name = "id_disciplina")
     private Integer idDisciplina;
-    @Column(name = "codigo")
     private String codigo;
     @Basic(optional = false)
-    @Column(name = "nome")
     private String nome;
     @Basic(optional = false)
-    @Column(name = "rotulo")
     private String rotulo;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

@@ -32,16 +32,12 @@ public class LdapServer implements Serializable {
     @Column(name = "id_server")
     private Integer idServer;
     @Basic(optional = false)
-    @Column(name = "host")
     private String host;
     @Basic(optional = false)
-    @Column(name = "port")
     private int port;
     @Basic(optional = false)
-    @Column(name = "ssl")
     private boolean ssl;
     @Basic(optional = false)
-    @Column(name = "basedn")
     private String basedn;
     @Basic(optional = false)
     @Column(name = "sufixo_email")
@@ -60,7 +56,6 @@ public class LdapServer implements Serializable {
     @Column(name = "var_ldap_campus")
     private String varLdapCampus;
     @Basic(optional = false)
-    @Column(name = "ativo")
     private boolean ativo;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

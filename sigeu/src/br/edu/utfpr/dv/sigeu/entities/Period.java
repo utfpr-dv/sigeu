@@ -16,7 +16,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -25,7 +24,6 @@ import javax.persistence.TemporalType;
  * @author Tiago
  */
 @Entity
-@Table(name = "period")
 @NamedQueries({
     @NamedQuery(name = "Period.findAll", query = "SELECT p FROM Period p")})
 public class Period implements Serializable {
@@ -35,21 +33,16 @@ public class Period implements Serializable {
     @Column(name = "id_period")
     private Integer idPeriod;
     @Basic(optional = false)
-    @Column(name = "name")
     private String name;
     @Basic(optional = false)
-    @Column(name = "shortname")
     private String shortname;
     @Basic(optional = false)
-    @Column(name = "starttime")
     @Temporal(TemporalType.TIME)
     private Date starttime;
     @Basic(optional = false)
-    @Column(name = "endtime")
     @Temporal(TemporalType.TIME)
     private Date endtime;
     @Basic(optional = false)
-    @Column(name = "ordem")
     private int ordem;
     @JoinColumn(name = "id_timetable", referencedColumnName = "id_timetable")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

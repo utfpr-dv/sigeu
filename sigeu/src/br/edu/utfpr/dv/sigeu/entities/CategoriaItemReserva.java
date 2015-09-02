@@ -35,10 +35,8 @@ public class CategoriaItemReserva implements Serializable {
     @Column(name = "id_categoria")
     private Integer idCategoria;
     @Basic(optional = false)
-    @Column(name = "nome")
     private String nome;
     @Basic(optional = false)
-    @Column(name = "ativo")
     private boolean ativo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCategoria", fetch = FetchType.LAZY)
     private List<ItemReserva> itemReservaList;

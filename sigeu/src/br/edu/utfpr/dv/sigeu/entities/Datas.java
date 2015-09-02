@@ -6,11 +6,14 @@
 package br.edu.utfpr.dv.sigeu.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
@@ -18,58 +21,44 @@ import javax.persistence.NamedQuery;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Sequencia.findAll", query = "SELECT s FROM Sequencia s")})
-public class Sequencia implements Serializable {
+    @NamedQuery(name = "Datas.findAll", query = "SELECT d FROM Datas d")})
+public class Datas implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    private String nome;
-    @Basic(optional = false)
-    private long valor;
+    @Temporal(TemporalType.DATE)
+    private Date data;
 
-    public Sequencia() {
+    public Datas() {
     }
 
-    public Sequencia(String nome) {
-        this.nome = nome;
+    public Datas(Date data) {
+        this.data = data;
     }
 
-    public Sequencia(String nome, long valor) {
-        this.nome = nome;
-        this.valor = valor;
+    public Date getData() {
+        return data;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public long getValor() {
-        return valor;
-    }
-
-    public void setValor(long valor) {
-        this.valor = valor;
+    public void setData(Date data) {
+        this.data = data;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (nome != null ? nome.hashCode() : 0);
+        hash += (data != null ? data.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Sequencia)) {
+        if (!(object instanceof Datas)) {
             return false;
         }
-        Sequencia other = (Sequencia) object;
-        if ((this.nome == null && other.nome != null) || (this.nome != null && !this.nome.equals(other.nome))) {
+        Datas other = (Datas) object;
+        if ((this.data == null && other.data != null) || (this.data != null && !this.data.equals(other.data))) {
             return false;
         }
         return true;
@@ -77,7 +66,7 @@ public class Sequencia implements Serializable {
 
     @Override
     public String toString() {
-        return "br.edu.utfpr.dv.sigeu.entities.Sequencia[ nome=" + nome + " ]";
+        return "br.edu.utfpr.dv.sigeu.entities.Datas[ data=" + data + " ]";
     }
     
 }

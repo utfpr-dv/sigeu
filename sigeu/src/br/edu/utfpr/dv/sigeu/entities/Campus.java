@@ -19,14 +19,12 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 /**
  *
  * @author Tiago
  */
 @Entity
-@Table(name = "campus")
 @NamedQueries({
     @NamedQuery(name = "Campus.findAll", query = "SELECT c FROM Campus c")})
 public class Campus implements Serializable {
@@ -36,15 +34,12 @@ public class Campus implements Serializable {
     @Column(name = "id_campus")
     private Integer idCampus;
     @Basic(optional = false)
-    @Column(name = "sigla")
     private String sigla;
     @Basic(optional = false)
-    @Column(name = "nome")
     private String nome;
     @Column(name = "url_logo")
     private String urlLogo;
     @Basic(optional = false)
-    @Column(name = "ativo")
     private boolean ativo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
     private List<ItemReserva> itemReservaList;
@@ -64,6 +59,8 @@ public class Campus implements Serializable {
     private List<PeriodoLetivo> periodoLetivoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
     private List<Classe> classeList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+    private List<UriPermissao> uriPermissaoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
     private List<CategoriaItemReserva> categoriaItemReservaList;
     @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
@@ -204,6 +201,14 @@ public class Campus implements Serializable {
 
     public void setClasseList(List<Classe> classeList) {
         this.classeList = classeList;
+    }
+
+    public List<UriPermissao> getUriPermissaoList() {
+        return uriPermissaoList;
+    }
+
+    public void setUriPermissaoList(List<UriPermissao> uriPermissaoList) {
+        this.uriPermissaoList = uriPermissaoList;
     }
 
     public List<CategoriaItemReserva> getCategoriaItemReservaList() {

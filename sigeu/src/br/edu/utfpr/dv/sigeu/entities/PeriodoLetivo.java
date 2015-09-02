@@ -35,7 +35,6 @@ public class PeriodoLetivo implements Serializable {
     @Column(name = "id_periodo_letivo")
     private Integer idPeriodoLetivo;
     @Basic(optional = false)
-    @Column(name = "nome")
     private String nome;
     @Basic(optional = false)
     @Column(name = "data_inicio")

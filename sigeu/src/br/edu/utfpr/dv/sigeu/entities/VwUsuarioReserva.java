@@ -23,9 +23,9 @@ import javax.persistence.Table;
 @NamedQueries({ @NamedQuery(name = "VwUsuarioReserva.findAll", query = "SELECT v FROM VwUsuarioReserva v") })
 public class VwUsuarioReserva implements Serializable {
 	private static final long serialVersionUID = 1L;
+	@Id
 	@Column(name = "id_campus")
 	private Integer idCampus;
-	@Id
 	@Column(name = "nome_usuario")
 	private String nomeUsuario;
 

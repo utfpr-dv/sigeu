@@ -60,7 +60,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 			o.setNomeUsuario(o.getNomeUsuario().trim().toUpperCase());
 		}
 
-		if (o.getImportado() == null) {
+		if ((Boolean) o.getImportado() == null) {
 			o.setImportado(false);
 		}
 	}
@@ -325,7 +325,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 			o.setNomeUsuario(o.getNomeUsuario().trim().toUpperCase());
 		}
 
-		if (o.getImportado() == null) {
+		if ((Boolean) o.getImportado() == null) {
 			o.setImportado(false);
 		}
 	}

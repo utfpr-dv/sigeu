@@ -35,19 +35,15 @@ public class MailServer implements Serializable {
     @Column(name = "authentication_required")
     private boolean authenticationRequired;
     @Basic(optional = false)
-    @Column(name = "starttls")
     private boolean starttls;
     @Basic(optional = false)
-    @Column(name = "ssl")
     private boolean ssl;
     @Basic(optional = false)
     @Column(name = "plain_text_over_tls")
     private boolean plainTextOverTls;
     @Basic(optional = false)
-    @Column(name = "host")
     private String host;
     @Basic(optional = false)
-    @Column(name = "port")
     private int port;
     @Basic(optional = false)
     @Column(name = "from_email")
@@ -56,7 +52,6 @@ public class MailServer implements Serializable {
     @Column(name = "user_name")
     private String userName;
     @Basic(optional = false)
-    @Column(name = "password")
     private String password;
     @JoinColumn(name = "id_campus", referencedColumnName = "id_campus", insertable = false, updatable = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)

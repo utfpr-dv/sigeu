@@ -3,8 +3,12 @@ package br.edu.utfpr.dv.sigeu.enumeration;
 import java.util.Calendar;
 
 public enum DiaEnum {
-	SEGUNDA("100000", "Segunda-Feira", Calendar.MONDAY), TERCA("010000", "Terça-Feira", Calendar.TUESDAY), QUARTA("001000", "Quarta-Feira", Calendar.WEDNESDAY), QUINTA(
-			"000100", "Quinta-Feira", Calendar.THURSDAY), SEXTA("000010", "Sexta-Feira", Calendar.FRIDAY), SABADO("000001", "Sábado", Calendar.SATURDAY);
+	SEGUNDA("100000", "Segunda-Feira", Calendar.MONDAY), TERCA("010000",
+			"Terça-Feira", Calendar.TUESDAY), QUARTA("001000", "Quarta-Feira",
+			Calendar.WEDNESDAY), QUINTA("000100", "Quinta-Feira",
+			Calendar.THURSDAY), SEXTA("000010", "Sexta-Feira", Calendar.FRIDAY), SABADO(
+			"000001", "Sábado", Calendar.SATURDAY), DOMINGO("000000",
+			"Domingo", Calendar.SUNDAY);
 
 	private String id;
 	private String nome;

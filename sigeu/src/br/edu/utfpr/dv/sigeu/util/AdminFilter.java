@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
+import br.edu.utfpr.dv.sigeu.service.UriPermissaoService;
 
 public class AdminFilter implements Filter {
 
@@ -37,10 +38,24 @@ public class AdminFilter implements Filter {
 					LoginFilter.SESSION_PESSOA_LOGIN);
 		}
 
-		if (uri.startsWith("/sigeu/admin/")) {
-			loginOk = pessoaLogin.getAdmin();
-		} else {
+		// if (uri.startsWith("/sigeu/admin/")) {
+		// loginOk = pessoaLogin.getAdmin();
+		// } else {
+		// loginOk = true;
+		// }
+
+		if (uri.trim().toLowerCase().equals("/sigeu/logoff")
+				|| uri.trim().toLowerCase().equals("/sigeu/login")
+				|| uri.trim().toLowerCase().equals("/sigeu/oops.xhtml")
+				|| uri.trim().toLowerCase().startsWith("/sigeu/javax")) {
 			loginOk = true;
+		} else {
+			if (pessoaLogin != null) {
+				loginOk = UriPermissaoService.verificaPermissaoDeAcesso(
+						pessoaLogin, uri);
+			} else {
+				loginOk = true;
+			}
 		}
 
 		if (!loginOk) {

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.naming.NamingException;
 
+import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.dao.LdapServerDAO;
 import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
@@ -88,6 +89,8 @@ public class LoginService {
 
 		hash = StringUtils.generateMD5Hash(password);
 
+		boolean ldapAuth = true;
+
 		if (!admin) {
 			// Servidor cadastrado, verificando senha
 			String uid = email.substring(0, email.indexOf("@"));
@@ -97,7 +100,19 @@ public class LoginService {
 
 			// Caso ocorra falha de senha, uma exceção será
 			// disparada
-			ldapUtils.authenticate(uid, password);
+			try {
+				ldapUtils.authenticate(uid, password);
+			} catch (NamingException e) {
+				/**
+				 * Se não conseguiu se conectar ao servidor LDAP compara a senha
+				 * com a última gravada na tabela PESSOA
+				 */
+				if (!hash.equals(pessoa.getSenhaMd5())) {
+					throw e;
+				}
+
+				ldapAuth = false;
+			}
 
 			// Se chegou aqui é porque a validação ocorreu com sucesso sem
 			// exception. Então pesquisa se já existe essa pessoa cadastrada
@@ -119,14 +134,37 @@ public class LoginService {
 			pessoa.setSenhaMd5(hash);
 
 			// Confere os grupos da Pessoa
-			String baseDn = ldapUtils.getDnByUid(uid);
 			List<GrupoPessoa> grupos = new ArrayList<GrupoPessoa>();
-			List<String> nomeGrupos = ldapUtils.getLdapOuByUid(uid, baseDn);
+			if (ldapAuth) {
+				String baseDn = ldapUtils.getDnByUid(uid);
+				List<String> nomeGrupos = ldapUtils.getLdapOuByUid(uid, baseDn);
 
-			for (String s : nomeGrupos) {
+				for (String s : nomeGrupos) {
+					GrupoPessoa gp = GrupoPessoaService.encontrePorDescricao(
+							campus, s);
+
+					if (gp == null) {
+						gp = new GrupoPessoa();
+						gp.setIdCampus(ldap.getIdCampus());
+						gp.setNome(s);
+
+						GrupoPessoaService.criar(gp);
+					}
+
+					grupos.add(gp);
+				}
+
+				if (novo) {
+					// Não existe pessoa cadastrada, CADASTRANDO
+					PessoaService.criar(pessoa);
+				} else {
+					// Pessoa já existe, será necessário atualizá-la
+					PessoaService.alterar(pessoa);
+				}
+			} else {
+				String s = Config.NOME_GRUPO_EXTERNO;
 				GrupoPessoa gp = GrupoPessoaService.encontrePorDescricao(
 						campus, s);
-
 				if (gp == null) {
 					gp = new GrupoPessoa();
 					gp.setIdCampus(ldap.getIdCampus());
@@ -134,16 +172,7 @@ public class LoginService {
 
 					GrupoPessoaService.criar(gp);
 				}
-
 				grupos.add(gp);
-			}
-
-			if (novo) {
-				// Não existe pessoa cadastrada, CADASTRANDO
-				PessoaService.criar(pessoa);
-			} else {
-				// Pessoa já existe, será necessário atualizá-la
-				PessoaService.alterar(pessoa);
 			}
 
 			// Atualiza os grupos da pessoa
@@ -152,9 +181,11 @@ public class LoginService {
 				trans = new Transaction();
 				trans.begin();
 				PessoaDAO pessoaDAO = new PessoaDAO(trans);
-				// Busca novamente a pessoa do banco de dados para conferir
-				// os
-				// grupos
+
+				/**
+				 * Busca novamente a pessoa do banco de dados para conferir os
+				 * grupos
+				 */
 				pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
 				GrupoPessoaService.atualizaGrupos(trans, pessoa, grupos);
 				trans.commit();
