@@ -96,8 +96,10 @@ public class CancelaReservaBean extends JavaBean {
 			}
 
 			try {
+				String emails[] = EmailService
+						.getEmailFromReservas(listExcluir);
 				EmailService.enviaEmailCancelamento(loginBean.getCampus(),
-						loginBean.getPessoaLogin(), listExcluir,
+						listExcluir, emails, loginBean.getPessoaLogin(),
 						motivoCancelamento);
 			} catch (Exception e) {
 				addErrorMessage("Erro",

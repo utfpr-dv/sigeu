@@ -83,12 +83,17 @@
 								rendered="#{loginBean.pessoaLogin.idPessoa eq 1}" />
 							<p:separator />
 						</p:submenu>
-						<p:submenu label="Reserva" style="width: 120px">
+						<p:submenu label="Reservas" style="width: 120px">
 							<p:menuitem value="Fazer Reserva"
 								outcome="/restrito/Reserva.xhtml" />
-							<p:menuitem value="Listar Agenda"
+							<p:separator />
+							<p:menuitem value="Minhas Reservas"
+								outcome="/restrito/MinhasReservas.xhtml" />
+							<p:separator />
+							<p:menuitem value="Listar Reservas (geral)"
 								outcome="/restrito/AgendaReserva.xhtml" />
-							<p:menuitem value="Listar Autorizações Pendentes"
+							<p:separator />
+							<p:menuitem value="Autorizar Reservas Pendentes"
 								outcome="/restrito/AutorizaReserva.xhtml" />
 						</p:submenu>
 					</p:menubar>

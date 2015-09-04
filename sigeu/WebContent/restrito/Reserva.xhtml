@@ -39,8 +39,6 @@
 							<p:tooltip id="toolTipFinal" for="final"
 								value="Hora final do período de reserva." />
 
-
-
 							<c:if test="#{loginBean.pessoaLogin.admin eq true}">
 								<p:outputLabel value="Importadas" for="campoImportadas" />
 								<p:selectBooleanCheckbox id="campoImportadas"
@@ -101,72 +99,29 @@
 							action="#{reservaBean.pesquisa}" update="@form" />
 					</div>
 
-					<p:tabView style="margin-top:15px">
-						<p:tab title="Recursos disponíveis">
-							<p:dataTable id="reservaTable"
-								value="#{reservaBean.listaItemDisponivel}" var="i"
-								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado." rows="20"
-								paginator="true" paginatorAlwaysVisible="true"
-								paginatorPosition="bottom">
-								<p:column headerText="Patrimonio" style="width: 80px">
-									<h:outputText value="#{i.patrimonio}" />
-								</p:column>
-								<p:column headerText="Categoria" style="width: 120px">
-									<h:outputText value="#{i.idCategoria.nome}" />
-								</p:column>
-								<p:column headerText="Nome">
-									<h:outputText value="#{i.nome}" />
-								</p:column>
-								<p:column headerText="Ações"
-									style="text-align: center; width: 100px">
-									<p:commandButton value="Reservar" icon="ui-icon-calendar"
-										action="#{reservaBean.reserva(i)}" update="@form" />
-								</p:column>
-							</p:dataTable>
-						</p:tab>
-						<p:tab title="Minhas reservas">
-							<p:dataTable id="minhasReservasTable"
-								value="#{reservaBean.listaMinhasReservas}" var="i"
-								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado." rows="20"
-								paginator="true" paginatorAlwaysVisible="true"
-								paginatorPosition="bottom">
-								<p:column headerText="Patrimonio" style="width: 60px">
-									<h:outputText value="#{i.idItemReserva.patrimonio}" />
-								</p:column>
-								<p:column headerText="Nome do Recurso" style="width: 120px">
-									<h:outputText value="#{i.idItemReserva.nome}" />
-								</p:column>
-								<p:column headerText="Categoria" style="width: 100px">
-									<h:outputText value="#{i.idItemReserva.idCategoria.nome}" />
-								</p:column>
-								<p:column headerText="Tipo" style="width: 100px">
-									<h:outputText value="#{i.idTipoReserva.descricao}" />
-								</p:column>
-								<p:column headerText="Usuário">
-									<h:outputText value="#{i.nomeUsuario}" />
-								</p:column>
-								<p:column headerText="Motivo">
-									<h:outputText value="#{i.motivo}" />
-								</p:column>
-								<p:column headerText="Data" style="width: 60px">
-									<h:outputText value="#{i.data}" converter="dateConverter" />
-								</p:column>
-								<p:column headerText="Início" style="width: 40px">
-									<h:outputText value="#{i.horaInicio}" converter="hourConverter" />
-								</p:column>
-								<p:column headerText="Fim" style="width: 40px">
-									<h:outputText value="#{i.horaFim}" converter="hourConverter" />
-								</p:column>
-								<p:column headerText="Ações"
-									style="text-align: center; width: 100px">
-									<p:commandButton value="Cancelar" icon="ui-icon-trash"
-										action="#{reservaBean.cancelaReserva(i)}" update="@form" />
-								</p:column>
-							</p:dataTable>
-						</p:tab>
-					</p:tabView>
+					<p:dataTable id="reservaTable"
+						value="#{reservaBean.listaItemDisponivel}" var="i"
+						style="margin-top: 15px" emptyMessage="Nenhum registro encontrado."
+						rows="20" paginator="true" paginatorAlwaysVisible="true"
+						paginatorPosition="bottom">
+						<p:column headerText="Patrimonio" style="width: 80px">
+							<h:outputText value="#{i.patrimonio}" />
+						</p:column>
+						<p:column headerText="Categoria" style="width: 120px">
+							<h:outputText value="#{i.idCategoria.nome}" />
+						</p:column>
+						<p:column headerText="Nome">
+							<h:outputText value="#{i.nome}" />
+						</p:column>
+						<p:column headerText="Detalhes">
+							<h:outputText value="#{i.detalhes}" />
+						</p:column>
+						<p:column headerText="Ações"
+							style="text-align: center; width: 100px">
+							<p:commandButton value="Reservar" icon="ui-icon-calendar"
+								action="#{reservaBean.reserva(i)}" update="@form" />
+						</p:column>
+					</p:dataTable>
 				</p:tab>
 				<p:tab id="tabReserva" title="Confirmar Reserva"
 					rendered="#{reservaBean.showTab eq 2}">

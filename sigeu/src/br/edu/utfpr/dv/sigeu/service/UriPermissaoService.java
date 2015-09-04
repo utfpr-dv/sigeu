@@ -58,38 +58,35 @@ public class UriPermissaoService {
 			List<GrupoPessoa> grupos = pessoa.getGrupoPessoaList();
 
 			for (GrupoPessoa g : grupos) {
-				boolean exists = false;
-				UriPermissao permissao = null;
-
 				// Verifica se o grupo da pessoa está cadastrado
 				for (UriPermissao u : list) {
 					if (u.getIdGrupoPessoa().getIdGrupoPessoa() == g
 							.getIdGrupoPessoa()) {
-						exists = true;
-						permissao = u;
-						break;
+						return u.getAcesso();
 					}
 				}
-
-				if (exists) {
-					return permissao.getAcesso();
-				} else {
-					/**
-					 * Quando não está cadastrado, considera liberado e cria
-					 * novo registro
-					 */
-					permissao = new UriPermissao();
-					permissao.setAcesso(true);
-					permissao.setIdCampus(pessoa.getIdCampus());
-					permissao.setIdGrupoPessoa(g);
-					permissao.setUri(uri);
-					UriPermissaoService.criar(permissao);
-					return true;
-				}
+				/*
+				 * Não cadastrar automaticamente
+				 */
+				// if (exists) {
+				// return permissao.getAcesso();
+				// } else {
+				// /**
+				// * Quando não está cadastrado, considera liberado e cria
+				// * novo registro
+				// */
+				// permissao = new UriPermissao();
+				// permissao.setAcesso(true);
+				// permissao.setIdCampus(pessoa.getIdCampus());
+				// permissao.setIdGrupoPessoa(g);
+				// permissao.setUri(uri);
+				// UriPermissaoService.criar(permissao);
+				// return true;
+				// }
 			}
 
 			/**
-			 * Se não encontrou pelo menos 1 bloqueio, libera.
+			 * Se não encontrou registros, libera.
 			 */
 			return true;
 		} catch (Exception e) {

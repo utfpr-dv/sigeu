@@ -32,7 +32,7 @@ public class AutorizaReservaBean extends JavaBean {
 	private Pessoa autorizador;
 
 	@PostConstruct
-	public void init(){
+	public void init() {
 		this.autorizador = loginBean.getPessoaLogin();
 		this.atualizaLista();
 	}
@@ -49,7 +49,8 @@ public class AutorizaReservaBean extends JavaBean {
 	 * Grava autorizações
 	 */
 	public void gravaAutorizacoes() {
-		List<Reserva> listaReservas = new ArrayList<Reserva>();
+		List<Reserva> listaReservasAutorizadas = new ArrayList<Reserva>();
+		List<Reserva> listaReservasCanceladas = new ArrayList<Reserva>();
 
 		for (ReservaVO vo : listaReservaVO) {
 			Reserva r = ReservaService.encontrePorId(vo.getIdReserva());
@@ -57,20 +58,32 @@ public class AutorizaReservaBean extends JavaBean {
 			if (vo.isAutorizar()) {
 				r.setStatus(StatusReserva.EFETIVADA.getStatus());
 				r.setIdAutorizador(autorizador);
-			} else {
+				listaReservasAutorizadas.add(r);
+			} else if (vo.isExcluir()) {
 				r.setStatus(StatusReserva.CANCELADA.getStatus());
-			}
-
-			if (vo.isAutorizar() || vo.isExcluir()) {
-				listaReservas.add(r);
+				listaReservasCanceladas.add(r);
 			}
 		}
 
-		if (listaReservas.size() > 0) {
+		if (listaReservasCanceladas.size() > 0
+				|| listaReservasAutorizadas.size() > 0) {
+
 			try {
-				ReservaService.alterar(loginBean.getCampus(),
-						loginBean.getPessoaLogin(), listaReservas,
-						"Autorização de reservas");
+				if (listaReservasAutorizadas.size() > 0) {
+					ReservaService
+							.alterar(loginBean.getCampus(),
+									loginBean.getPessoaLogin(),
+									listaReservasAutorizadas,
+									"Autorização de reservas");
+				}
+
+				if (listaReservasCanceladas.size() > 0) {
+					ReservaService
+							.alterar(loginBean.getCampus(),
+									loginBean.getPessoaLogin(),
+									listaReservasCanceladas,
+									"Cancelamento de reservas");
+				}
 
 				addInfoMessage("Autorização",
 						"Todas as autorizações e cancelamentos foram gravadas com sucesso!");
@@ -82,13 +95,20 @@ public class AutorizaReservaBean extends JavaBean {
 				addErrorMessage("Autorização", e.getMessage());
 			}
 		} else {
-			addWarnMessage("Autorização", "Nada a autorizar.");
+			addWarnMessage("Autorização", "Nada a autorizar ou a cancelar.");
 		}
 
 		// Se chegou até aqui, manda o e-mail de confirmação
 		try {
-			EmailService.enviaEmailConfirmacao(loginBean.getCampus(),
-					listaReservas);
+			for (Reserva r : listaReservasAutorizadas) {
+				String emails[] = new String[] { "", "", "" };
+				emails[0] = loginBean.getPessoaLogin().getEmail();
+				emails[1] = r.getIdUsuario().getEmail();
+				emails[2] = r.getIdAutorizador().getEmail();
+				EmailService.enviaEmailConfirmacao(loginBean.getCampus(), r,
+						emails);
+			}
+
 		} catch (Exception e) {
 			addErrorMessage("Email", "Erro ao mandar e-mails de confirmação.");
 			addErrorMessage("Email", e.getMessage());
@@ -97,12 +117,15 @@ public class AutorizaReservaBean extends JavaBean {
 		// Se chegou até aqui, manda o e-mail de cancelamento das reservas
 		// canceladas
 		try {
-			EmailService.enviaEmailCancelamento(loginBean.getCampus(),
-					loginBean.getPessoaLogin(), listaReservas,
-					"Reserva não autorizada. Entre em contato com "
-							+ loginBean.getPessoaLogin().getNomeCompleto()
-							+ " (" + loginBean.getPessoaLogin().getEmail()
-							+ ")");
+			for (Reserva r : listaReservasCanceladas) {
+				String emails[] = new String[] { "", "", "" };
+				emails[0] = loginBean.getPessoaLogin().getEmail();
+				emails[1] = r.getIdUsuario().getEmail();
+				emails[2] = r.getIdPessoa().getEmail();
+				EmailService.enviaEmailCancelamento(r.getIdCampus(), r, emails,
+						loginBean.getPessoaLogin(),
+						"Entre em contato para mais informações.");
+			}
 		} catch (Exception e) {
 			addErrorMessage("Email", "Erro ao mandar e-mails de Cancelamento.");
 			addErrorMessage("Email", e.getMessage());

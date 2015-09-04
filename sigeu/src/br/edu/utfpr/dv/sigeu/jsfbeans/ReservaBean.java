@@ -513,8 +513,10 @@ public class ReservaBean extends JavaBean {
 
 					case EFETIVADA:
 						// Envia e-mail de confirmação
+						String emails[] = EmailService
+								.getEmailFromReserva(reserva);
 						EmailService.enviaEmailConfirmacao(
-								loginBean.getCampus(), reserva);
+								loginBean.getCampus(), reserva, emails);
 
 						addInfoMessage("Reserva", "Reserva de "
 								+ itemReservaGravacao.getNome()
@@ -574,8 +576,9 @@ public class ReservaBean extends JavaBean {
 				break;
 			case EFETIVADA:
 				// Envia e-mail de confirmação das reservas
-				EmailService
-						.enviaEmailConfirmacao(loginBean.getCampus(), lista);
+				String emails[] = EmailService.getEmailFromReservas(lista);
+				EmailService.enviaEmailConfirmacao(loginBean.getCampus(),
+						lista, emails);
 
 				addInfoMessage("Reserva",
 						"Reserva de " + itemReservaGravacao.getNome()
@@ -731,8 +734,10 @@ public class ReservaBean extends JavaBean {
 				}
 
 				try {
+					String emails[] = EmailService
+							.getEmailFromReservas(listExcluir);
 					EmailService.enviaEmailCancelamento(loginBean.getCampus(),
-							loginBean.getPessoaLogin(), listExcluir,
+							listExcluir, emails, loginBean.getPessoaLogin(),
 							motivoCancelamento);
 				} catch (Exception e) {
 					addErrorMessage("Erro",
