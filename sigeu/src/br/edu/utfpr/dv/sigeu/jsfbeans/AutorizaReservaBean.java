@@ -18,7 +18,7 @@ import br.edu.utfpr.dv.sigeu.service.EmailService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
-import com.adamiworks.utils.DateUtils;
+import com.adamiworks.utils.DateTimeUtils;
 
 @Named
 @ViewScoped
@@ -153,9 +153,9 @@ public class AutorizaReservaBean extends JavaBean {
 		// Marca para não excluir quando está autorizando
 		item.setExcluir(false);
 
-		Calendar itemStart = DateUtils.getCalendarFromDates(item.getReserva()
+		Calendar itemStart = DateTimeUtils.getCalendarFromDates(item.getReserva()
 				.getData(), item.getReserva().getHoraInicio());
-		Calendar itemEnd = DateUtils.getCalendarFromDates(item.getReserva()
+		Calendar itemEnd = DateTimeUtils.getCalendarFromDates(item.getReserva()
 				.getData(), item.getReserva().getHoraFim());
 
 		for (ReservaVO vo : listaReservaVO) {
@@ -163,13 +163,13 @@ public class AutorizaReservaBean extends JavaBean {
 					&& vo.getReserva().getIdItemReserva().getIdItemReserva() == item
 							.getReserva().getIdItemReserva().getIdItemReserva()) {
 				// Verifica todas as reservas conflitantes e marca para exclusão
-				Calendar voStart = DateUtils.getCalendarFromDates(vo
+				Calendar voStart = DateTimeUtils.getCalendarFromDates(vo
 						.getReserva().getData(), vo.getReserva()
 						.getHoraInicio());
-				Calendar voEnd = DateUtils.getCalendarFromDates(vo.getReserva()
+				Calendar voEnd = DateTimeUtils.getCalendarFromDates(vo.getReserva()
 						.getData(), vo.getReserva().getHoraFim());
 
-				boolean conflita = DateUtils.conflicts(itemStart, itemEnd,
+				boolean conflita = DateTimeUtils.conflicts(itemStart, itemEnd,
 						voStart, voEnd);
 
 				if (conflita) {

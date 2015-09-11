@@ -12,6 +12,10 @@ h2 {
 	margin: 10px 0px 10px 0px;
 }
 
+.ui-messages-error-summary {
+	font-size: large;
+}
+
 .ui-widget {
 	font-size: 9pt !important;
 	font-family: Arial, Helvetica, Sans-serif !important;

@@ -22,7 +22,7 @@ import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 public class ItemReservaBean extends JavaBean {
 	@Inject
 	private LoginBean loginBean;
-	
+
 	private static final long serialVersionUID = -7332998125885395663L;
 
 	private Integer editarId = null;
@@ -34,6 +34,7 @@ public class ItemReservaBean extends JavaBean {
 	@PostConstruct
 	public void init() {
 		itemReserva = new ItemReserva();
+		itemReserva.setNumeroHorasAntecedencia(0);
 		itemReserva.setAtivo(true);
 
 		HttpServletRequest req = (HttpServletRequest) FacesContext
@@ -127,7 +128,8 @@ public class ItemReservaBean extends JavaBean {
 		listaCategoria = null;
 
 		try {
-			listaCategoria = CategoriaItemReservaService.pesquisar(loginBean.getCampus(), query, true);
+			listaCategoria = CategoriaItemReservaService.pesquisar(
+					loginBean.getCampus(), query, true);
 
 			for (CategoriaItemReserva i : listaCategoria) {
 				list.add(i.getNome());

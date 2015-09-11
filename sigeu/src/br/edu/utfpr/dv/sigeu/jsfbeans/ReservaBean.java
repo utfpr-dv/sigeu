@@ -29,6 +29,7 @@ import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
+import com.adamiworks.utils.DateTimeUtils;
 import com.adamiworks.utils.StringUtils;
 
 @Named
@@ -419,8 +420,32 @@ public class ReservaBean extends JavaBean {
 	}
 
 	public void reserva(ItemReserva i) {
-		this.itemReservaGravacao = i;
-		this.showTab = 2;
+		/*
+		 * Valida o número de horas de antecedência para realizar a reserva
+		 */
+		Calendar dataHoraInicialReserva = DateTimeUtils.getCalendarFromDates(
+				campoData, campoHoraInicial);
+
+		long horas = DateTimeUtils.hoursAfter(Calendar.getInstance().getTime(),
+				dataHoraInicialReserva.getTime());
+
+		/*
+		 * Se o número de horas entre o momento da reserva e a data e hora de
+		 * ínicio da reserva for menor que o número de horas de antecedência,
+		 * proíbe a reserva
+		 */
+		//System.out.println("Horas de antecedência calculadas: " + horas);
+
+		if (i.getNumeroHorasAntecedencia() > 0
+				&& horas < i.getNumeroHorasAntecedencia()) {
+			this.addErrorMessage("Horas de antecedência",
+					"Reserva de " + i.getNome()
+							+ " é permitida apenas com antecedência mínima de "
+							+ i.getNumeroHorasAntecedencia() + " horas.");
+		} else {
+			this.itemReservaGravacao = i;
+			this.showTab = 2;
+		}
 	}
 
 	/**

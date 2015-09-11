@@ -24,7 +24,7 @@ import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
-import com.adamiworks.utils.DateUtils;
+import com.adamiworks.utils.DateTimeUtils;
 
 public class ReservaService {
 
@@ -872,9 +872,9 @@ public class ReservaService {
 			vo.setAutorizar(false);
 			vo.setExcluir(false);
 			vo.setCampus(reserva.getIdCampus());
-			vo.setDataReserva(DateUtils.format(reserva.getData(), "dd/MM/yyyy"));
-			vo.setHoraReserva(DateUtils.format(reserva.getHoraInicio(), "HH:mm")
-					+ "-" + DateUtils.format(reserva.getHoraFim(), "HH:mm"));
+			vo.setDataReserva(DateTimeUtils.format(reserva.getData(), "dd/MM/yyyy"));
+			vo.setHoraReserva(DateTimeUtils.format(reserva.getHoraInicio(), "HH:mm")
+					+ "-" + DateTimeUtils.format(reserva.getHoraFim(), "HH:mm"));
 			vo.setIdReserva(reserva.getIdReserva());
 			vo.setMotivoReserva(reserva.getMotivo());
 			vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());

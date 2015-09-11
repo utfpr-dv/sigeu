@@ -24,7 +24,7 @@ import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
 import br.edu.utfpr.dv.sigeu.vo.PeriodoReservaVO;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
-import com.adamiworks.utils.DateUtils;
+import com.adamiworks.utils.DateTimeUtils;
 import com.adamiworks.utils.StringUtils;
 
 @Named
@@ -204,9 +204,9 @@ public class AgendaReservaBean extends JavaBean {
 
 		for (Reserva r : listaReserva) {
 			PeriodoReservaVO vo = new PeriodoReservaVO();
-			Calendar horaInicio = DateUtils.getCalendarFromDates(r.getData(),
+			Calendar horaInicio = DateTimeUtils.getCalendarFromDates(r.getData(),
 					r.getHoraInicio());
-			Calendar horaFim = DateUtils.getCalendarFromDates(r.getData(),
+			Calendar horaFim = DateTimeUtils.getCalendarFromDates(r.getData(),
 					r.getHoraFim());
 
 			boolean found = false;
@@ -231,12 +231,12 @@ public class AgendaReservaBean extends JavaBean {
 				motivo.append(r.getIdUsuario().getNomeCompleto());
 				motivo.append(" \n");
 				motivo.append(r.getMotivo());
-				Calendar perInicio = DateUtils.getCalendarFromDates(
+				Calendar perInicio = DateTimeUtils.getCalendarFromDates(
 						r.getData(), p.getStarttime());
-				Calendar perFim = DateUtils.getCalendarFromDates(r.getData(),
+				Calendar perFim = DateTimeUtils.getCalendarFromDates(r.getData(),
 						p.getEndtime());
 
-				boolean conflicts = DateUtils.conflicts(horaInicio, horaFim,
+				boolean conflicts = DateTimeUtils.conflicts(horaInicio, horaFim,
 						perInicio, perFim);
 
 				if (conflicts) {

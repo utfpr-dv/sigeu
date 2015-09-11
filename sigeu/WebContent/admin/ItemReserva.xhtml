@@ -1,53 +1,87 @@
-<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/WEB-INF/template/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="titulo">SIGEU: Itens de Reserva</ui:define>
 
 	<ui:define name="corpo">
-		<h:form id="frmItemReserva" prependId="false" rendered="#{loginBean.pessoaLogin.admin eq true}">
+		<h:form id="frmItemReserva" prependId="false"
+			rendered="#{loginBean.pessoaLogin.admin eq true}">
 			<h2>Item de Reserva</h2>
 
-			<p:panelGrid columns="2" id="painel" style="margin-top: 5px; width: 100%">
+			<p:panelGrid columns="2" id="painel"
+				style="margin-top: 5px; width: 100%">
 				<p:outputLabel value="ID" />
-				<p:outputLabel value="#{itemReservaBean.itemReserva.idItemReserva}" id="id" />
+				<p:outputLabel value="#{itemReservaBean.itemReserva.idItemReserva}"
+					id="id" />
 
 				<p:outputLabel value="Categoria" for="pesquisaCategoria" />
-				<p:autoComplete id="pesquisaCategoria" forceSelection="true" value="#{itemReservaBean.pesquisaCategoria}"
-					completeMethod="#{itemReservaBean.selecionaCategoria}" required="true" minQueryLength="1" queryDelay="250">
-					<p:ajax event="itemSelect" listener="#{itemReservaBean.defineCategoria}" update="pesquisaCategoria" />
+				<p:autoComplete id="pesquisaCategoria" forceSelection="true"
+					value="#{itemReservaBean.pesquisaCategoria}"
+					completeMethod="#{itemReservaBean.selecionaCategoria}"
+					required="true" minQueryLength="1" queryDelay="250">
+					<p:ajax event="itemSelect"
+						listener="#{itemReservaBean.defineCategoria}"
+						update="pesquisaCategoria" />
 				</p:autoComplete>
 
 				<p:outputLabel value="Nome" for="nome" />
-				<p:inputText label="Nome" value="#{itemReservaBean.itemReserva.nome}" id="nome" size="64" maxlength="64" />
+				<p:inputText label="Nome"
+					value="#{itemReservaBean.itemReserva.nome}" id="nome" size="64"
+					maxlength="64" />
 
 				<p:outputLabel value="Rótulo" for="rotulo" />
-				<p:inputText label="Rótulo" value="#{itemReservaBean.itemReserva.rotulo}" id="rotulo" size="12" maxlength="12" />
+				<p:inputText label="Rótulo"
+					value="#{itemReservaBean.itemReserva.rotulo}" id="rotulo" size="12"
+					maxlength="12" />
 
 				<p:outputLabel value="Patrimônio" for="patrimonio" />
-				<p:inputText label="Patrimônio" value="#{itemReservaBean.itemReserva.patrimonio}" id="patrimonio" size="32" maxlength="32" />
+				<p:inputText label="Patrimônio"
+					value="#{itemReservaBean.itemReserva.patrimonio}" id="patrimonio"
+					size="32" maxlength="32" />
+
+				<p:outputLabel for="numeroHorasAntecedencia" value="Número de horas de antecedência para reserva" />
+				<p:inputMask id="numeroHorasAntecedencia"
+					value="#{itemReservaBean.itemReserva.numeroHorasAntecedencia}" mask="9?99" slotChar=" "
+					required="true" />
 
 				<p:outputLabel value="Detalhes" for="detalhes" />
-				<p:inputTextarea label="Detalhes" value="#{itemReservaBean.itemReserva.detalhes}" id="detalhes" rows="7" cols="80" maxlength="4000"
+				<p:inputTextarea label="Detalhes"
+					value="#{itemReservaBean.itemReserva.detalhes}" id="detalhes"
+					rows="7" cols="80" maxlength="4000"
 					counterTemplate="{0} caracteres restantes." autoResize="false" />
 
 				<p:outputLabel value="Ativo" for="ativo" />
-				<p:selectBooleanCheckbox id="ativo" value="#{itemReservaBean.itemReserva.ativo}" onLabel="Ativo" offLabel="Inativo" onIcon="ui-icon-close"
-					offIcon="ui-icon-close" style="width:80px" />
+				<p:selectBooleanCheckbox id="ativo"
+					value="#{itemReservaBean.itemReserva.ativo}" onLabel="Ativo"
+					offLabel="Inativo" onIcon="ui-icon-close" offIcon="ui-icon-close"
+					style="width:80px" />
 
 			</p:panelGrid>
 
 			<div id="buttons" style="margin-top: 15px">
-				<p:commandButton value="Salvar" id="botaoSalvar" action="#{itemReservaBean.gravar}" icon="ui-icon-disk" style="width:100px" process="@form" update="@form" />
-				<p:commandButton value="Excluir" id="botaoExcluir" actionListener="#{itemReservaBean.excluir}" icon="ui-icon-trash" update="@form" process="@this"
-					style="width:100px">
-					<p:confirm header="Excluir" message="Confirma exclusão?" icon="ui-icon-alert" />
+				<p:commandButton value="Salvar" id="botaoSalvar"
+					action="#{itemReservaBean.gravar}" icon="ui-icon-disk"
+					style="width:100px" process="@form" update="@form" />
+				<p:commandButton value="Excluir" id="botaoExcluir"
+					actionListener="#{itemReservaBean.excluir}" icon="ui-icon-trash"
+					update="@form" process="@this" style="width:100px">
+					<p:confirm header="Excluir" message="Confirma exclusão?"
+						icon="ui-icon-alert" />
 				</p:commandButton>
-				<p:commandButton value="Cancelar" id="botaoCancelar" onclick="history.go(-1)" icon="ui-icon-close" style="width:100px" process="@this" />
+				<p:commandButton value="Cancelar" id="botaoCancelar"
+					onclick="history.go(-1)" icon="ui-icon-close" style="width:100px"
+					process="@this" />
 			</div>
 
 			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 			</p:confirmDialog>
 
 		</h:form>

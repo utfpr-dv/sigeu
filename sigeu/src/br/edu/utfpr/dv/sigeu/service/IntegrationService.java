@@ -74,7 +74,7 @@ import br.edu.utfpr.dv.sigeu.persistence.HibernateUtil;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 import br.edu.utfpr.dv.sigeu.sort.ClassroomComparator;
 
-import com.adamiworks.utils.DateUtils;
+import com.adamiworks.utils.DateTimeUtils;
 import com.adamiworks.utils.StringUtils;
 import com.adamiworks.utils.ldap.LdapUtils;
 
@@ -861,7 +861,7 @@ public class IntegrationService {
 			System.out.println("PeriodoLetivo Looping...");
 
 			// Total de dias entre o intervalo
-			int totalDias = DateUtils.dateDiff(periodoLetivo.getDataInicio(),
+			int totalDias = DateTimeUtils.dateDiff(periodoLetivo.getDataInicio(),
 					periodoLetivo.getDataFim()).intValue() + 1;
 
 			/**
