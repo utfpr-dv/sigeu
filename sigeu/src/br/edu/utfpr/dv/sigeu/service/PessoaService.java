@@ -75,6 +75,7 @@ public class PessoaService {
 			if (p != null) {
 				Hibernate.initialize(p.getIdCampus());
 				Hibernate.initialize(p.getIdCampus().getIdInstituicao());
+				Hibernate.initialize(p.getIdCampus().getLdapServerList());
 				Hibernate.initialize(p.getGrupoPessoaList());
 			}
 
@@ -114,6 +115,7 @@ public class PessoaService {
 			if (p != null) {
 				Hibernate.initialize(p.getIdCampus());
 				Hibernate.initialize(p.getIdCampus().getIdInstituicao());
+				Hibernate.initialize(p.getIdCampus().getLdapServerList());
 				Hibernate.initialize(p.getGrupoPessoaList());
 			}
 
