@@ -14,12 +14,12 @@ import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
-import br.edu.utfpr.dv.sigeu.persistence.DatabaseConfig;
-import br.edu.utfpr.dv.sigeu.persistence.DatabaseParameter;
 import br.edu.utfpr.dv.sigeu.service.LoginService;
 import br.edu.utfpr.dv.sigeu.util.LoginFilter;
 
 import com.adamiworks.utils.StringUtils;
+import com.adamiworks.utils.hibernate.DatabaseConfig;
+import com.adamiworks.utils.hibernate.DatabaseParameter;
 
 @Named
 @SessionScoped
@@ -45,67 +45,51 @@ public class LoginBean extends JavaBean {
 	public String login() {
 		boolean ok = true;
 
-		this.serverInfo = "Server: "
-				+ DatabaseConfig.getInstance().getProperty(
-						DatabaseParameter.DATABASE_URL);
+		this.serverInfo = "Server: " + DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_URL);
 
 		try {
 			pessoaLogin = LoginService.autentica(email, password);
 
 			if (pessoaLogin == null) {
-				this.addErrorMessage("Login",
-						"E-mail não cadastrado ou senha inválida!");
+				this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");
 			} else {
 				if (!pessoaLogin.getAtivo()) {
-					this.addErrorMessage("Login",
-							"Acesso inativado. Informe ao administrador do sistema.");
+					this.addErrorMessage("Login", "Acesso inativado. Informe ao administrador do sistema.");
 				} else {
 					this.setNomeUsuario(pessoaLogin.getNomeCompleto());
 
 					// TODO - Por enquanto campus é o mesmo da pessoa de login
 					campus = pessoaLogin.getIdCampus();
 
-					HttpServletRequest request = (HttpServletRequest) FacesContext
-							.getCurrentInstance().getExternalContext()
-							.getRequest();
+					HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+							.getExternalContext().getRequest();
 
-					request.getSession().setAttribute(
-							LoginFilter.SESSION_EMAIL_LOGIN, email);
+					request.getSession().setAttribute(LoginFilter.SESSION_EMAIL_LOGIN, email);
 
-					request.getSession().setAttribute(
-							LoginFilter.SESSION_PESSOA_LOGIN, pessoaLogin);
+					request.getSession().setAttribute(LoginFilter.SESSION_PESSOA_LOGIN, pessoaLogin);
 
-					request.getSession().setAttribute(
-							LoginFilter.SESSION_CAMPUS, campus);
+					request.getSession().setAttribute(LoginFilter.SESSION_CAMPUS, campus);
 
 				}
 			}
 		} catch (CommunicationException e) {
 			ok = false;
-			handleException(
-					"Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.",
-					e);
+			handleException("Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.", e);
 		} catch (NamingException e) {
 			ok = false;
 			handleException("Usuário ou senha inválidos.", null);
 		} catch (ServidorLdapNaoCadastradoException e) {
 			ok = false;
-			handleException(
-					"Servidor de autenticação não cadastrado para o endereço de e-mail especificado.",
-					e);
+			handleException("Servidor de autenticação não cadastrado para o endereço de e-mail especificado.", e);
 		} catch (UsuarioDesativadoException e) {
 			ok = false;
-			handleException(
-					"Usuário não autorizado. Entre em contato com o Administrador do sistema.",
-					e);
+			handleException("Usuário não autorizado. Entre em contato com o Administrador do sistema.", e);
 		} catch (GenericJDBCException e) {
 			ok = false;
 			handleException(e);
 		} catch (Exception e) {
 			ok = false;
-			handleException(
-					"Ocorreu um erro ao tentar comunicar com o servidor de autenticação",
-					e);
+			handleException("Ocorreu um erro ao tentar comunicar com o servidor de autenticação", e);
 		}
 		if (ok) {
 			if (Config.getInstance().isDebugMode()) {
@@ -119,8 +103,8 @@ public class LoginBean extends JavaBean {
 	}
 
 	public String logoff() {
-		HttpServletRequest request = (HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
+				.getRequest();
 
 		request.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
 
@@ -129,8 +113,7 @@ public class LoginBean extends JavaBean {
 
 	@Override
 	public String toString() {
-		return "LoginBean [email=" + email + ", password="
-				+ StringUtils.generateMD5Hash(password) + "]";
+		return "LoginBean [email=" + email + ", password=" + StringUtils.generateMD5Hash(password) + "]";
 	}
 
 	public Pessoa getPessoaLogin() {
