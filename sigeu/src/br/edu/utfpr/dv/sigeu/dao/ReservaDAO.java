@@ -59,7 +59,6 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		if (o.getNomeUsuario() != null) {
 			o.setNomeUsuario(o.getNomeUsuario().trim().toUpperCase());
 		}
-
 	}
 
 	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
