@@ -122,6 +122,7 @@ public abstract class JavaBean implements Serializable {
 
 	protected void handleException(Throwable t) {
 		addErrorMessage("Exception", t.toString());
+		t.printStackTrace();
 	}
 
 	protected void handleException(String msg, Throwable t) {
@@ -130,5 +131,6 @@ public abstract class JavaBean implements Serializable {
 		} else {
 			addErrorMessage("Exception", msg);
 		}
+		t.printStackTrace();
 	}
 }

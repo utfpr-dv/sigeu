@@ -57,8 +57,7 @@ public class GrupoPessoaService {
 	 * @param grupos
 	 *            Lista de grupos do LDAP
 	 */
-	public static void atualizaGrupos(Transaction trans, Pessoa pessoa,
-			List<GrupoPessoa> grupos) throws Exception {
+	public static void atualizaGrupos(Transaction trans, Pessoa pessoa, List<GrupoPessoa> grupos) throws Exception {
 		// try {
 		// trans = new Transaction();
 		// trans.begin();
@@ -85,7 +84,8 @@ public class GrupoPessoaService {
 				boolean naoRelacionado = true;
 
 				for (GrupoPessoa grupoCadastrado : gruposCadastrados) {
-					if (grupoCadastrado.getNome().equals(gp.getNome())) {
+					// if (grupoCadastrado.getNome().equals(gp.getNome())) {
+					if (grupoCadastrado.getIdGrupoPessoa() == gp.getIdGrupoPessoa()) {
 						eliminado = false;
 						break;
 					}
@@ -97,7 +97,8 @@ public class GrupoPessoaService {
 				}
 
 				for (GrupoPessoa grupoCadastrado : gruposCadastrados) {
-					if (gp.getNome().equals(grupoCadastrado.getNome())) {
+					// if (gp.getNome().equals(grupoCadastrado.getNome())) {
+					if (gp.getIdGrupoPessoa() == grupoCadastrado.getIdGrupoPessoa()) {
 						naoRelacionado = false;
 						break;
 					}
@@ -175,9 +176,8 @@ public class GrupoPessoaService {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public static GrupoPessoa encontrePorDescricao(Campus campus,
-			String descricao) throws IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, SQLException {
+	public static GrupoPessoa encontrePorDescricao(Campus campus, String descricao)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
 		Transaction trans = new Transaction();
 		trans.begin();
 

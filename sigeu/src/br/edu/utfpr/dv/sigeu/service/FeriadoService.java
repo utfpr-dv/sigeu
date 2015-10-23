@@ -79,8 +79,7 @@ public class FeriadoService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Feriado> pesquisar(Campus campus, String textoPesquisa)
-			throws Exception {
+	public static List<Feriado> pesquisar(Campus campus, String textoPesquisa) throws Exception {
 		List<Feriado> lista = null;
 
 		Transaction trans = new Transaction();
@@ -91,10 +90,9 @@ public class FeriadoService {
 			FeriadoDAO dao = new FeriadoDAO(trans);
 
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-				lista = dao.pesquisa(0);
+				lista = dao.pesquisa(campus, 0);
 			} else {
-				lista = dao.pesquisa(campus,
-						textoPesquisa, 0);
+				lista = dao.pesquisa(campus, textoPesquisa, 0);
 			}
 
 			if (lista != null) {
@@ -165,8 +163,7 @@ public class FeriadoService {
 		}
 	}
 
-	public static List<Feriado> pesquisarPorData(Date dataInicial,
-			Date dataFinal) throws Exception {
+	public static List<Feriado> pesquisarPorData(Campus campus, Date dataInicial, Date dataFinal) throws Exception {
 		List<Feriado> lista = null;
 
 		Transaction trans = new Transaction();
@@ -176,7 +173,7 @@ public class FeriadoService {
 
 			FeriadoDAO dao = new FeriadoDAO(trans);
 
-			lista = dao.pesquisa(dataInicial, dataFinal);
+			lista = dao.pesquisa(campus, dataInicial, dataFinal);
 
 			if (lista != null) {
 				for (Feriado c : lista) {
@@ -202,7 +199,7 @@ public class FeriadoService {
 	 *            Data a ser conferida
 	 * @return Retorna true se ao menos um feriado for encontrado na data.
 	 */
-	public static boolean verificaFeriado(Date data) {
+	public static boolean verificaFeriado(Campus campus, Date data) {
 		List<Feriado> lista = null;
 
 		Transaction trans = new Transaction();
@@ -212,7 +209,7 @@ public class FeriadoService {
 
 			FeriadoDAO dao = new FeriadoDAO(trans);
 
-			lista = dao.pesquisa(data);
+			lista = dao.pesquisa(campus, data);
 
 			return (lista != null && lista.size() > 0);
 

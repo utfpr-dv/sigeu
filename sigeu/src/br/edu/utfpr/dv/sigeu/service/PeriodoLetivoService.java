@@ -90,8 +90,7 @@ public class PeriodoLetivoService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<PeriodoLetivo> pesquisar(Campus campus, String textoPesquisa)
-			throws Exception {
+	public static List<PeriodoLetivo> pesquisar(Campus campus, String textoPesquisa) throws Exception {
 		List<PeriodoLetivo> lista = null;
 
 		Transaction trans = new Transaction();
@@ -102,10 +101,9 @@ public class PeriodoLetivoService {
 			PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
 
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-				lista = dao.pesquisa(HibernateDAO.PESQUISA_LIMITE);
+				lista = dao.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
 			} else {
-				lista = dao.pesquisa(campus,
-						textoPesquisa, 0);
+				lista = dao.pesquisa(campus, textoPesquisa, 0);
 			}
 
 			if (lista != null) {
@@ -131,8 +129,7 @@ public class PeriodoLetivoService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static PeriodoLetivo encontrePorId(Integer editarId)
-			throws Exception {
+	public static PeriodoLetivo encontrePorId(Integer editarId) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
@@ -165,8 +162,7 @@ public class PeriodoLetivoService {
 			trans.begin();
 
 			PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-			PeriodoLetivo existente = dao.encontrePorId(item
-					.getIdPeriodoLetivo());
+			PeriodoLetivo existente = dao.encontrePorId(item.getIdPeriodoLetivo());
 
 			dao.remover(existente);
 			trans.commit();
@@ -207,8 +203,7 @@ public class PeriodoLetivoService {
 		return lista;
 	}
 
-	public static PeriodoLetivo encontrePorNome(Campus campus, String value)
-			throws Exception {
+	public static PeriodoLetivo encontrePorNome(Campus campus, String value) throws Exception {
 
 		Transaction trans = new Transaction();
 
@@ -223,8 +218,7 @@ public class PeriodoLetivoService {
 		}
 	}
 
-	public static PeriodoLetivo encontreAtual(Campus campus, Date data)
-			throws Exception {
+	public static PeriodoLetivo encontreAtual(Campus campus, Date data) throws Exception {
 
 		Transaction trans = new Transaction();
 

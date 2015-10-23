@@ -59,7 +59,10 @@ public class UriPermissaoService {
 
 			for (GrupoPessoa g : grupos) {
 				// Verifica se o grupo da pessoa está cadastrado
+				
+				//System.out.println("Grupo Pessoa = "+g.getIdGrupoPessoa());
 				for (UriPermissao u : list) {
+					//System.out.println("  Grupo Permissao = "+u.getIdGrupoPessoa().getIdGrupoPessoa());
 					if (u.getIdGrupoPessoa().getIdGrupoPessoa() == g
 							.getIdGrupoPessoa()) {
 						return u.getAcesso();

@@ -45,9 +45,10 @@ public class PeriodoLetivoDAO extends HibernateDAO<PeriodoLetivo> {
 		o.setNome(o.getNome().toUpperCase().trim());
 	}
 
-	public List<PeriodoLetivo> pesquisa(int limit) {
-		String hql = "from PeriodoLetivo o order by o.dataInicio ASC";
+	public List<PeriodoLetivo> pesquisa(Campus campus, int limit) {
+		String hql = "from PeriodoLetivo o where o.idCampus.idCampus = :idCampus order by o.dataInicio ASC";
 		Query q = session.createQuery(hql);
+		q.setInteger("idCampus", campus.getIdCampus().intValue());
 		if (limit > 0) {
 			q.setMaxResults(limit);
 		}
@@ -64,8 +65,7 @@ public class PeriodoLetivoDAO extends HibernateDAO<PeriodoLetivo> {
 		return null;
 	}
 
-	public List<PeriodoLetivo> pesquisa(Campus campus, String textoPesquisa,
-			int limit) {
+	public List<PeriodoLetivo> pesquisa(Campus campus, String textoPesquisa, int limit) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM PeriodoLetivo o ");

@@ -56,10 +56,14 @@
 						<p:submenu label="Administração"
 							rendered="#{loginBean.pessoaLogin.admin eq true}">
 							<p:menuitem value="Instituição"
+								rendered="#{loginBean.pessoaLogin.idPessoa eq 1}"
 								outcome="/admin/PesquisaInstituicao.xhtml" />
-							<p:menuitem value="Campus" outcome="/admin/PesquisaCampus.xhtml" />
-							<p:separator />
+							<p:menuitem value="Campus"
+								rendered="#{loginBean.pessoaLogin.idPessoa eq 1}"
+								outcome="/admin/PesquisaCampus.xhtml" />
+							<p:separator rendered="#{loginBean.pessoaLogin.idPessoa eq 1}" />
 							<p:menuitem value="Servidor LDAP"
+								rendered="#{loginBean.pessoaLogin.idPessoa eq 1}"
 								outcome="/admin/PesquisaLdapServer.xhtml" />
 							<p:separator />
 							<p:menuitem value="Pessoa" outcome="/admin/PesquisaPessoa.xhtml" />
@@ -107,9 +111,8 @@
 			<p:separator style="margin-top: 20px" />
 
 			<footer>
-				Desenvolvido na Universidade Tecnológica Federal do Paraná - <a
-					href="http://www.utfpr.edu.br/doisvizinhos" target="_blank">Campus
-					Dois Vizinhos</a>
+				<p:outputLabel value="#{loginBean.campus.nome}"
+					style="font-weight: bold; font-size: small" />
 			</footer>
 		</div>
 

@@ -89,8 +89,7 @@ public class IntegrationService {
 	// private static SimpleDateFormat hourFormat = new
 	// SimpleDateFormat("HH:mm");
 
-	public static void deleteAllPreviousTimetables(Campus campus)
-			throws Exception {
+	public static void deleteAllPreviousTimetables(Campus campus) throws Exception {
 		Transaction transaction = null;
 
 		try {
@@ -114,8 +113,7 @@ public class IntegrationService {
 	 * @return
 	 * @throws IOException
 	 */
-	public static void writeUploadFile(String fileName, byte[] data)
-			throws IOException {
+	public static void writeUploadFile(String fileName, byte[] data) throws IOException {
 
 		String pathUpload = null;
 
@@ -145,8 +143,7 @@ public class IntegrationService {
 	 * @param xmlFileName
 	 * @throws Exception
 	 */
-	public static Integer importXml(Campus campus, String xmlFileName)
-			throws Exception {
+	public static Integer importXml(Campus campus, String xmlFileName) throws Exception {
 		// Remove todas as importações anteriores
 		IntegrationService.deleteAllPreviousTimetables(campus);
 
@@ -155,8 +152,7 @@ public class IntegrationService {
 		// + Config.CONFIG_PATH_UPLOAD)
 		// + File.separator + xmlFileName;
 
-		String fileName = Config.getInstance().getConfig(
-		Config.CONFIG_PATH_UPLOAD) + File.separator + xmlFileName;
+		String fileName = Config.getInstance().getConfig(Config.CONFIG_PATH_UPLOAD) + File.separator + xmlFileName;
 
 		System.out.println("Importando arquivo XML: " + fileName);
 
@@ -192,11 +188,9 @@ public class IntegrationService {
 
 				String id = e.getAttribute("id").trim();
 				String name = e.getAttribute("name").trim();
-				String shortname = StringUtils.left(e.getAttribute("short")
-						.trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
 
-				if (name.length() == 0 || id.length() == 0
-						|| shortname.length() == 0) {
+				if (name.length() == 0 || id.length() == 0 || shortname.length() == 0) {
 					continue;
 				}
 
@@ -224,11 +218,9 @@ public class IntegrationService {
 
 				String id = e.getAttribute("id").trim();
 				String name = e.getAttribute("name").trim();
-				String shortname = StringUtils.left(e.getAttribute("short")
-						.trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
 
-				if (name.length() == 0 || id.length() == 0
-						|| shortname.length() == 0) {
+				if (name.length() == 0 || id.length() == 0 || shortname.length() == 0) {
 					continue;
 				}
 
@@ -255,11 +247,9 @@ public class IntegrationService {
 
 				String id = e.getAttribute("id").trim();
 				String name = e.getAttribute("name").trim();
-				String shortname = StringUtils.left(e.getAttribute("short")
-						.trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
 
-				if (name.length() == 0 || id.length() == 0
-						|| shortname.length() == 0) {
+				if (name.length() == 0 || id.length() == 0 || shortname.length() == 0) {
 					continue;
 				}
 
@@ -299,11 +289,9 @@ public class IntegrationService {
 
 				String id = e.getAttribute("id").trim();
 				String name = e.getAttribute("name").trim();
-				String shortname = StringUtils.left(e.getAttribute("short")
-						.trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
 
-				if (name.length() == 0 || id.length() == 0
-						|| shortname.length() == 0) {
+				if (name.length() == 0 || id.length() == 0 || shortname.length() == 0) {
 					continue;
 				}
 
@@ -330,15 +318,12 @@ public class IntegrationService {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element e = (Element) nNode;
 
-				Integer period = Integer.valueOf(e.getAttribute("period")
-						.trim());
+				Integer period = Integer.valueOf(e.getAttribute("period").trim());
 				// String name = e.getAttribute("name").trim();
 				String name = period.toString();
-				String shortname = StringUtils.left(e.getAttribute("short")
-						.trim(), 32);
+				String shortname = StringUtils.left(e.getAttribute("short").trim(), 32);
 
-				if (period == null || name.length() == 0
-						|| shortname.length() == 0) {
+				if (period == null || name.length() == 0 || shortname.length() == 0) {
 					continue;
 				}
 
@@ -413,13 +398,10 @@ public class IntegrationService {
 				// System.out.println(id);
 				// }
 
-				teacherids = (teacherids == null
-						|| teacherids.trim().length() == 0 ? PROFESSOR_NAO_CADASTRADO_ID
+				teacherids = (teacherids == null || teacherids.trim().length() == 0 ? PROFESSOR_NAO_CADASTRADO_ID
 						: teacherids);
 
-				if (id.length() == 0 || classids.length() == 0
-						|| subjectids.length() == 0
-						|| classroomids.length() == 0
+				if (id.length() == 0 || classids.length() == 0 || subjectids.length() == 0 || classroomids.length() == 0
 						|| teacherids.length() == 0) {
 					continue;
 				}
@@ -452,8 +434,8 @@ public class IntegrationService {
 				String period = e.getAttribute("period").trim();
 				String days = e.getAttribute("days").trim();
 
-				if (lessonid.length() == 0 || classroomids.length() == 0
-						|| period.length() == 0 || days.length() == 0) {
+				if (lessonid.length() == 0 || classroomids.length() == 0 || period.length() == 0
+						|| days.length() == 0) {
 					continue;
 				}
 
@@ -498,20 +480,17 @@ public class IntegrationService {
 
 			for (Teacher teacher : teacherList) {
 
-				Professor p = professorDAO.encontrePorCodigo(campus,
-						teacher.getId());
+				Professor p = professorDAO.encontrePorCodigo(campus, teacher.getId());
 
 				if (p == null) {
 					p = new Professor();
 				}
 
-				p.setCodigo(StringUtils.left(teacher.getId().trim()
-						.toUpperCase(), 32));
+				p.setCodigo(StringUtils.left(teacher.getId().trim().toUpperCase(), 32));
 				p.setCor(StringUtils.left(teacher.getColor().trim(), 12));
 				p.setGenero(teacher.getGender());
 				p.setIdCampus(timetable.getIdCampus());
-				p.setName(StringUtils.left(teacher.getName().trim(), 128)
-						.trim().toUpperCase());
+				p.setName(StringUtils.left(teacher.getName().trim(), 128).trim().toUpperCase());
 
 				if (p.getIdProfessor() == null) {
 					professorDAO.criar(p);
@@ -568,9 +547,8 @@ public class IntegrationService {
 	 *            Código do Periodo letivo selecionado na importação do XML
 	 * @throws Exception
 	 */
-	public static void geraReservasDoXml(Campus campus, Pessoa pessoaLogin,
-			ReservaAdminBean bean, Integer idTimeTable, Integer idPeriodoLetivo)
-			throws Exception {
+	public static void geraReservasDoXml(Campus campus, Pessoa pessoaLogin, ReservaAdminBean bean, Integer idTimeTable,
+			Integer idPeriodoLetivo) throws Exception {
 
 		// Atualiza professores
 		// IntegrationService.relacionaProfessorPessoa();
@@ -586,8 +564,7 @@ public class IntegrationService {
 			ReservaDAO reservaDAO = new ReservaDAO(trans);
 			PeriodoLetivoDAO periodoLetivoDAO = new PeriodoLetivoDAO(trans);
 
-			PeriodoLetivo periodoLetivo = periodoLetivoDAO
-					.encontrePorId(idPeriodoLetivo);
+			PeriodoLetivo periodoLetivo = periodoLetivoDAO.encontrePorId(idPeriodoLetivo);
 
 			System.out.println("Eliminando registros antigos...");
 
@@ -612,8 +589,7 @@ public class IntegrationService {
 			LessonDAO lessonDAO = new LessonDAO(trans);
 			PeriodDAO periodDAO = new PeriodDAO(trans);
 			ItemReservaDAO itemReservaDAO = new ItemReservaDAO(trans);
-			CategoriaItemReservaDAO categoriaItemReservaDAO = new CategoriaItemReservaDAO(
-					trans);
+			CategoriaItemReservaDAO categoriaItemReservaDAO = new CategoriaItemReservaDAO(trans);
 			TipoReservaDAO tipoReservaDAO = new TipoReservaDAO(trans);
 
 			System.out.println("Eliminando registros antigos...OK");
@@ -621,8 +597,7 @@ public class IntegrationService {
 			System.out.println("Criando novo transacao do SIGEU...");
 
 			// Cria nova transação
-			transacao = TransacaoService.criar(campus, pessoaLogin,
-					"Importação XML ASC TimeTables");
+			transacao = TransacaoService.criar(campus, pessoaLogin, "Importação XML ASC TimeTables");
 
 			periodoLetivo.setIdTransacaoReserva(transacao);
 			periodoLetivoDAO.alterar(periodoLetivo);
@@ -635,24 +610,20 @@ public class IntegrationService {
 			System.out.println("Recuperando registros padrão...");
 
 			// Recupera categoria de sala de aula
-			CategoriaItemReserva salaDeAula = categoriaItemReservaDAO
-					.encontrePorDescricao(campus, "SALA / AUDITÓRIO");
+			CategoriaItemReserva salaDeAula = categoriaItemReservaDAO.encontrePorDescricao(campus, "SALA / AUDITÓRIO");
 
 			// Recupera categoria de laboratório
-			CategoriaItemReserva laboratorio = categoriaItemReservaDAO
-					.encontrePorDescricao(campus, "LABORATÓRIO");
+			CategoriaItemReserva laboratorio = categoriaItemReservaDAO.encontrePorDescricao(campus, "LABORATÓRIO");
 
 			// Recupera tipo de reserva "Aula Regular"
-			TipoReserva tipoReserva = tipoReservaDAO.encontrePorDescricao(
-					campus, "AULA REGULAR");
+			TipoReserva tipoReserva = tipoReservaDAO.encontrePorDescricao(campus, "AULA REGULAR");
 
 			// Responsável pelas reservas
 			// Pessoa usuarioAdmin = pessoaDAO.encontrePorId(1);
 			Pessoa usuarioAdmin = pessoaLogin;
 
 			if (salaDeAula == null) {
-				throw new Exception(
-						"Categoria 'SALA / AUDITÓRIO' não localizada");
+				throw new Exception("Categoria 'SALA / AUDITÓRIO' não localizada");
 			}
 
 			if (laboratorio == null) {
@@ -660,8 +631,7 @@ public class IntegrationService {
 			}
 
 			if (tipoReserva == null) {
-				throw new Exception(
-						"Tipo de Reserva 'AULA REGULAR' não localizada");
+				throw new Exception("Tipo de Reserva 'AULA REGULAR' não localizada");
 			}
 
 			if (usuarioAdmin == null) {
@@ -685,8 +655,7 @@ public class IntegrationService {
 			for (Classroom c : listClassroom) {
 				CategoriaItemReserva categoria = null;
 
-				if (c.getName().trim().toLowerCase().substring(0, 3)
-						.equals("lab")) {
+				if (c.getName().trim().toLowerCase().substring(0, 3).equals("lab")) {
 					categoria = laboratorio;
 				} else {
 					categoria = salaDeAula;
@@ -696,13 +665,10 @@ public class IntegrationService {
 					System.out.println(c.getShortname());
 				}
 
-				ItemReserva sala = itemReservaDAO
-						.encontrePorDescricaoECategoria(campus, categoria,
-								c.getName());
+				ItemReserva sala = itemReservaDAO.encontrePorDescricaoECategoria(campus, categoria, c.getName());
 
 				if (sala == null) {
-					sala = itemReservaDAO.encontrePorRotuloECategoria(campus,
-							categoria, c.getShortname());
+					sala = itemReservaDAO.encontrePorRotuloECategoria(campus, categoria, c.getShortname());
 				}
 
 				if (sala == null) {
@@ -765,8 +731,7 @@ public class IntegrationService {
 			Map<String, Disciplina> mapListDisciplina = new HashMap<String, Disciplina>();
 
 			for (Subject s : listSubject) {
-				Disciplina d = disciplinaDAO.encontrePorCodigo(campus,
-						s.getId());
+				Disciplina d = disciplinaDAO.encontrePorCodigo(campus, s.getId());
 
 				if (d == null) {
 					d = new Disciplina();
@@ -832,8 +797,7 @@ public class IntegrationService {
 
 			System.out.println("Carrega Lessons...");
 
-			LessonIdMapList liml = new LessonIdMapList(
-					lessonDAO.encontrePorTimeTable(idTimeTable));
+			LessonIdMapList liml = new LessonIdMapList(lessonDAO.encontrePorTimeTable(idTimeTable));
 			Map<Object, Lesson> mapListLesson = liml.getMap();
 
 			System.out.println("Carrega Lessons...OK");
@@ -861,8 +825,8 @@ public class IntegrationService {
 			System.out.println("PeriodoLetivo Looping...");
 
 			// Total de dias entre o intervalo
-			int totalDias = DateTimeUtils.dateDiff(periodoLetivo.getDataInicio(),
-					periodoLetivo.getDataFim()).intValue() + 1;
+			int totalDias = DateTimeUtils.dateDiff(periodoLetivo.getDataInicio(), periodoLetivo.getDataFim()).intValue()
+					+ 1;
 
 			/**
 			 * LOOPING FINAL ONDE AS RESERVAS SÃO CRIADAS E GRAVADAS DENTRO DO
@@ -878,15 +842,13 @@ public class IntegrationService {
 				// Adds a line
 				row = new BigDecimal(String.valueOf(i));
 
-				progress = row.divide(total, 2, RoundingMode.HALF_DOWN)
-						.multiply(new BigDecimal("100")).intValue();
+				progress = row.divide(total, 2, RoundingMode.HALF_DOWN).multiply(new BigDecimal("100")).intValue();
 
 				bean.setProgress(progress);
 
-				System.out.println("Data: " + sdf.format(dia.getTime())
-						+ "  progresso: " + progress + "%");
+				System.out.println("Data: " + sdf.format(dia.getTime()) + "  progresso: " + progress + "%");
 
-				if (!FeriadoService.verificaFeriado(dia.getTime())) {
+				if (!FeriadoService.verificaFeriado(campus, dia.getTime())) {
 
 					if (dia.getTime().compareTo(periodoLetivo.getDataFim()) > 0) {
 						System.out.println("Período letivo encerrado");
@@ -895,18 +857,14 @@ public class IntegrationService {
 
 					for (Card card : listCard) {
 						// Somente se o dia da semana for compatível
-						if (dia.get(Calendar.DAY_OF_WEEK) == DiaEnum
-								.getDiaEnumById(card.getDays()).getDia()) {
+						if (dia.get(Calendar.DAY_OF_WEEK) == DiaEnum.getDiaEnumById(card.getDays()).getDia()) {
 
 							// Recupera o Lesson
-							Lesson lesson = mapListLesson.get(card
-									.getLessonid());
+							Lesson lesson = mapListLesson.get(card.getLessonid());
 
 							if (lesson == null || lesson.getClassids() == null) {
-								System.out.println("ID_CARD="
-										+ card.getIdCard() + " LESSONID="
-										+ card.getLessonid() + " CLASSROOMIDS="
-										+ card.getClassroomids());
+								System.out.println("ID_CARD=" + card.getIdCard() + " LESSONID=" + card.getLessonid()
+										+ " CLASSROOMIDS=" + card.getClassroomids());
 							}
 
 							// Recupera as classes do Lesson
@@ -920,24 +878,20 @@ public class IntegrationService {
 								Pessoa usuario = null;
 
 								// === Recupera professores do Lesson ===
-								String teachers[] = lesson.getTeacherids()
-										.split(",");
+								String teachers[] = lesson.getTeacherids().split(",");
 
 								for (String s : teachers) {
 
-									Professor p = mapListProfessor.get(s
-											.toUpperCase().trim());
+									Professor p = mapListProfessor.get(s.toUpperCase().trim());
 
 									if (p == null) {
-										p = mapListProfessor
-												.get(PROFESSOR_NAO_CADASTRADO_ID);
+										p = mapListProfessor.get(PROFESSOR_NAO_CADASTRADO_ID);
 									}
 
 									nomeUsuario = p.getName();
 
 									if (p.getProfessorPessoa() != null) {
-										usuario = p.getProfessorPessoa()
-												.getIdPessoa();
+										usuario = p.getProfessorPessoa().getIdPessoa();
 									}
 
 									// QUANDO O USUÁRIO NÃO FOR IDENTIFICADO,
@@ -947,79 +901,58 @@ public class IntegrationService {
 									}
 
 									// Recupera as salas registradas no card
-									String classroomids[] = card
-											.getClassroomids().split(",");
+									String classroomids[] = card.getClassroomids().split(",");
 
 									// Navega entre as classroomid do Card
 									// IGNORAR CLASSROOMIDS DE LESSON
 									for (String classroomid : classroomids) {
-										ItemReserva sala = mapListSala
-												.get(classroomid);
+										ItemReserva sala = mapListSala.get(classroomid);
 
 										if (sala == null) {
-											throw new Exception(
-													"Sala não encontrada [Lesson:"
-															+ lesson.getId()
-															+ "][Classroomid:"
-															+ classroomid + "]");
+											throw new Exception("Sala não encontrada [Lesson:" + lesson.getId()
+													+ "][Classroomid:" + classroomid + "]");
 										}
 
 										// Periodo
 										// Period period =
 										// periodDAO.encontrePorNome(
 										// idTimeTable, card.getPeriod());
-										Period period = mapPeriodList.get(card
-												.getPeriod());
+										Period period = mapPeriodList.get(card.getPeriod());
 
 										// Disciplina
-										Disciplina disciplina = mapListDisciplina
-												.get(lesson.getSubjectids());
+										Disciplina disciplina = mapListDisciplina.get(lesson.getSubjectids());
 
 										if (disciplina == null) {
 											throw new Exception(
-													"Disciplina não encontrada [Lesson:"
-															+ lesson.getId()
-															+ "]");
+													"Disciplina não encontrada [Lesson:" + lesson.getId() + "]");
 										}
 
 										StringBuilder motivo = new StringBuilder();
 
-										motivo.append("[DISCIPLINA ")
-												.append(disciplina.getRotulo())
-												.append(" - ")
-												.append(disciplina.getNome())
-												.append("] / [TURMA ")
-												.append(classe.getNome())
-												.append("]");
+										motivo.append("[DISCIPLINA ").append(disciplina.getRotulo()).append(" - ")
+												.append(disciplina.getNome()).append("] / [TURMA ")
+												.append(classe.getNome()).append("]");
 
 										Reserva reserva = new Reserva();
 										reserva.setImportado(true);
 										reserva.setIdTransacao(transacao);
-										reserva.setHoraGravacao(Calendar
-												.getInstance().getTime());
-										reserva.setDataGravacao(Calendar
-												.getInstance().getTime());
+										reserva.setHoraGravacao(Calendar.getInstance().getTime());
+										reserva.setDataGravacao(Calendar.getInstance().getTime());
 										reserva.setData(dia.getTime());
 										reserva.setHoraFim(period.getEndtime());
-										reserva.setHoraInicio(period
-												.getStarttime());
+										reserva.setHoraInicio(period.getStarttime());
 										reserva.setIdCampus(campus);
 										reserva.setIdItemReserva(sala);
 										reserva.setIdTipoReserva(tipoReserva);
 										reserva.setIdTransacao(transacao);
 										reserva.setIdUsuario(usuario);
-										reserva.setNomeUsuario(nomeUsuario
-												.trim().toUpperCase());
+										reserva.setNomeUsuario(nomeUsuario.trim().toUpperCase());
 										reserva.setIdPessoa(usuarioAdmin);
 										reserva.setIdAutorizador(usuarioAdmin);
-										reserva.setEmailNotificacao(usuarioAdmin
-												.getEmail());
-										reserva.setRotulo(StringUtils.left(
-												classe.toString(), 32));
-										reserva.setCor(p.getCor() == null ? "#BBD2D2"
-												: p.getCor());
-										reserva.setStatus(StatusReserva.EFETIVADA
-												.getStatus());
+										reserva.setEmailNotificacao(usuarioAdmin.getEmail());
+										reserva.setRotulo(StringUtils.left(classe.toString(), 32));
+										reserva.setCor(p.getCor() == null ? "#BBD2D2" : p.getCor());
+										reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
 
 										reserva.setMotivo(motivo.toString());
 
@@ -1071,8 +1004,7 @@ public class IntegrationService {
 
 			ProfessorDAO professorDAO = new ProfessorDAO(trans);
 			PessoaDAO pessoaDAO = new PessoaDAO(trans);
-			ProfessorPessoaDAO professorPessoaDAO = new ProfessorPessoaDAO(
-					trans);
+			ProfessorPessoaDAO professorPessoaDAO = new ProfessorPessoaDAO(trans);
 
 			List<Pessoa> listPessoa = pessoaDAO.pesquisa(campus, null, 0);
 			// List<Pessoa> listPessoa = pessoaDAO.pesquisaPorGrupo(Config
@@ -1091,8 +1023,7 @@ public class IntegrationService {
 				 * preposições.
 				 */
 				for (Pessoa pessoa : listPessoa) {
-					double sim = StringUtils.similarity(
-							pessoa.getNomeCompleto(), prof.getName());
+					double sim = StringUtils.similarity(pessoa.getNomeCompleto(), prof.getName());
 
 					if (sim >= 0.80d) {
 						PessoaSimilarity pps = new PessoaSimilarity();
@@ -1109,9 +1040,8 @@ public class IntegrationService {
 					listSimilarity.sort(new PessoaSimilarityComparator());
 
 					for (PessoaSimilarity ps : listSimilarity) {
-						System.out.println(prof.getName() + " ~ "
-								+ ps.getPessoa().getNomeCompleto() + " = "
-								+ ps.getDistance());
+						System.out.println(
+								prof.getName() + " ~ " + ps.getPessoa().getNomeCompleto() + " = " + ps.getDistance());
 					}
 
 					System.out.println("===");
@@ -1127,8 +1057,7 @@ public class IntegrationService {
 					boolean exists = true;
 
 					ProfessorPessoa pp = null;
-					pp = professorPessoaDAO
-							.encontrePorId(prof.getIdProfessor());
+					pp = professorPessoaDAO.encontrePorId(prof.getIdProfessor());
 
 					if (pp == null) {
 						exists = false;
@@ -1146,8 +1075,7 @@ public class IntegrationService {
 					}
 
 				} else {
-					System.out.println(prof.getName()
-							+ " NÃO POSSUI REGISTROS SEMELHANTES.");
+					System.out.println(prof.getName() + " NÃO POSSUI REGISTROS SEMELHANTES.");
 					// }
 				}
 			}
@@ -1195,14 +1123,12 @@ public class IntegrationService {
 	 * @author Tiago
 	 *
 	 */
-	public static class PessoaSimilarityComparator implements
-			Comparator<PessoaSimilarity> {
+	public static class PessoaSimilarityComparator implements Comparator<PessoaSimilarity> {
 
 		@Override
 		public int compare(PessoaSimilarity arg0, PessoaSimilarity arg1) {
 			// Descending arg1 - arg0
-			return new Double((arg1.getDistance() * 1000)
-					- (arg0.getDistance() * 1000)).intValue();
+			return new Double((arg1.getDistance() * 1000) - (arg0.getDistance() * 1000)).intValue();
 		}
 
 	}
@@ -1215,8 +1141,7 @@ public class IntegrationService {
 	 *            Campus a ser atualizado
 	 * @throws Exception
 	 */
-	public static void atualizaPessoasLdap(ReservaAdminBean bean, Campus campus)
-			throws Exception {
+	public static void atualizaPessoasLdap(ReservaAdminBean bean, Campus campus) throws Exception {
 		Date inicio = Calendar.getInstance().getTime();
 		Date fim = null;
 
@@ -1236,8 +1161,8 @@ public class IntegrationService {
 			// LdapServer ldap = LdapServerService.encontrePorEmail(emailLogin);
 			LdapServer ldap = campus.getLdapServerList().get(0);
 
-			LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(),
-					ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
+			LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(), ldap.getSsl(), true, ldap.getBasedn(),
+					ldap.getVarLdapUid());
 
 			// ///////////////////////////////////
 			List<String> mapa = ldapUtils.getAllLdapInfo(ldap.getVarLdapUid());
@@ -1245,8 +1170,7 @@ public class IntegrationService {
 			 * Usar este código abaixo para encontrar todos os UIDs com os
 			 * grupos em uma chamada ao LDAP só.
 			 */
-			Map<String, String> userTree = ldapUtils.getAllUsers(ldap
-					.getVarLdapUid());
+			Map<String, String> userTree = ldapUtils.getAllUsers(ldap.getVarLdapUid());
 
 			int criadas = 0;
 			int alteradas = 0;
@@ -1259,7 +1183,7 @@ public class IntegrationService {
 			String nomeCompleto = null;
 			String email = null;
 			String uid = null;
-			// String lCampus = null;
+			String lCampus = null;
 			String map[] = null;
 			Pessoa pessoa = null;
 			boolean update = true;
@@ -1270,8 +1194,7 @@ public class IntegrationService {
 			GrupoPessoa gp = null;
 			/**/
 
-			// String varLdapCampus =
-			// ldap.getVarLdapCampus().trim().toUpperCase();
+			//String varLdapCampus = ldap.getVarLdapCampus().trim().toUpperCase();
 
 			BigDecimal total = new BigDecimal(String.valueOf(mapa.size()));
 			BigDecimal row = new BigDecimal("0");
@@ -1281,8 +1204,7 @@ public class IntegrationService {
 				// Adds a line
 				row = row.add(new BigDecimal("1"));
 
-				progress = row.divide(total, 2, RoundingMode.HALF_DOWN)
-						.multiply(new BigDecimal("100")).intValue();
+				progress = row.divide(total, 2, RoundingMode.HALF_DOWN).multiply(new BigDecimal("100")).intValue();
 
 				bean.setProgress(progress);
 
@@ -1293,42 +1215,34 @@ public class IntegrationService {
 				nomeCompleto = null;
 				email = null;
 				uid = null;
-				// lCampus = null;
+				lCampus = null;
 
 				for (String a : attrs) {
 					map = a.split(":");
 
-					if (map[0].trim().toUpperCase()
-							.equals(ldap.getVarLdapCnpjCpf().toUpperCase())) {
+					if (map[0].trim().toUpperCase().equals(ldap.getVarLdapCnpjCpf().toUpperCase())) {
 						cnpjCpf = map[1].trim();
 					}
 
-					if (map[0].trim().toUpperCase()
-							.equals(ldap.getVarLdapEmail().toUpperCase())) {
+					if (map[0].trim().toUpperCase().equals(ldap.getVarLdapEmail().toUpperCase())) {
 						email = map[1].trim();
 					}
 
-					if (map[0].trim().toUpperCase()
-							.equals(ldap.getVarLdapMatricula().toUpperCase())) {
+					if (map[0].trim().toUpperCase().equals(ldap.getVarLdapMatricula().toUpperCase())) {
 						matricula = map[1].trim();
 					}
 
-					if (map[0]
-							.trim()
-							.toUpperCase()
-							.equals(ldap.getVarLdapNomeCompleto().toUpperCase())) {
+					if (map[0].trim().toUpperCase().equals(ldap.getVarLdapNomeCompleto().toUpperCase())) {
 						nomeCompleto = map[1].trim();
 					}
 
-					if (map[0].trim().toUpperCase()
-							.equals(ldap.getVarLdapUid().toUpperCase())) {
+					if (map[0].trim().toUpperCase().equals(ldap.getVarLdapUid().toUpperCase())) {
 						uid = map[1].trim();
 					}
 
-					// if (map[0].trim().toUpperCase()
-					// .equals(ldap.getVarLdapCampus().toUpperCase())) {
-					// lCampus = map[1].trim().toUpperCase();
-					// }
+					if (map[0].trim().toUpperCase().equals(ldap.getVarLdapCampus().toUpperCase())) {
+						lCampus = map[1].trim().toUpperCase();
+					}
 				}
 
 				// System.out.println(uid);
@@ -1353,8 +1267,7 @@ public class IntegrationService {
 						continue;
 					}
 
-					if (cnpjCpf == null || matricula == null
-							|| nomeCompleto == null) {
+					if (cnpjCpf == null || matricula == null || nomeCompleto == null) {
 						ignorados++;
 						continue;
 					}
@@ -1374,32 +1287,31 @@ public class IntegrationService {
 				} else {
 					fieldsIgnored = 0;
 
-					if (pessoa.getCnpjCpf().trim().toUpperCase()
-							.equals(cnpjCpf.trim().toUpperCase())) {
+					if (pessoa.getCnpjCpf().trim().toUpperCase().equals(cnpjCpf.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
 
-					if (pessoa.getEmail().trim().toUpperCase()
-							.equals(email.trim().toUpperCase())) {
+					if (pessoa.getEmail().trim().toUpperCase().equals(email.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
 
-					if (pessoa.getMatricula().trim().toUpperCase()
-							.equals(matricula.trim().toUpperCase())) {
+					if (pessoa.getMatricula().trim().toUpperCase().equals(matricula.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
 
-					if (pessoa.getNomeCompleto().trim().toUpperCase()
-							.equals(nomeCompleto.trim().toUpperCase())) {
+					if (pessoa.getNomeCompleto().trim().toUpperCase().equals(nomeCompleto.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
 
+					if (pessoa.getLdapCampus().trim().toUpperCase().equals(lCampus.trim().toUpperCase())) {
+						fieldsIgnored++;
+					}
+					
 					// Se todos os campos continuam iguais, não faz nada
-					if (fieldsIgnored >= 4) {
+					if (fieldsIgnored >= 5) {
 						ignorados++;
 						continue;
 					}
-
 				}
 
 				pessoa.setCnpjCpf(cnpjCpf);
@@ -1408,6 +1320,7 @@ public class IntegrationService {
 				pessoa.setMatricula(matricula);
 				pessoa.setNomeCompleto(nomeCompleto);
 				pessoa.setPessoaFisica(true);
+				pessoa.setLdapCampus(lCampus);
 
 				if (update) {
 					// PessoaService.alterar(pessoa);
@@ -1462,8 +1375,7 @@ public class IntegrationService {
 						trans.begin();
 
 						// Recupera id do grupo
-						gp = grupoPessoaDAO
-								.encontrePorId(gp.getIdGrupoPessoa());
+						gp = grupoPessoaDAO.encontrePorId(gp.getIdGrupoPessoa());
 					}
 
 					grupos.add(gp);
@@ -1475,9 +1387,8 @@ public class IntegrationService {
 				if (commitCount >= HibernateUtil.HIBERNATE_BATCH_SIZE) {
 
 					System.out.println(commitCount + " registros processados.");
-					System.out.println("---> Criadas: " + criadas
-							+ " | Alteradas: " + alteradas + " | Ignorados: "
-							+ ignorados);
+					System.out.println(
+							"---> Criadas: " + criadas + " | Alteradas: " + alteradas + " | Ignorados: " + ignorados);
 
 					commitCount = 0;
 					trans.commit();

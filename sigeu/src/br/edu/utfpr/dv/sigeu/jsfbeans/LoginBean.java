@@ -35,6 +35,8 @@ public class LoginBean extends JavaBean {
 	private String nomeUsuario;
 
 	private String serverInfo;
+	
+	private String appInfo;
 
 	private Pessoa pessoaLogin;
 
@@ -111,6 +113,8 @@ public class LoginBean extends JavaBean {
 		return "/Logoff";
 	}
 
+	
+	
 	@Override
 	public String toString() {
 		return "LoginBean [email=" + email + ", password=" + StringUtils.generateMD5Hash(password) + "]";
@@ -164,4 +168,11 @@ public class LoginBean extends JavaBean {
 		this.campus = campus;
 	}
 
+	public String getAppInfo() {
+		return appInfo;
+	}
+
+	public void setAppInfo(String appInfo) {
+		this.appInfo = appInfo;
+	}
 }

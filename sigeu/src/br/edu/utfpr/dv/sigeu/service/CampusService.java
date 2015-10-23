@@ -107,8 +107,7 @@ public class CampusService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Campus> pesquisar(String textoPesquisa,
-			Instituicao instituicao) throws Exception {
+	public static List<Campus> pesquisar(String textoPesquisa, Instituicao instituicao) throws Exception {
 		List<Campus> lista = null;
 
 		Transaction trans = new Transaction();
@@ -170,8 +169,7 @@ public class CampusService {
 	 * @throws EntidadePossuiRelacionamentoException
 	 * @throws Exception
 	 */
-	public static void remover(Campus i)
-			throws EntidadePossuiRelacionamentoException, Exception {
+	public static void remover(Campus i) throws EntidadePossuiRelacionamentoException, Exception {
 		Transaction trans = new Transaction();
 
 		try {
@@ -183,10 +181,8 @@ public class CampusService {
 			Hibernate.initialize(campusBd.getGrupoPessoaList());
 			Hibernate.initialize(campusBd.getPessoaList());
 
-			if (campusBd.getGrupoPessoaList().size() > 0
-					|| campusBd.getPessoaList().size() > 0) {
-				throw new EntidadePossuiRelacionamentoException(
-						campusBd.getNome());
+			if (campusBd.getGrupoPessoaList().size() > 0 || campusBd.getPessoaList().size() > 0) {
+				throw new EntidadePossuiRelacionamentoException(campusBd.getNome());
 			}
 
 			dao.remover(campusBd);
@@ -198,4 +194,51 @@ public class CampusService {
 			trans.close();
 		}
 	}
+
+	public static Campus encontrePorEmail(String email) throws Exception {
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+
+			CampusDAO dao = new CampusDAO(trans);
+			Campus obj = dao.encontrePorEmail(email);
+
+			if (obj != null) {
+				Hibernate.initialize(obj.getIdInstituicao());
+				Hibernate.initialize(obj.getIdCampus());
+				Hibernate.initialize(obj.getLdapServerList());
+			}
+			return obj;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			trans.close();
+		}
+	}
+
+	public static Campus encontrePorSigla(String sigla) throws Exception {
+		Transaction trans = new Transaction();
+
+		try {
+			trans.begin();
+
+			CampusDAO dao = new CampusDAO(trans);
+			Campus obj = dao.encontrePorSigla(sigla);
+
+			if (obj != null) {
+				Hibernate.initialize(obj.getIdInstituicao());
+				Hibernate.initialize(obj.getIdCampus());
+				Hibernate.initialize(obj.getLdapServerList());
+			}
+			return obj;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			trans.close();
+		}
+	}
+
 }

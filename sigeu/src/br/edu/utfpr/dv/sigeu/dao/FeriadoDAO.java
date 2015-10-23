@@ -28,10 +28,11 @@ public class FeriadoDAO extends HibernateDAO<Feriado> {
 		return (Feriado) q.uniqueResult();
 	}
 
-	public Feriado encontrePorDescricao(String descricao) {
-		String hql = "from Feriado o where upper(o.descricao) = upper(:des) order by o.data";
+	public Feriado encontrePorDescricao(Campus campus, String descricao) {
+		String hql = "from Feriado o where o.idCampus.idCampus = :idCampus AND upper(o.descricao) = upper(:des) order by o.data";
 		Query q = session.createQuery(hql);
 		q.setString("des", descricao);
+		q.setInteger("idCampus", campus.getIdCampus().intValue());
 		return (Feriado) q.uniqueResult();
 	}
 
@@ -49,7 +50,7 @@ public class FeriadoDAO extends HibernateDAO<Feriado> {
 
 	public List<Feriado> pesquisa(Campus campus, String textoPesquisa, int limit) {
 		if (textoPesquisa == null || textoPesquisa.trim().equals("")) {
-			return this.pesquisa(limit);
+			return this.pesquisa(campus, limit);
 		}
 		String hql = "from Feriado o where (upper(o.descricao) like upper(:q)) and o.idCampus.idCampus = :idCampus order by o.data ASC";
 		Query q = session.createQuery(hql);
@@ -73,9 +74,11 @@ public class FeriadoDAO extends HibernateDAO<Feriado> {
 		return null;
 	}
 
-	public List<Feriado> pesquisa(int limit) {
-		String hql = "from Feriado o order by o.data ASC";
+	public List<Feriado> pesquisa(Campus campus, int limit) {
+		String hql = "from Feriado o WHERE o.idCampus.idCampus = :idCampus order by o.data ASC";
 		Query q = session.createQuery(hql);
+		q.setInteger("idCampus", campus.getIdCampus());
+
 		if (limit > 0) {
 			q.setMaxResults(limit);
 		}
@@ -92,10 +95,11 @@ public class FeriadoDAO extends HibernateDAO<Feriado> {
 		return null;
 	}
 
-	public List<Feriado> pesquisa(Date dataInicial, Date dataFinal) {
-		String hql = "from Feriado o WHERE o.data between :d1 and :d2 order by o.data ASC";
+	public List<Feriado> pesquisa(Campus campus, Date dataInicial, Date dataFinal) {
+		String hql = "from Feriado o WHERE o.idCampus.idCampus = :idCampus AND o.data between :d1 and :d2 order by o.data ASC";
 
 		Query q = session.createQuery(hql);
+		q.setInteger("idCampus", campus.getIdCampus());
 		q.setDate("d1", dataInicial);
 		q.setDate("d2", dataFinal);
 		List<?> list = q.list();
@@ -111,8 +115,8 @@ public class FeriadoDAO extends HibernateDAO<Feriado> {
 		return null;
 	}
 
-	public List<Feriado> pesquisa(Date data) {
-		return this.pesquisa(data, data);
+	public List<Feriado> pesquisa(Campus campus, Date data) {
+		return this.pesquisa(campus, data, data);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import br.edu.utfpr.dv.sigeu.service.FeriadoService;
 public class PesquisaFeriadoBean extends JavaBean {
 	@Inject
 	private LoginBean loginBean;
-	
+
 	private static final long serialVersionUID = -7338998125882395663L;
 
 	//
@@ -32,9 +32,12 @@ public class PesquisaFeriadoBean extends JavaBean {
 	public void init() {
 		try {
 			lista = FeriadoService.pesquisar(loginBean.getCampus(), null);
-			//this.addInfoMessage("Pesquisa", "Exibindo  " + HibernateDAO.PESQUISA_LIMITE + " itens. Pesquise utilizando parâmetros para obter mais registros.");
+			// this.addInfoMessage("Pesquisa", "Exibindo " +
+			// HibernateDAO.PESQUISA_LIMITE + " itens. Pesquise utilizando
+			// parâmetros para obter mais registros.");
 		} catch (Exception e) {
-			//this.addErrorMessage("Pesquisa", "Erro ao realizar pesquisa inicial. Entre em contato com o Admin.");
+			// this.addErrorMessage("Pesquisa", "Erro ao realizar pesquisa
+			// inicial. Entre em contato com o Admin.");
 		}
 	}
 
@@ -55,7 +58,7 @@ public class PesquisaFeriadoBean extends JavaBean {
 	 */
 	public void pesquisaPorData() {
 		try {
-			this.lista = FeriadoService.pesquisarPorData(dataInicial, dataFinal);
+			this.lista = FeriadoService.pesquisarPorData(loginBean.getCampus(), dataInicial, dataFinal);
 		} catch (Exception e) {
 			e.printStackTrace();
 			addErrorMessage("Pesquisa", "Erro na pesquisa");

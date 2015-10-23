@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Hibernate;
 
 import br.edu.utfpr.dv.sigeu.dao.LdapServerDAO;
+import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.LdapServer;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
@@ -50,7 +51,7 @@ public class LdapServerService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<LdapServer> pesquisar(String textoPesquisa) throws Exception {
+	public static List<LdapServer> pesquisar(Campus campus, String textoPesquisa) throws Exception {
 		List<LdapServer> lista = null;
 
 		Transaction trans = new Transaction();
@@ -60,9 +61,9 @@ public class LdapServerService {
 
 			LdapServerDAO dao = new LdapServerDAO(trans);
 			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-				lista = dao.pesquisa(HibernateDAO.PESQUISA_LIMITE);
+				lista = dao.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
 			} else {
-				lista = dao.pesquisa(textoPesquisa, 0);
+				lista = dao.pesquisa(campus, textoPesquisa, 0);
 			}
 
 			if (lista != null) {

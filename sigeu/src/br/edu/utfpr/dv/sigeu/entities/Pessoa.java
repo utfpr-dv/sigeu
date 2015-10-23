@@ -27,238 +27,253 @@ import javax.persistence.OneToMany;
  * @author Tiago
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "Pessoa.findAll", query = "SELECT p FROM Pessoa p")})
+@NamedQueries({ @NamedQuery(name = "Pessoa.findAll", query = "SELECT p FROM Pessoa p") })
 public class Pessoa implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id_pessoa")
-    private Integer idPessoa;
-    @Basic(optional = false)
-    private String email;
-    @Basic(optional = false)
-    @Column(name = "nome_completo")
-    private String nomeCompleto;
-    @Basic(optional = false)
-    @Column(name = "senha_md5")
-    private String senhaMd5;
-    @Basic(optional = false)
-    @Column(name = "pessoa_fisica")
-    private boolean pessoaFisica;
-    @Column(name = "cnpj_cpf")
-    private String cnpjCpf;
-    private String matricula;
-    @Basic(optional = false)
-    private boolean ativo;
-    @Basic(optional = false)
-    private boolean admin;
-    @Basic(optional = false)
-    private boolean externo;
-    @ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
-    private List<GrupoPessoa> grupoPessoaList;
-    @ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
-    private List<ItemReserva> itemReservaList;
-    @JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Campus idCampus;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
-    private List<Transacao> transacaoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
-    private List<ProfessorPessoa> professorPessoaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idAutorizador", fetch = FetchType.LAZY)
-    private List<Reserva> reservaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
-    private List<Reserva> reservaList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario", fetch = FetchType.LAZY)
-    private List<Reserva> reservaList2;
+	private static final long serialVersionUID = 1L;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic(optional = false)
+	@Column(name = "id_pessoa")
+	private Integer idPessoa;
+	@Basic(optional = false)
+	private String email;
+	@Basic(optional = false)
+	@Column(name = "nome_completo")
+	private String nomeCompleto;
+	@Basic(optional = false)
+	@Column(name = "senha_md5")
+	private String senhaMd5;
+	@Basic(optional = false)
+	@Column(name = "pessoa_fisica")
+	private boolean pessoaFisica;
+	@Column(name = "cnpj_cpf")
+	private String cnpjCpf;
+	private String matricula;
+	@Basic(optional = false)
+	private boolean ativo;
+	@Basic(optional = false)
+	private boolean admin;
+	@Basic(optional = false)
+	private boolean externo;
 
-    public Pessoa() {
-    }
+	@Column(name = "ldap_campus")
+	@Basic(optional = false)
+	private String ldapCampus;
 
-    public Pessoa(Integer idPessoa) {
-        this.idPessoa = idPessoa;
-    }
+	@ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
+	private List<GrupoPessoa> grupoPessoaList;
+	@ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
+	private List<ItemReserva> itemReservaList;
+	@JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	private Campus idCampus;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
+	private List<Transacao> transacaoList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
+	private List<ProfessorPessoa> professorPessoaList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idAutorizador", fetch = FetchType.LAZY)
+	private List<Reserva> reservaList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
+	private List<Reserva> reservaList1;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario", fetch = FetchType.LAZY)
+	private List<Reserva> reservaList2;
 
-    public Pessoa(Integer idPessoa, String email, String nomeCompleto, String senhaMd5, boolean pessoaFisica, boolean ativo, boolean admin, boolean externo) {
-        this.idPessoa = idPessoa;
-        this.email = email;
-        this.nomeCompleto = nomeCompleto;
-        this.senhaMd5 = senhaMd5;
-        this.pessoaFisica = pessoaFisica;
-        this.ativo = ativo;
-        this.admin = admin;
-        this.externo = externo;
-    }
+	public Pessoa() {
+	}
 
-    public Integer getIdPessoa() {
-        return idPessoa;
-    }
+	public Pessoa(Integer idPessoa) {
+		this.idPessoa = idPessoa;
+	}
 
-    public void setIdPessoa(Integer idPessoa) {
-        this.idPessoa = idPessoa;
-    }
+	public Pessoa(Integer idPessoa, String email, String nomeCompleto, String senhaMd5, boolean pessoaFisica,
+			boolean ativo, boolean admin, boolean externo) {
+		this.idPessoa = idPessoa;
+		this.email = email;
+		this.nomeCompleto = nomeCompleto;
+		this.senhaMd5 = senhaMd5;
+		this.pessoaFisica = pessoaFisica;
+		this.ativo = ativo;
+		this.admin = admin;
+		this.externo = externo;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public Integer getIdPessoa() {
+		return idPessoa;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setIdPessoa(Integer idPessoa) {
+		this.idPessoa = idPessoa;
+	}
 
-    public String getNomeCompleto() {
-        return nomeCompleto;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setNomeCompleto(String nomeCompleto) {
-        this.nomeCompleto = nomeCompleto;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getSenhaMd5() {
-        return senhaMd5;
-    }
+	public String getNomeCompleto() {
+		return nomeCompleto;
+	}
 
-    public void setSenhaMd5(String senhaMd5) {
-        this.senhaMd5 = senhaMd5;
-    }
+	public void setNomeCompleto(String nomeCompleto) {
+		this.nomeCompleto = nomeCompleto;
+	}
 
-    public boolean getPessoaFisica() {
-        return pessoaFisica;
-    }
+	public String getSenhaMd5() {
+		return senhaMd5;
+	}
 
-    public void setPessoaFisica(boolean pessoaFisica) {
-        this.pessoaFisica = pessoaFisica;
-    }
+	public void setSenhaMd5(String senhaMd5) {
+		this.senhaMd5 = senhaMd5;
+	}
 
-    public String getCnpjCpf() {
-        return cnpjCpf;
-    }
+	public boolean getPessoaFisica() {
+		return pessoaFisica;
+	}
 
-    public void setCnpjCpf(String cnpjCpf) {
-        this.cnpjCpf = cnpjCpf;
-    }
+	public void setPessoaFisica(boolean pessoaFisica) {
+		this.pessoaFisica = pessoaFisica;
+	}
 
-    public String getMatricula() {
-        return matricula;
-    }
+	public String getCnpjCpf() {
+		return cnpjCpf;
+	}
 
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
-    }
+	public void setCnpjCpf(String cnpjCpf) {
+		this.cnpjCpf = cnpjCpf;
+	}
 
-    public boolean getAtivo() {
-        return ativo;
-    }
+	public String getMatricula() {
+		return matricula;
+	}
 
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
 
-    public boolean getAdmin() {
-        return admin;
-    }
+	public boolean getAtivo() {
+		return ativo;
+	}
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
+	public void setAtivo(boolean ativo) {
+		this.ativo = ativo;
+	}
 
-    public boolean getExterno() {
-        return externo;
-    }
+	public boolean getAdmin() {
+		return admin;
+	}
 
-    public void setExterno(boolean externo) {
-        this.externo = externo;
-    }
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
 
-    public List<GrupoPessoa> getGrupoPessoaList() {
-        return grupoPessoaList;
-    }
+	public boolean getExterno() {
+		return externo;
+	}
 
-    public void setGrupoPessoaList(List<GrupoPessoa> grupoPessoaList) {
-        this.grupoPessoaList = grupoPessoaList;
-    }
+	public void setExterno(boolean externo) {
+		this.externo = externo;
+	}
 
-    public List<ItemReserva> getItemReservaList() {
-        return itemReservaList;
-    }
+	public List<GrupoPessoa> getGrupoPessoaList() {
+		return grupoPessoaList;
+	}
 
-    public void setItemReservaList(List<ItemReserva> itemReservaList) {
-        this.itemReservaList = itemReservaList;
-    }
+	public void setGrupoPessoaList(List<GrupoPessoa> grupoPessoaList) {
+		this.grupoPessoaList = grupoPessoaList;
+	}
 
-    public Campus getIdCampus() {
-        return idCampus;
-    }
+	public List<ItemReserva> getItemReservaList() {
+		return itemReservaList;
+	}
 
-    public void setIdCampus(Campus idCampus) {
-        this.idCampus = idCampus;
-    }
+	public void setItemReservaList(List<ItemReserva> itemReservaList) {
+		this.itemReservaList = itemReservaList;
+	}
 
-    public List<Transacao> getTransacaoList() {
-        return transacaoList;
-    }
+	public Campus getIdCampus() {
+		return idCampus;
+	}
 
-    public void setTransacaoList(List<Transacao> transacaoList) {
-        this.transacaoList = transacaoList;
-    }
+	public void setIdCampus(Campus idCampus) {
+		this.idCampus = idCampus;
+	}
 
-    public List<ProfessorPessoa> getProfessorPessoaList() {
-        return professorPessoaList;
-    }
+	public List<Transacao> getTransacaoList() {
+		return transacaoList;
+	}
 
-    public void setProfessorPessoaList(List<ProfessorPessoa> professorPessoaList) {
-        this.professorPessoaList = professorPessoaList;
-    }
+	public void setTransacaoList(List<Transacao> transacaoList) {
+		this.transacaoList = transacaoList;
+	}
 
-    public List<Reserva> getReservaList() {
-        return reservaList;
-    }
+	public List<ProfessorPessoa> getProfessorPessoaList() {
+		return professorPessoaList;
+	}
 
-    public void setReservaList(List<Reserva> reservaList) {
-        this.reservaList = reservaList;
-    }
+	public void setProfessorPessoaList(List<ProfessorPessoa> professorPessoaList) {
+		this.professorPessoaList = professorPessoaList;
+	}
 
-    public List<Reserva> getReservaList1() {
-        return reservaList1;
-    }
+	public List<Reserva> getReservaList() {
+		return reservaList;
+	}
 
-    public void setReservaList1(List<Reserva> reservaList1) {
-        this.reservaList1 = reservaList1;
-    }
+	public void setReservaList(List<Reserva> reservaList) {
+		this.reservaList = reservaList;
+	}
 
-    public List<Reserva> getReservaList2() {
-        return reservaList2;
-    }
+	public List<Reserva> getReservaList1() {
+		return reservaList1;
+	}
 
-    public void setReservaList2(List<Reserva> reservaList2) {
-        this.reservaList2 = reservaList2;
-    }
+	public void setReservaList1(List<Reserva> reservaList1) {
+		this.reservaList1 = reservaList1;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (idPessoa != null ? idPessoa.hashCode() : 0);
-        return hash;
-    }
+	public List<Reserva> getReservaList2() {
+		return reservaList2;
+	}
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Pessoa)) {
-            return false;
-        }
-        Pessoa other = (Pessoa) object;
-        if ((this.idPessoa == null && other.idPessoa != null) || (this.idPessoa != null && !this.idPessoa.equals(other.idPessoa))) {
-            return false;
-        }
-        return true;
-    }
+	public void setReservaList2(List<Reserva> reservaList2) {
+		this.reservaList2 = reservaList2;
+	}
 
-    @Override
-    public String toString() {
-        return "br.edu.utfpr.dv.sigeu.entities.Pessoa[ idPessoa=" + idPessoa + " ]";
-    }
-    
+	public String getLdapCampus() {
+		return ldapCampus;
+	}
+
+	public void setLdapCampus(String ldapCampus) {
+		this.ldapCampus = ldapCampus;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		hash += (idPessoa != null ? idPessoa.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		// TODO: Warning - this method won't work in the case the id fields are
+		// not set
+		if (!(object instanceof Pessoa)) {
+			return false;
+		}
+		Pessoa other = (Pessoa) object;
+		if ((this.idPessoa == null && other.idPessoa != null)
+				|| (this.idPessoa != null && !this.idPessoa.equals(other.idPessoa))) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "br.edu.utfpr.dv.sigeu.entities.Pessoa[ idPessoa=" + idPessoa + " ]";
+	}
+
 }
