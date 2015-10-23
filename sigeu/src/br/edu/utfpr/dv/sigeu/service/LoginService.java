@@ -216,7 +216,11 @@ public class LoginService {
 		}
 
 		// Busca novamente do banco para preencher atributos faltantes
-		pessoa = PessoaService.encontrePorId(pessoa.getIdPessoa());
+		if (!admin) {
+			pessoa = PessoaService.encontrePorId(pessoa.getIdPessoa());
+		} else {
+			pessoa = PessoaService.encontrePorId(1);
+		}
 
 		return pessoa;
 

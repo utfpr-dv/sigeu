@@ -28,6 +28,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 		if (p != null) {
 			Hibernate.initialize(p.getIdCampus());
 			Hibernate.initialize(p.getIdCampus().getIdInstituicao());
+			Hibernate.initialize(p.getIdCampus().getLdapServerList());
 			Hibernate.initialize(p.getGrupoPessoaList());
 			Hibernate.initialize(p.getProfessorPessoaList());
 		}

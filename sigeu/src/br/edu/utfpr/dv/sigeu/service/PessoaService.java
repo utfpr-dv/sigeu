@@ -62,8 +62,7 @@ public class PessoaService {
 	 * 
 	 * @return
 	 */
-	public static Pessoa encontrePorId(Integer id, boolean carregaGrupos)
-			throws Exception {
+	public static Pessoa encontrePorId(Integer id, boolean carregaGrupos) throws Exception {
 		Transaction trans = new Transaction();
 		Pessoa p = null;
 		try {
@@ -102,8 +101,7 @@ public class PessoaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Pessoa encontrePorEmail(String email, Campus campus)
-			throws Exception {
+	public static Pessoa encontrePorEmail(String email, Campus campus) throws Exception {
 		Transaction trans = new Transaction();
 		trans.begin();
 
@@ -129,8 +127,7 @@ public class PessoaService {
 		return p;
 	}
 
-	public static Pessoa encontrePorCnpjCpf(Campus campus, String cnpjCpf)
-			throws Exception {
+	public static Pessoa encontrePorCnpjCpf(Campus campus, String cnpjCpf) throws Exception {
 		Transaction trans = new Transaction();
 		trans.begin();
 
@@ -155,8 +152,7 @@ public class PessoaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Pessoa> pesquisar(Campus campus, String textoPesquisa)
-			throws Exception {
+	public static List<Pessoa> pesquisar(Campus campus, String textoPesquisa) throws Exception {
 		List<Pessoa> lista = null;
 
 		Transaction trans = new Transaction();
@@ -196,8 +192,7 @@ public class PessoaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Pessoa> pesquisar(Campus campus, String query,
-			boolean ativo, int limit) throws Exception {
+	public static List<Pessoa> pesquisar(Campus campus, String query, boolean ativo, int limit) throws Exception {
 		List<Pessoa> lista = null;
 
 		Transaction trans = new Transaction();
@@ -243,8 +238,8 @@ public class PessoaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Pessoa> pesquisar(Campus campus, String query,
-			boolean ativo, String grupo, int limit) throws Exception {
+	public static List<Pessoa> pesquisar(Campus campus, String query, boolean ativo, String grupo, int limit)
+			throws Exception {
 		List<Pessoa> lista = null;
 		List<Pessoa> listaRetorno = null;
 
@@ -274,8 +269,7 @@ public class PessoaService {
 
 			listaRetorno = lista;
 
-			if (grupo != null && grupo.trim().length() > 0 && lista != null
-					&& lista.size() > 0) {
+			if (grupo != null && grupo.trim().length() > 0 && lista != null && lista.size() > 0) {
 				listaRetorno = new ArrayList<Pessoa>();
 
 				grupo = grupo.trim().toUpperCase();
