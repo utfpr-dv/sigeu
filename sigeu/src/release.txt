@@ -1,0 +1,5 @@
+SIGEU - Notas de versão
+
+v1.3.1
+- Correção de erro que permitia usuário admin logar mesmo com senha errada;
+- Implementação do campo "url" no arquivo config.properties para que seja enviado o endereço URL correto do sistema nos e-mails de comunicação;

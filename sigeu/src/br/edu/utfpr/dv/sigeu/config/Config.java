@@ -10,9 +10,9 @@ import com.adamiworks.utils.FileUtils;
 
 public class Config {
 
-	public static final String APPLICATION_URL = "http://sigeu.dv.utfpr.edu.br";
 	public static final String APPLICATION_NAME = "Sistema Integrado de Gestão Universitária";
 	public static final String APPLICATION_CODE = "SIGEU";
+	public static final String APPLICATION_VERSION = "1.3.1";
 	public static final String CONFIG_PATH_UPLOAD = "path.upload";
 	public static final String CONFIG_FILE = "config.properties";
 	public static final String NOME_GRUPO_EXTERNO = "EXTERNO";
@@ -22,6 +22,7 @@ public class Config {
 	private Properties config;
 	private boolean debugMode;
 	private int threadMax = 2;
+	private String url;
 
 	static {
 		self = new Config();
@@ -48,13 +49,18 @@ public class Config {
 		}
 
 		try {
-			String thread = config.getProperty("thread.max").trim()
-					.toLowerCase();
+			String thread = config.getProperty("thread.max").trim().toLowerCase();
 			if (thread != null) {
 				this.threadMax = Integer.valueOf(thread);
 			}
 		} catch (Exception e) {
 			this.threadMax = 2;
+		}
+
+		try {
+			url = config.getProperty("url").trim().toLowerCase();
+		} catch (Exception e) {
+			// ignora
 		}
 	}
 
@@ -83,8 +89,7 @@ public class Config {
 	 * @param value
 	 */
 	public void setSessionVariable(String key, Object value) {
-		Map<String, Object> map = FacesContext.getCurrentInstance()
-				.getExternalContext().getSessionMap();
+		Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 		map.put(key, value);
 	}
 
@@ -95,8 +100,7 @@ public class Config {
 	 * @return
 	 */
 	public Object getSessionVariable(String key) {
-		Map<String, Object> map = FacesContext.getCurrentInstance()
-				.getExternalContext().getSessionMap();
+		Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 		return map.get(key);
 	}
 
@@ -108,4 +112,8 @@ public class Config {
 		return threadMax;
 	}
 
+	public String getUrl() {
+		return url;
+	}
+	
 }

@@ -18,8 +18,7 @@ import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
 
 public class EmailService {
 
-	public static void enviaEmailConfirmacao(Campus campus, Reserva reserva,
-			String[] emails) throws Exception {
+	public static void enviaEmailConfirmacao(Campus campus, Reserva reserva, String[] emails) throws Exception {
 		List<Reserva> reservas = new ArrayList<Reserva>();
 		reservas.add(reserva);
 		EmailService.enviaEmailConfirmacao(campus, reservas, emails);
@@ -31,8 +30,8 @@ public class EmailService {
 	 * @param reserva
 	 * @throws Exception
 	 */
-	public static void enviaEmailConfirmacao(Campus campus,
-			List<Reserva> listaReserva, String[] emails) throws Exception {
+	public static void enviaEmailConfirmacao(Campus campus, List<Reserva> listaReserva, String[] emails)
+			throws Exception {
 
 		MensagemEmail email = new MensagemEmail(campus);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -66,12 +65,10 @@ public class EmailService {
 			for (Reserva r : listaReserva) {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(r.getData());
-				String diaDaSemana = DiaEnum.getDiaEnumByDia(
-						cal.get(Calendar.DAY_OF_WEEK)).getNome();
+				String diaDaSemana = DiaEnum.getDiaEnumByDia(cal.get(Calendar.DAY_OF_WEEK)).getNome();
 
 				String data = dateFormat.format(r.getData());
-				String horario = timeFormat.format(r.getHoraInicio()) + " - "
-						+ timeFormat.format(r.getHoraFim());
+				String horario = timeFormat.format(r.getHoraInicio()) + " - " + timeFormat.format(r.getHoraFim());
 				// String assunto = "Reserva " + r.getIdItemReserva().getNome()
 				// + " em " + data + " (" + diaDaSemana + ")";
 
@@ -83,14 +80,10 @@ public class EmailService {
 				sb.append("<tr>");
 
 				// Recurso
-				sb.append("<td>")
-						.append(r.getIdItemReserva().getNome().toUpperCase())
-						.append("</td>");
+				sb.append("<td>").append(r.getIdItemReserva().getNome().toUpperCase()).append("</td>");
 
 				// Tipo
-				sb.append("<td>")
-						.append(r.getIdItemReserva().getIdCategoria().getNome()
-								.toUpperCase()).append("</td>");
+				sb.append("<td>").append(r.getIdItemReserva().getIdCategoria().getNome().toUpperCase()).append("</td>");
 				// Dia da Semana
 				sb.append("<td>").append(diaDaSemana).append("</td>");
 
@@ -101,26 +94,19 @@ public class EmailService {
 				sb.append("<td>").append(horario).append("</td>");
 
 				// Usuário
-				sb.append("<td>")
-						.append(r.getNomeUsuario().trim().toUpperCase())
-						.append("</td>");
+				sb.append("<td>").append(r.getNomeUsuario().trim().toUpperCase()).append("</td>");
 
 				// Descriçao
-				sb.append("<td>").append(r.getIdTipoReserva().getDescricao())
-						.append("</td>");
+				sb.append("<td>").append(r.getIdTipoReserva().getDescricao()).append("</td>");
 
 				// Motivo
 				sb.append("<td>").append(motivo).append("</td>");
 
 				// Quem fez a reseva
-				sb.append("<td>")
-						.append(r.getIdPessoa().getNomeCompleto().trim()
-								.toUpperCase()).append("</td>");
+				sb.append("<td>").append(r.getIdPessoa().getNomeCompleto().trim().toUpperCase()).append("</td>");
 
 				// Quem autorizou
-				sb.append("<td>")
-						.append(r.getIdAutorizador().getNomeCompleto().trim()
-								.toUpperCase()).append("</td>");
+				sb.append("<td>").append(r.getIdAutorizador().getNomeCompleto().trim().toUpperCase()).append("</td>");
 
 				sb.append("</tr>");
 
@@ -130,8 +116,7 @@ public class EmailService {
 			sb.append("<b><i>ATENÇÃO: Este é um e-mail automático enviado pelo SIGEU. Para mais informações ");
 			sb.append("entre em contato direto com o responsável pela reserva assinalado acima.</b></i>");
 
-			email.criaMensagem(emails, null, null, assunto, sb.toString(),
-					true, null);
+			email.criaMensagem(emails, null, null, assunto, sb.toString(), true, null);
 
 			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e1) {
@@ -141,13 +126,11 @@ public class EmailService {
 		}
 	}
 
-	public static void enviaEmailCancelamento(Campus campus, Reserva reserva,
-			String[] emails, Pessoa login, String motivoCancelamento)
-			throws Exception {
+	public static void enviaEmailCancelamento(Campus campus, Reserva reserva, String[] emails, Pessoa login,
+			String motivoCancelamento) throws Exception {
 		List<Reserva> reservas = new ArrayList<Reserva>();
 		reservas.add(reserva);
-		EmailService.enviaEmailCancelamento(campus, reservas, emails, login,
-				motivoCancelamento);
+		EmailService.enviaEmailCancelamento(campus, reservas, emails, login, motivoCancelamento);
 	}
 
 	/**
@@ -156,8 +139,7 @@ public class EmailService {
 	 * @param reserva
 	 * @throws Exception
 	 */
-	public static void enviaEmailCancelamento(Campus campus,
-			List<Reserva> listaReserva, String[] emails, Pessoa login,
+	public static void enviaEmailCancelamento(Campus campus, List<Reserva> listaReserva, String[] emails, Pessoa login,
 			String motivoCancelamento) throws Exception {
 
 		MensagemEmail email = new MensagemEmail(campus);
@@ -192,12 +174,10 @@ public class EmailService {
 			for (Reserva r : listaReserva) {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(r.getData());
-				String diaDaSemana = DiaEnum.getDiaEnumByDia(
-						cal.get(Calendar.DAY_OF_WEEK)).getNome();
+				String diaDaSemana = DiaEnum.getDiaEnumByDia(cal.get(Calendar.DAY_OF_WEEK)).getNome();
 
 				String data = dateFormat.format(r.getData());
-				String horario = timeFormat.format(r.getHoraInicio()) + " - "
-						+ timeFormat.format(r.getHoraFim());
+				String horario = timeFormat.format(r.getHoraInicio()) + " - " + timeFormat.format(r.getHoraFim());
 				// String assunto = "Reserva " + r.getIdItemReserva().getNome()
 				// + " em " + data + " (" + diaDaSemana + ")";
 
@@ -209,14 +189,10 @@ public class EmailService {
 				sb.append("<tr>");
 
 				// Recurso
-				sb.append("<td>")
-						.append(r.getIdItemReserva().getNome().toUpperCase())
-						.append("</td>");
+				sb.append("<td>").append(r.getIdItemReserva().getNome().toUpperCase()).append("</td>");
 
 				// Tipo
-				sb.append("<td>")
-						.append(r.getIdItemReserva().getIdCategoria().getNome()
-								.toUpperCase()).append("</td>");
+				sb.append("<td>").append(r.getIdItemReserva().getIdCategoria().getNome().toUpperCase()).append("</td>");
 				// Dia da Semana
 				sb.append("<td>").append(diaDaSemana).append("</td>");
 
@@ -227,21 +203,16 @@ public class EmailService {
 				sb.append("<td>").append(horario).append("</td>");
 
 				// Usuário
-				sb.append("<td>")
-						.append(r.getNomeUsuario().trim().toUpperCase())
-						.append("</td>");
+				sb.append("<td>").append(r.getNomeUsuario().trim().toUpperCase()).append("</td>");
 
 				// Descriçao
-				sb.append("<td>").append(r.getIdTipoReserva().getDescricao())
-						.append("</td>");
+				sb.append("<td>").append(r.getIdTipoReserva().getDescricao()).append("</td>");
 
 				// Motivo
 				sb.append("<td>").append(motivo).append("</td>");
 
 				// Quem cancelou
-				sb.append("<td>")
-						.append(login.getNomeCompleto().trim().toUpperCase())
-						.append("</td>");
+				sb.append("<td>").append(login.getNomeCompleto().trim().toUpperCase()).append("</td>");
 
 				// motivo
 				sb.append("<td>").append(motivoCancelamento).append("</td>");
@@ -254,8 +225,7 @@ public class EmailService {
 			sb.append("<b><i>ATENÇÃO: Este é um e-mail automático enviado pelo SIGEU. Para mais informações ");
 			sb.append("entre em contato direto com o responsável pela reserva assinalado acima.</b></i>");
 
-			email.criaMensagem(emails, null, null, assunto, sb.toString(),
-					true, null);
+			email.criaMensagem(emails, null, null, assunto, sb.toString(), true, null);
 
 			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e1) {
@@ -271,8 +241,7 @@ public class EmailService {
 	 * @param autorizador
 	 * @param itemReserva
 	 */
-	public static void enviaEmailAutorizador(Campus campus, Pessoa autorizador,
-			ItemReserva itemReserva) {
+	public static void enviaEmailAutorizador(Campus campus, Pessoa autorizador, ItemReserva itemReserva) {
 		try {
 			String emailAutorizador = autorizador.getEmail();
 
@@ -288,17 +257,17 @@ public class EmailService {
 			sb.append(": ");
 			sb.append(itemReserva.getNome());
 			sb.append("\" que requisitam sua atenção.\n\n");
-			sb.append("Por gentileza, acesse o sistema pelo endereço ").append(
-					Config.APPLICATION_URL);
-			sb.append(" e acesse o menu \"Reservas\", \"Autorizar Reservas Pendentes\" para obter a lista das reservas pendentes.\n\n\n\n\n");
-			sb.append("Você recebeu este e-mail porque está cadastrado como responsável pelas reservas do item supracitado.\n\n");
+			sb.append("Por gentileza, acesse o sistema pelo endereço ").append(Config.getInstance().getUrl());
+			sb.append(
+					" e acesse o menu \"Reservas\", \"Autorizar Reservas Pendentes\" para obter a lista das reservas pendentes.\n\n\n\n\n");
+			sb.append(
+					"Você recebeu este e-mail porque está cadastrado como responsável pelas reservas do item supracitado.\n\n");
 			sb.append("Caso haja algum engano, por gentileza entre em contato com o administrador do sistema.");
 
 			MensagemEmail email = new MensagemEmail(campus);
 
 			// Envia mensagem para o autorizador
-			email.criaMensagemTextoSimples(emailAutorizador, null, assunto,
-					sb.toString());
+			email.criaMensagemTextoSimples(emailAutorizador, null, assunto, sb.toString());
 
 			// Envia as mensagens por Thread
 			email.enviaMensagens();

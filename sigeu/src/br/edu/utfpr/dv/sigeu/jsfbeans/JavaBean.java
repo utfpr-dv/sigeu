@@ -20,8 +20,7 @@ public abstract class JavaBean implements Serializable {
 	 */
 	public void addErrorMessage(String title, String message) {
 		FacesContext context = FacesContext.getCurrentInstance();
-		context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-				message, title));
+		context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, title));
 	}
 
 	/**
@@ -61,12 +60,10 @@ public abstract class JavaBean implements Serializable {
 	 */
 	public void redirect(String url) {
 		try {
-			FacesContext.getCurrentInstance().getExternalContext()
-					.redirect(url);
+			FacesContext.getCurrentInstance().getExternalContext().redirect(url);
 		} catch (IOException e) {
 			e.printStackTrace();
-			this.addErrorMessage("Página indisponível",
-					"Não foi possível acessar: " + url);
+			this.addErrorMessage("Página indisponível", "Não foi possível acessar: " + url);
 		}
 	}
 
@@ -109,11 +106,9 @@ public abstract class JavaBean implements Serializable {
 	}
 
 	public void clearMessages() {
-		Iterator<String> itIds = FacesContext.getCurrentInstance()
-				.getClientIdsWithMessages();
+		Iterator<String> itIds = FacesContext.getCurrentInstance().getClientIdsWithMessages();
 		while (itIds.hasNext()) {
-			List<FacesMessage> messageList = FacesContext.getCurrentInstance()
-					.getMessageList(itIds.next());
+			List<FacesMessage> messageList = FacesContext.getCurrentInstance().getMessageList(itIds.next());
 			if (!messageList.isEmpty()) {
 				messageList.clear();
 			}
@@ -122,7 +117,8 @@ public abstract class JavaBean implements Serializable {
 
 	protected void handleException(Throwable t) {
 		addErrorMessage("Exception", t.toString());
-		t.printStackTrace();
+		// Se este print ocorrer, a mensagem de erro não será exibida na tela
+		// t.printStackTrace();
 	}
 
 	protected void handleException(String msg, Throwable t) {
@@ -131,6 +127,7 @@ public abstract class JavaBean implements Serializable {
 		} else {
 			addErrorMessage("Exception", msg);
 		}
-		t.printStackTrace();
+		// Se este print ocorrer, a mensagem de erro não será exibida na tela
+		// t.printStackTrace();
 	}
 }
