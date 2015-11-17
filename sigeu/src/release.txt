@@ -1,5 +1,28 @@
 SIGEU - Notas de versão
 
+Versão X.Y.Z, onde:
+
+X = Major number      Refere-se a versão principal. Quando alterado contém um 
+                      grande número de alterações significativas. 
+                      As versões com o Major Number diferente são completamente 
+                      incompatíveis entre si, sendo necessário atualização
+                      completa, incluindo o banco de dados.
+
+Y = Release number    Quando alterado representa alterações que incluem novas
+                      funcionalidades ou correções importantes que também
+                      alteram o modelo de dados (banco de dados). Pode ser que
+                      algumas funcionalidades continuem compatíveis, mas via de
+                      regra não são compatíveis com versões anteriores.
+                      
+Z = Fixpack number    Todas as versões com mesmo Major e Release number,
+                      independentemente de FixPack, são compatíveis. Fixpacks
+                      contém correções pontuais que não modificam o modelo de
+                      dados.
+
+
+v1.3.2
+- Inclusão do código da versão no rodapé da página principal;
+
 v1.3.1
 - Correção de erro que permitia usuário admin logar mesmo com senha errada;
 - Implementação do campo "url" no arquivo config.properties para que seja enviado o endereço URL correto do sistema nos e-mails de comunicação;

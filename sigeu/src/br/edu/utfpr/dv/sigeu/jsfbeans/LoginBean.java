@@ -48,6 +48,8 @@ public class LoginBean extends JavaBean {
 		boolean ok = true;
 
 		this.serverInfo = "Server: " + DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_URL);
+		
+		this.appInfo = Config.APPLICATION_NAME + " - " + Config.APPLICATION_CODE + " v"+Config.APPLICATION_VERSION;
 
 		try {
 			pessoaLogin = LoginService.autentica(email, password);
@@ -60,7 +62,6 @@ public class LoginBean extends JavaBean {
 				} else {
 					this.setNomeUsuario(pessoaLogin.getNomeCompleto());
 
-					// TODO - Por enquanto campus é o mesmo da pessoa de login
 					campus = pessoaLogin.getIdCampus();
 
 					HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
