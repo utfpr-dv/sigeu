@@ -33,8 +33,7 @@
 				<p:dataTable id="ItemReservaTable"
 					value="#{pesquisaItemReservaBean.lista}" var="i"
 					style="margin-top: 20px" emptyMessage="Nenhum registro encontrado."
-					rows="7" paginator="true" paginatorAlwaysVisible="true"
-					paginatorPosition="bottom">
+					>
 
 					<p:column headerText="ID" style="text-align: center; width: 80px">
 						<h:outputText value="#{i.idItemReserva}" />

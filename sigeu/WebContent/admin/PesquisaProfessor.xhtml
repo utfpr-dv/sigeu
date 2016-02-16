@@ -24,9 +24,7 @@
 
 			<p:dataTable id="entTable" value="#{pesquisaProfessorBean.lista}"
 				var="ent" style="margin-top: 20px"
-				emptyMessage="Nenhum registro encontrado." rows="40"
-				paginator="true" paginatorAlwaysVisible="true"
-				paginatorPosition="bottom">
+				emptyMessage="Nenhum registro encontrado." >
 
 				<p:column headerText="ID" style="text-align: center; width: 80px">
 					<h:outputText value="#{ent.idProfessor}" />

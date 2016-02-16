@@ -610,7 +610,8 @@ public class IntegrationService {
 			System.out.println("Recuperando registros padrão...");
 
 			// Recupera categoria de sala de aula
-			CategoriaItemReserva salaDeAula = categoriaItemReservaDAO.encontrePorDescricao(campus, "SALA / AUDITÓRIO");
+			CategoriaItemReserva salaDeAula = categoriaItemReservaDAO.encontrePorDescricao(campus,
+					"SALA / MINI-AUDITÓRIO");
 
 			// Recupera categoria de laboratório
 			CategoriaItemReserva laboratorio = categoriaItemReservaDAO.encontrePorDescricao(campus, "LABORATÓRIO");
@@ -665,10 +666,19 @@ public class IntegrationService {
 					System.out.println(c.getShortname());
 				}
 
-				ItemReserva sala = itemReservaDAO.encontrePorDescricaoECategoria(campus, categoria, c.getName());
+				/*
+				 * ALTERAÇÃO REALIZADA PARA RESPEITAR O ÍNDICE DE UNICIDADE
+				 * "ak_item_reserva_nome" DO BANCO DE DADOS. DESTA FORMA NÃO SE
+				 * ALTERA A CATEGORIA DA SALA DE AULA (OU LABORATÓRIOS) SE ELES
+				 * JÁ EXISTIREM.
+				 */
+				// ItemReserva sala =
+				// itemReservaDAO.encontrePorDescricaoECategoria(campus,
+				// categoria, c.getName());
+				ItemReserva sala = itemReservaDAO.encontrePorDescricao(campus, c.getName());
 
 				if (sala == null) {
-					sala = itemReservaDAO.encontrePorRotuloECategoria(campus, categoria, c.getShortname());
+					sala = itemReservaDAO.encontrePorRotulo(campus, c.getShortname());
 				}
 
 				if (sala == null) {
@@ -683,6 +693,7 @@ public class IntegrationService {
 				sala.setCodigo(c.getId());
 				sala.setPatrimonio("N/A");
 				sala.setRotulo(c.getShortname());
+				sala.setNumeroHorasAntecedencia(0);
 
 				if (sala.getIdItemReserva() == null) {
 					itemReservaDAO.criar(sala);
@@ -1194,7 +1205,8 @@ public class IntegrationService {
 			GrupoPessoa gp = null;
 			/**/
 
-			//String varLdapCampus = ldap.getVarLdapCampus().trim().toUpperCase();
+			// String varLdapCampus =
+			// ldap.getVarLdapCampus().trim().toUpperCase();
 
 			BigDecimal total = new BigDecimal(String.valueOf(mapa.size()));
 			BigDecimal row = new BigDecimal("0");
@@ -1306,7 +1318,7 @@ public class IntegrationService {
 					if (pessoa.getLdapCampus().trim().toUpperCase().equals(lCampus.trim().toUpperCase())) {
 						fieldsIgnored++;
 					}
-					
+
 					// Se todos os campos continuam iguais, não faz nada
 					if (fieldsIgnored >= 5) {
 						ignorados++;

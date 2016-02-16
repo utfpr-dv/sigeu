@@ -47,8 +47,7 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return (ItemReserva) q.uniqueResult();
 	}
 
-	public ItemReserva encontrePorDescricaoECategoria(Campus campus,
-			CategoriaItemReserva categoria, String descricao) {
+	public ItemReserva encontrePorDescricaoECategoria(Campus campus, CategoriaItemReserva categoria, String descricao) {
 		String hql = "from ItemReserva o where upper(o.nome) = upper(:des) AND o.idCampus.idCampus = :idCampus AND ";
 		hql += "o.idCategoria.idCategoria = :idCategoria";
 		Query q = session.createQuery(hql);
@@ -58,8 +57,15 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return (ItemReserva) q.uniqueResult();
 	}
 
-	public ItemReserva encontrePorRotuloECategoria(Campus campus,
-			CategoriaItemReserva categoria, String rotulo) {
+	public ItemReserva encontrePorRotulo(Campus campus, String rotulo) {
+		String hql = "from ItemReserva o where upper(o.rotulo) = upper(:des) AND o.idCampus.idCampus = :idCampus ";
+		Query q = session.createQuery(hql);
+		q.setInteger("idCampus", campus.getIdCampus());
+		q.setString("des", rotulo);
+		return (ItemReserva) q.uniqueResult();
+	}
+
+	public ItemReserva encontrePorRotuloECategoria(Campus campus, CategoriaItemReserva categoria, String rotulo) {
 		String hql = "from ItemReserva o where upper(o.rotulo) = upper(:des) AND o.idCampus.idCampus = :idCampus AND ";
 		hql += "o.idCategoria.idCategoria = :idCategoria";
 		Query q = session.createQuery(hql);
@@ -69,8 +75,7 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return (ItemReserva) q.uniqueResult();
 	}
 
-	public ItemReserva encontrePorDescricaoECategoria(Campus campus,
-			Integer categoria, String descricao) {
+	public ItemReserva encontrePorDescricaoECategoria(Campus campus, Integer categoria, String descricao) {
 		String hql = "from ItemReserva o where upper(o.nome) = upper(:des) AND o.idCampus.idCampus = :idCampus AND ";
 		hql += "o.idCategoria.idCategoria = :idCategoria";
 		Query q = session.createQuery(hql);
@@ -92,8 +97,7 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return "item_reserva";
 	}
 
-	public List<ItemReserva> pesquisa(Campus campus,
-			CategoriaItemReserva categoria, String textoPesquisa,
+	public List<ItemReserva> pesquisa(Campus campus, CategoriaItemReserva categoria, String textoPesquisa,
 			Boolean ativo, int limit) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
@@ -105,7 +109,8 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		}
 
 		if (textoPesquisa != null && textoPesquisa.trim().length() > 0) {
-			hql.append("(upper(o.nome) like upper(:q) OR upper(o.rotulo) like upper(:q) OR upper(o.patrimonio) like upper(:q) ) AND ");
+			hql.append(
+					"(upper(o.nome) like upper(:q) OR upper(o.rotulo) like upper(:q) OR upper(o.patrimonio) like upper(:q) ) AND ");
 		}
 
 		if (ativo != null) {
@@ -133,12 +138,10 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return this.pesquisaObjetos(q, limit);
 	}
 
-	public List<ItemReserva> pesquisaItemReservaDisponivel(Campus campus,
-			Date data, Date horaInicial, Date horaFinal,
+	public List<ItemReserva> pesquisaItemReservaDisponivel(Campus campus, Date data, Date horaInicial, Date horaFinal,
 			CategoriaItemReserva categoria, ItemReserva item) {
 
-		String sql = FileUtils
-				.readTextFile("/br/edu/utfpr/dv/sigeu/sqlquery/Query001.sql");
+		String sql = FileUtils.readTextFile("/br/edu/utfpr/dv/sigeu/sqlquery/Query001.sql");
 		Query query = session.createSQLQuery(sql).addEntity(ItemReserva.class);
 
 		query.setInteger("idCampus", campus.getIdCampus());
@@ -164,13 +167,11 @@ public class ItemReservaDAO extends HibernateDAO<ItemReserva> {
 		return lista;
 	}
 
-	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa,
-			Boolean ativo, int limit) {
+	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa, Boolean ativo, int limit) {
 		return this.pesquisa(campus, null, textoPesquisa, ativo, limit);
 	}
 
-	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa,
-			int limit) {
+	public List<ItemReserva> pesquisa(Campus campus, String textoPesquisa, int limit) {
 		return this.pesquisa(campus, textoPesquisa, null, limit);
 	}
 
