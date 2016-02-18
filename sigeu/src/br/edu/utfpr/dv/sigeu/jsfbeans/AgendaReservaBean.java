@@ -66,9 +66,7 @@ public class AgendaReservaBean extends JavaBean {
 
 			for (Period period : listaPeriod) {
 				StringBuilder h = new StringBuilder();
-				h.append(StringUtils.padLeft(
-						StringUtils.left(period.getShortname().trim(), 3), 3,
-						"0"));
+				h.append(StringUtils.padLeft(StringUtils.left(period.getShortname().trim(), 3), 3, "0"));
 				h.append(" \n");
 				h.append(formatHora.format(period.getStarttime()));
 				h.append(" - \n");
@@ -76,8 +74,7 @@ public class AgendaReservaBean extends JavaBean {
 				horarioVO.setHorario(period.getOrdem(), h.toString());
 			}
 
-			listaTipoReserva = TipoReservaService.pesquisar(
-					loginBean.getCampus(), null, true);
+			listaTipoReserva = TipoReservaService.pesquisar(loginBean.getCampus(), null, true);
 		} catch (Exception e) {
 			addErrorMessage("Iniciar", "Erro ao carregar tela!");
 			e.printStackTrace();
@@ -95,16 +92,14 @@ public class AgendaReservaBean extends JavaBean {
 		listaItemReserva = null;
 
 		try {
-			listaItemReserva = ItemReservaService.pesquisar(
-					loginBean.getCampus(), query, true);
+			listaItemReserva = ItemReservaService.pesquisar(loginBean.getCampus(), query, null);
 
 			if (listaItemReserva != null && listaItemReserva.size() > 0) {
 				for (ItemReserva i : listaItemReserva) {
 					list.add(i.getNome());
 				}
 			} else {
-				this.addInfoMessage("Selecionar",
-						"Nenhum item de reserva encontrado.");
+				this.addInfoMessage("Selecionar", "Nenhum item de reserva encontrado.");
 			}
 
 		} catch (Exception e) {
@@ -157,9 +152,8 @@ public class AgendaReservaBean extends JavaBean {
 
 				listaReservaVO = new ArrayList<ReservaVO>();
 
-				listaReserva = ReservaService.pesquisaReservasEfetivadas(
-						loginBean.getCampus(), data, data2, tipoReserva,
-						categoria, itemReserva, nomeUsuario);
+				listaReserva = ReservaService.pesquisaReservasEfetivadas(loginBean.getCampus(), data, data2,
+						tipoReserva, categoria, itemReserva, nomeUsuario, true);
 
 				if (listaReserva.size() > 0) {
 					reservaParaAgenda();
@@ -169,15 +163,11 @@ public class AgendaReservaBean extends JavaBean {
 						ReservaVO vo = new ReservaVO();
 						vo.setCampus(reserva.getIdCampus());
 						vo.setDataReserva(formatData.format(reserva.getData()));
-						vo.setHoraReserva(formatHora.format(reserva
-								.getHoraInicio())
-								+ " a "
+						vo.setHoraReserva(formatHora.format(reserva.getHoraInicio()) + " a "
 								+ formatHora.format(reserva.getHoraFim()));
 						vo.setMotivoReserva(reserva.getMotivo());
-						vo.setNomeItemReserva(reserva.getIdItemReserva()
-								.getNome());
-						vo.setTipoReserva(reserva.getIdTipoReserva()
-								.getDescricao());
+						vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());
+						vo.setTipoReserva(reserva.getIdTipoReserva().getDescricao());
 						vo.setUsuarioReserva(reserva.getNomeUsuario());
 						vo.setCor(reserva.getCor());
 						vo.setIdReserva(reserva.getIdReserva());
@@ -204,23 +194,19 @@ public class AgendaReservaBean extends JavaBean {
 
 		for (Reserva r : listaReserva) {
 			PeriodoReservaVO vo = new PeriodoReservaVO();
-			Calendar horaInicio = DateTimeUtils.getCalendarFromDates(r.getData(),
-					r.getHoraInicio());
-			Calendar horaFim = DateTimeUtils.getCalendarFromDates(r.getData(),
-					r.getHoraFim());
+			Calendar horaInicio = DateTimeUtils.getCalendarFromDates(r.getData(), r.getHoraInicio());
+			Calendar horaFim = DateTimeUtils.getCalendarFromDates(r.getData(), r.getHoraFim());
 
 			boolean found = false;
 			for (PeriodoReservaVO prVO : listaPeriodoReservaVO) {
-				if (r.getIdItemReserva().getRotulo()
-						.equals(prVO.getNomeItemReserva())) {
+				if (r.getIdItemReserva().getRotulo().equals(prVO.getNomeItemReserva())) {
 					vo = prVO;
 					found = true;
 					break;
 				}
 			}
 
-			DiaEnum dia = DiaEnum.getDiaEnumByDia(horaInicio
-					.get(Calendar.DAY_OF_WEEK));
+			DiaEnum dia = DiaEnum.getDiaEnumByDia(horaInicio.get(Calendar.DAY_OF_WEEK));
 			vo.setNomeItemReserva(r.getIdItemReserva().getRotulo());
 			vo.setData(r.getData());
 			vo.setDiaDaSemana(dia.getNome());
@@ -231,18 +217,14 @@ public class AgendaReservaBean extends JavaBean {
 				motivo.append(r.getIdUsuario().getNomeCompleto());
 				motivo.append(" \n");
 				motivo.append(r.getMotivo());
-				Calendar perInicio = DateTimeUtils.getCalendarFromDates(
-						r.getData(), p.getStarttime());
-				Calendar perFim = DateTimeUtils.getCalendarFromDates(r.getData(),
-						p.getEndtime());
+				Calendar perInicio = DateTimeUtils.getCalendarFromDates(r.getData(), p.getStarttime());
+				Calendar perFim = DateTimeUtils.getCalendarFromDates(r.getData(), p.getEndtime());
 
-				boolean conflicts = DateTimeUtils.conflicts(horaInicio, horaFim,
-						perInicio, perFim);
+				boolean conflicts = DateTimeUtils.conflicts(horaInicio, horaFim, perInicio, perFim);
 
 				if (conflicts) {
 					vo.setCor(p.getOrdem(), r.getCor());
-					vo.setRotulo(p.getOrdem(), r.getIdTipoReserva()
-							.getDescricao());
+					vo.setRotulo(p.getOrdem(), r.getIdTipoReserva().getDescricao());
 					vo.setMotivo(p.getOrdem(), motivo.toString());
 				} else {
 					if (vo.getRotulo(p.getOrdem()) == null) {
@@ -319,8 +301,7 @@ public class AgendaReservaBean extends JavaBean {
 		return listaPeriodoReservaVO;
 	}
 
-	public void setListaPeriodoReservaVO(
-			List<PeriodoReservaVO> listaPeriodoReservaVO) {
+	public void setListaPeriodoReservaVO(List<PeriodoReservaVO> listaPeriodoReservaVO) {
 		this.listaPeriodoReservaVO = listaPeriodoReservaVO;
 	}
 

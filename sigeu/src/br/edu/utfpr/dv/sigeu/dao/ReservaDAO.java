@@ -61,11 +61,14 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		}
 	}
 
-	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
-			Date data, TipoReserva tipoReserva, CategoriaItemReserva categoria,
-			ItemReserva item, String nomeUsuario) {
-		return this.pesquisaReserva(campus, status, data, data, tipoReserva,
-				categoria, item, nomeUsuario);
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status, Date data, TipoReserva tipoReserva,
+			CategoriaItemReserva categoria, ItemReserva item, String nomeUsuario) {
+		return this.pesquisaReserva(campus, status, data, data, tipoReserva, categoria, item, nomeUsuario);
+	}
+
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status, Date data, Date data2,
+			TipoReserva tipoReserva, CategoriaItemReserva categoria, ItemReserva item, String nomeUsuario) {
+		return this.pesquisaReserva(campus, status, data, data2, tipoReserva, categoria, item, nomeUsuario, false);
 	}
 
 	/**
@@ -80,9 +83,9 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * @param nomeUsuario
 	 * @return
 	 */
-	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
-			Date data, Date data2, TipoReserva tipoReserva,
-			CategoriaItemReserva categoria, ItemReserva item, String nomeUsuario) {
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status, Date data, Date data2,
+			TipoReserva tipoReserva, CategoriaItemReserva categoria, ItemReserva item, String nomeUsuario,
+			boolean incluiItemDesativado) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
@@ -116,8 +119,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 			q.setInteger("idItemReserva", item.getIdItemReserva());
 		}
 		if (nomeUsuario != null && nomeUsuario.trim().length() > 0) {
-			q.setString("nomeUsuario", "%" + nomeUsuario.trim().toUpperCase()
-					+ "%");
+			q.setString("nomeUsuario", "%" + nomeUsuario.trim().toUpperCase() + "%");
 		}
 		q.setDate("data", data);
 		q.setDate("data2", data2);
@@ -128,8 +130,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		return this.pesquisaObjetos(q, 0);
 	}
 
-	public List<Reserva> pesquisaReservaDoUsuario(Campus campus,
-			StatusReserva status, Pessoa pessoa, Date data,
+	public List<Reserva> pesquisaReservaDoUsuario(Campus campus, StatusReserva status, Pessoa pessoa, Date data,
 			CategoriaItemReserva categoria, ItemReserva item, boolean importadas) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
@@ -168,8 +169,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		return this.pesquisaObjetos(q, 0);
 	}
 
-	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
-			Date data, Date horaInicio, Date horaFim,
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status, Date data, Date horaInicio, Date horaFim,
 			CategoriaItemReserva categoria, ItemReserva item) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
@@ -216,15 +216,14 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * @param transacao
 	 */
 	public void removeByTransacao(Campus campus, int idTransacao) {
-		Query q = session
-				.createQuery("DELETE FROM Reserva o WHERE o.idCampus.idCampus = :idCampus AND o.idTransacao.idTransacao = :idTransacao");
+		Query q = session.createQuery(
+				"DELETE FROM Reserva o WHERE o.idCampus.idCampus = :idCampus AND o.idTransacao.idTransacao = :idTransacao");
 		q.setInteger("idCampus", campus.getIdCampus());
 		q.setInteger("idTransacao", idTransacao);
 		q.executeUpdate();
 	}
 
-	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status,
-			Date data, TipoReserva tipoReserva) {
+	public List<Reserva> pesquisaReserva(Campus campus, StatusReserva status, Date data, TipoReserva tipoReserva) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idTipoReserva tr ");
@@ -247,8 +246,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * 
 	 * @return
 	 */
-	public List<Reserva> listaReservaPorTransacao(Campus campus,
-			StatusReserva status, Integer idTransacao) {
+	public List<Reserva> listaReservaPorTransacao(Campus campus, StatusReserva status, Integer idTransacao) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idTransacao t ");
@@ -281,8 +279,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 	 * 
 	 * @return
 	 */
-	public List<Reserva> listaReservasPendentes(Campus campus,
-			Pessoa autorizador) {
+	public List<Reserva> listaReservasPendentes(Campus campus, Pessoa autorizador) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
 		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.pessoaList p ");
