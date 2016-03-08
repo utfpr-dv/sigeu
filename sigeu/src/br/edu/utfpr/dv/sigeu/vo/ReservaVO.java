@@ -14,6 +14,7 @@ public class ReservaVO {
 	private String motivoReserva;
 	private String usuarioReserva;
 	private String cor;
+	private String diaSemana;
 	//
 	// Campos de controle (ocultos)
 	private Campus campus;
@@ -116,4 +117,13 @@ public class ReservaVO {
 		this.cor = cor;
 	}
 
+	public String getDiaSemana() {
+		return diaSemana;
+	}
+
+	public void setDiaSemana(String diaSemana) {
+		this.diaSemana = diaSemana;
+	}
+
+	
 }

@@ -410,7 +410,7 @@ public class ReservaService {
 
 	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus,
 			Date data, Date data2, TipoReserva tipoReserva,
-			CategoriaItemReserva categoria, ItemReserva item, String usuario, boolean incluiItemDesativado)
+			CategoriaItemReserva categoria, ItemReserva item, String usuario, String motivo, boolean incluiItemDesativado)
 			throws Exception {
 		Transaction trans = new Transaction();
 
@@ -420,7 +420,7 @@ public class ReservaService {
 
 			List<Reserva> lista = dao.pesquisaReserva(campus,
 					StatusReserva.EFETIVADA, data, data2, tipoReserva,
-					categoria, item, usuario, incluiItemDesativado);
+					categoria, item, usuario, motivo, incluiItemDesativado);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {

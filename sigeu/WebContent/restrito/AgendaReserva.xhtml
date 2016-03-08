@@ -12,7 +12,7 @@
 			<p:tab id="tabPesquisa" title="Agenda de Reservas">
 				<h:form id="frmAgendaReserva" prependId="false">
 					<div style="margin: 0 auto; text-align: center">
-						<p:panelGrid columns="10" style="margin: 0 auto">
+						<p:panelGrid columns="12" style="margin: 0 auto">
 							<p:outputLabel value="Período de" for="data" />
 							<p:calendar label="Data da Reserva" id="data"
 								value="#{agendaReservaBean.data}" size="10" pattern="dd/MM/yyyy"
@@ -48,9 +48,14 @@
 									listener="#{agendaReservaBean.defineItem}" update="item" />
 							</p:autoComplete>
 
+							<p:outputLabel value="  Motivo" for="motivo" />
+							<p:inputText id="motivo"
+								value="#{agendaReservaBean.motivo}" size="20"
+								maxlength="200" />
+
 							<p:outputLabel value="  Usuário" for="nomeUsuario" />
 							<p:inputText id="nomeUsuario"
-								value="#{agendaReservaBean.nomeUsuario}" size="40"
+								value="#{agendaReservaBean.nomeUsuario}" size="20"
 								maxlength="200" />
 
 						</p:panelGrid>
@@ -88,6 +93,11 @@
 							<h:outputText value="#{r.usuarioReserva}" />
 						</p:column>
 
+						<p:column headerText="Dia"
+							style="text-align: center;  width: 40px">
+							<h:outputText value="#{r.diaSemana}" />
+						</p:column>
+						
 						<p:column headerText="Data"
 							style="text-align: center;  width: 80px">
 							<h:outputText value="#{r.dataReserva}" />

@@ -59,6 +59,9 @@ public class ReservaBean extends JavaBean {
 	private Integer campoHoraF;
 	private Integer campoMinutoF;
 	private Boolean campoImportadas = true;
+	
+	// COORDENA ENVIO DE E-MAILS
+	private boolean enviaEmail = true;
 	//
 
 	//
@@ -106,23 +109,19 @@ public class ReservaBean extends JavaBean {
 		listaCategoriaItemReserva = null;
 
 		try {
-			listaCategoriaItemReserva = CategoriaItemReservaService.pesquisar(
-					loginBean.getCampus(), query, true);
+			listaCategoriaItemReserva = CategoriaItemReservaService.pesquisar(loginBean.getCampus(), query, true);
 
-			if (listaCategoriaItemReserva != null
-					&& listaCategoriaItemReserva.size() > 0) {
+			if (listaCategoriaItemReserva != null && listaCategoriaItemReserva.size() > 0) {
 				for (CategoriaItemReserva i : listaCategoriaItemReserva) {
 					list.add(i.getNome());
 				}
 			} else {
-				this.addInfoMessage("Selecionar",
-						"Nenhuma categoria encontrada.");
+				this.addInfoMessage("Selecionar", "Nenhuma categoria encontrada.");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.addErrorMessage("Selecionar",
-					"Erro na pesquisa de categorias.");
+			this.addErrorMessage("Selecionar", "Erro na pesquisa de categorias.");
 			return list;
 		}
 
@@ -140,22 +139,19 @@ public class ReservaBean extends JavaBean {
 		listaItemReserva = null;
 
 		if (this.categoriaItemReserva == null) {
-			this.addWarnMessage("Selecionar",
-					"Selecione uma categoria antes de pesquisar o item de reserva.");
+			this.addWarnMessage("Selecionar", "Selecione uma categoria antes de pesquisar o item de reserva.");
 			return list;
 		}
 
 		try {
-			listaItemReserva = ItemReservaService.pesquisar(
-					loginBean.getCampus(), categoriaItemReserva, query, true);
+			listaItemReserva = ItemReservaService.pesquisar(loginBean.getCampus(), categoriaItemReserva, query, true);
 
 			if (listaItemReserva != null && listaItemReserva.size() > 0) {
 				for (ItemReserva i : listaItemReserva) {
 					list.add(i.getNome());
 				}
 			} else {
-				this.addInfoMessage("Selecionar",
-						"Nenhum item de reserva encontrado.");
+				this.addInfoMessage("Selecionar", "Nenhum item de reserva encontrado.");
 			}
 
 		} catch (Exception e) {
@@ -180,13 +176,11 @@ public class ReservaBean extends JavaBean {
 		usuario = null;
 
 		try {
-			listaUsuario = PessoaService.pesquisar(loginBean.getCampus(),
-					query, true, 14);
+			listaUsuario = PessoaService.pesquisar(loginBean.getCampus(), query, true, 14);
 
 			if (listaUsuario != null && listaUsuario.size() > 0) {
 				for (Pessoa p : listaUsuario) {
-					list.add(p.getNomeCompleto() + " (Mat:" + p.getMatricula()
-							+ ")");
+					list.add(p.getNomeCompleto() + " (Mat:" + p.getMatricula() + ")");
 				}
 			} else {
 				this.addInfoMessage("Selecionar", "Nenhum usuário encontrado.");
@@ -242,8 +236,7 @@ public class ReservaBean extends JavaBean {
 		usuario = null;
 
 		for (Pessoa p : listaUsuario) {
-			String match = p.getNomeCompleto() + " (Mat:" + p.getMatricula()
-					+ ")";
+			String match = p.getNomeCompleto() + " (Mat:" + p.getMatricula() + ")";
 
 			if (campoUsuario.equals(match)) {
 				usuario = p;
@@ -266,8 +259,7 @@ public class ReservaBean extends JavaBean {
 			cc.set(Calendar.MILLISECOND, 00);
 
 			Date dataReserva = cc.getTime();
-			PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(
-					loginBean.getCampus(), dataReserva);
+			PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(loginBean.getCampus(), dataReserva);
 
 			if (pl == null) {
 				throw new Exception("Nenhum Período Letivo Cadastrado");
@@ -284,16 +276,12 @@ public class ReservaBean extends JavaBean {
 					this.itemReserva = null;
 				}
 
-				repeticaoReservaEnum = RepeticaoReservaEnum
-						.getEnum(campoRepete);
+				repeticaoReservaEnum = RepeticaoReservaEnum.getEnum(campoRepete);
 
-				if (!repeticaoReservaEnum
-						.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
-					if (campoDataFimRepete == null
-							|| campoDataFimRepete.before(campoData)
+				if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
+					if (campoDataFimRepete == null || campoDataFimRepete.before(campoData)
 							|| campoDataFimRepete.compareTo(campoData) == 0) {
-						addWarnMessage("consulta",
-								"A data limite de repetição deve ser maior que a data da reserva.");
+						addWarnMessage("consulta", "A data limite de repetição deve ser maior que a data da reserva.");
 						// EditableValueHolder evh = (EditableValueHolder)
 						// FacesContext
 						// .getCurrentInstance().getViewRoot()
@@ -310,16 +298,14 @@ public class ReservaBean extends JavaBean {
 					}
 				}
 
-				if (campoData == null || categoriaItemReserva == null
-						|| campoHoraInicial == null || campoHoraFinal == null) {
+				if (campoData == null || categoriaItemReserva == null || campoHoraInicial == null
+						|| campoHoraFinal == null) {
 					this.addErrorMessage("Informações insuficientes",
 							"Necessário informar: Categoria, Data e Horário para buscar reservas.");
 				} else {
 
-					if (campoHoraInicial.after(campoHoraFinal)
-							|| campoHoraInicial.equals(campoHoraFinal)) {
-						this.addErrorMessage("Horário inválido",
-								"Hora inicial deve ser menor que hora final.");
+					if (campoHoraInicial.after(campoHoraFinal) || campoHoraInicial.equals(campoHoraFinal)) {
+						this.addErrorMessage("Horário inválido", "Hora inicial deve ser menor que hora final.");
 					} else {
 						try {
 							// Preenche a lista de reservas do dia
@@ -328,41 +314,27 @@ public class ReservaBean extends JavaBean {
 							// categoriaItemReserva, itemReserva);
 
 							// Preenche a lista de itens disponíveis
-							listaItemDisponivel = ReservaService
-									.pesquisaItemReservaDisponivel(
-											loginBean.getCampus(), campoData,
-											campoHoraInicial, campoHoraFinal,
-											categoriaItemReserva, itemReserva);
+							listaItemDisponivel = ReservaService.pesquisaItemReservaDisponivel(loginBean.getCampus(),
+									campoData, campoHoraInicial, campoHoraFinal, categoriaItemReserva, itemReserva);
 
-							if (listaItemDisponivel == null
-									|| listaItemDisponivel.size() == 0) {
+							if (listaItemDisponivel == null || listaItemDisponivel.size() == 0) {
 								this.addWarnMessage("Item Disponível",
 										"Nenhum item disponível para a data e horário informados.");
 							}
 
 							// Preenche lista das minhas reservas
-							this.listaMinhasReservas = ReservaService
-									.pesquisaReservasEfetivadasDoUsuario(
-											loginBean.getCampus(),
-											loginBean.getPessoaLogin(),
-											campoData, categoriaItemReserva,
-											itemReserva, campoImportadas);
+							this.listaMinhasReservas = ReservaService.pesquisaReservasEfetivadasDoUsuario(
+									loginBean.getCampus(), loginBean.getPessoaLogin(), campoData, categoriaItemReserva,
+									itemReserva, campoImportadas);
 
 							// Rola entre a lista de itens disponíveis para
 							// checar
 							// se
 							// realmente está disponível com o repeteco
-							if (!repeticaoReservaEnum
-									.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
-								listaItemDisponivel = ReservaService
-										.removeItensNaoDisponiveisParaReservaRecorrente(
-												loginBean.getCampus(),
-												loginBean.getPessoaLogin(),
-												campoData, campoHoraInicial,
-												campoHoraFinal,
-												repeticaoReservaEnum,
-												campoDataFimRepete,
-												listaItemDisponivel);
+							if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
+								listaItemDisponivel = ReservaService.removeItensNaoDisponiveisParaReservaRecorrente(
+										loginBean.getCampus(), loginBean.getPessoaLogin(), campoData, campoHoraInicial,
+										campoHoraFinal, repeticaoReservaEnum, campoDataFimRepete, listaItemDisponivel);
 							}
 
 						} catch (Exception e) {
@@ -392,24 +364,18 @@ public class ReservaBean extends JavaBean {
 			}
 		}
 
-		if (campoData == null || categoriaItemReserva == null
-				|| campoHoraInicial == null || campoHoraFinal == null) {
+		if (campoData == null || categoriaItemReserva == null || campoHoraInicial == null || campoHoraFinal == null) {
 			this.addErrorMessage("Informações insuficientes",
 					"Necessário informar: Categoria, Data e Horário para buscar reservas.");
 		} else {
 
-			if (campoHoraInicial.after(campoHoraFinal)
-					|| campoHoraInicial.equals(campoHoraFinal)) {
-				this.addErrorMessage("Horário inválido",
-						"Hora inicial deve ser menor que hora final.");
+			if (campoHoraInicial.after(campoHoraFinal) || campoHoraInicial.equals(campoHoraFinal)) {
+				this.addErrorMessage("Horário inválido", "Hora inicial deve ser menor que hora final.");
 			} else {
 				// Preenche a lista de todas as reservas conforme filtros
 				try {
-					this.listaTodasReservas = ReservaService
-							.pesquisaReservasEfetivadas(loginBean.getCampus(),
-									campoData, campoHoraInicial,
-									campoHoraFinal, categoriaItemReserva,
-									itemReserva);
+					this.listaTodasReservas = ReservaService.pesquisaReservasEfetivadas(loginBean.getCampus(),
+							campoData, campoHoraInicial, campoHoraFinal, categoriaItemReserva, itemReserva);
 				} catch (Exception e) {
 					addErrorMessage("Pesquisa", "A pequisa falhou.");
 					addErrorMessage("Pesquisa", e.getMessage());
@@ -423,25 +389,20 @@ public class ReservaBean extends JavaBean {
 		/*
 		 * Valida o número de horas de antecedência para realizar a reserva
 		 */
-		Calendar dataHoraInicialReserva = DateTimeUtils.getCalendarFromDates(
-				campoData, campoHoraInicial);
+		Calendar dataHoraInicialReserva = DateTimeUtils.getCalendarFromDates(campoData, campoHoraInicial);
 
-		long horas = DateTimeUtils.hoursAfter(Calendar.getInstance().getTime(),
-				dataHoraInicialReserva.getTime());
+		long horas = DateTimeUtils.hoursAfter(Calendar.getInstance().getTime(), dataHoraInicialReserva.getTime());
 
 		/*
 		 * Se o número de horas entre o momento da reserva e a data e hora de
 		 * ínicio da reserva for menor que o número de horas de antecedência,
 		 * proíbe a reserva
 		 */
-		//System.out.println("Horas de antecedência calculadas: " + horas);
+		// System.out.println("Horas de antecedência calculadas: " + horas);
 
-		if (i.getNumeroHorasAntecedencia() > 0
-				&& horas < i.getNumeroHorasAntecedencia()) {
-			this.addErrorMessage("Horas de antecedência",
-					"Reserva de " + i.getNome()
-							+ " é permitida apenas com antecedência mínima de "
-							+ i.getNumeroHorasAntecedencia() + " horas.");
+		if (i.getNumeroHorasAntecedencia() > 0 && horas < i.getNumeroHorasAntecedencia()) {
+			this.addErrorMessage("Horas de antecedência", "Reserva de " + i.getNome()
+					+ " é permitida apenas com antecedência mínima de " + i.getNumeroHorasAntecedencia() + " horas.");
 		} else {
 			this.itemReservaGravacao = i;
 			this.showTab = 2;
@@ -475,11 +436,9 @@ public class ReservaBean extends JavaBean {
 				reserva.setNomeUsuario(usuario.getNomeCompleto());
 			}
 
-			if (emailNotificacao == null
-					|| emailNotificacao.trim().length() <= 0
+			if (emailNotificacao == null || emailNotificacao.trim().length() <= 0
 					|| emailNotificacao.indexOf("@") <= 0) {
-				addWarnMessage("Email",
-						"Informe um endereço de e-mail válido para notificação.");
+				addWarnMessage("Email", "Informe um endereço de e-mail válido para notificação.");
 				return;
 			}
 			reserva.setEmailNotificacao(emailNotificacao);
@@ -490,8 +449,7 @@ public class ReservaBean extends JavaBean {
 		}
 
 		reserva.setIdTipoReserva(tipoReserva);
-		reserva.setRotulo(StringUtils.left(tipoReserva.getDescricao().trim(),
-				32));
+		reserva.setRotulo(StringUtils.left(tipoReserva.getDescricao().trim(), 32));
 
 		if (repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
 			gravaReservaNormal(reserva);
@@ -508,49 +466,41 @@ public class ReservaBean extends JavaBean {
 	 */
 	private void gravaReservaNormal(Reserva reserva) {
 		try {
-			boolean existeConcorrente = ReservaService
-					.existeConcorrente(reserva);
+			boolean existeConcorrente = ReservaService.existeConcorrente(reserva);
 
 			if (existeConcorrente) {
-				addWarnMessage(
-						"Gravar",
+				addWarnMessage("Gravar",
 						"Já foi feita uma reserva para este recurso na data informada que conflita com o horário desejado. Verifique!");
 			} else {
 				try {
-					ReservaService.criar(loginBean.getCampus(),
-							loginBean.getPessoaLogin(), reserva);
+					ReservaService.criar(loginBean.getCampus(), loginBean.getPessoaLogin(), reserva);
 
 					StatusReserva statusReserva = null;
 
 					// Verifica se o status da reserva foi alterado durante a
 					// gravação
-					statusReserva = StatusReserva.getFromStatus(reserva
-							.getStatus());
+					statusReserva = StatusReserva.getFromStatus(reserva.getStatus());
 
 					switch (statusReserva) {
 					case PENDENTE:
-						addWarnMessage(
-								"Reserva",
-								"Pré-Reserva de "
-										+ itemReservaGravacao.getNome()
-										+ " gravada com sucesso. Aguarde a confirmação da reserva por e-mail que será feita pelo responsável.");
+						addWarnMessage("Reserva", "Pré-Reserva de " + itemReservaGravacao.getNome()
+								+ " gravada com sucesso. Aguarde a confirmação da reserva por e-mail que será feita pelo responsável.");
 						break;
 
 					case EFETIVADA:
 						// Envia e-mail de confirmação
-						String emails[] = EmailService
-								.getEmailFromReserva(reserva);
-						EmailService.enviaEmailConfirmacao(
-								loginBean.getCampus(), reserva, emails);
+						String emails[] = EmailService.getEmailFromReserva(reserva);
 
-						addInfoMessage("Reserva", "Reserva de "
-								+ itemReservaGravacao.getNome()
-								+ " realizada com sucesso!");
+						if (enviaEmail) {
+							EmailService.enviaEmailConfirmacao(loginBean.getCampus(), reserva, emails);
+						}
+
+						addInfoMessage("Reserva",
+								"Reserva de " + itemReservaGravacao.getNome() + " realizada com sucesso!");
 						break;
 
 					case CANCELADA:
-						addErrorMessage("Reserva",
-								"A reserva foi cancelada! Informe o administrador do sistema!");
+						addErrorMessage("Reserva", "A reserva foi cancelada! Informe o administrador do sistema!");
 						break;
 					default:
 						break;
@@ -562,16 +512,14 @@ public class ReservaBean extends JavaBean {
 					this.showTab = 1;
 
 				} catch (Exception e) {
-					addWarnMessage("Gravar",
-							"Houve um erro ao tentar gravar a reserva. Tente novamente.");
+					addWarnMessage("Gravar", "Houve um erro ao tentar gravar a reserva. Tente novamente.");
 					addErrorMessage("Gravar", e.getMessage());
 					e.printStackTrace();
 				}
 			}
 
 		} catch (Exception e) {
-			addErrorMessage("Gravar",
-					"Erro ao buscar reservas previamente realizadas!");
+			addErrorMessage("Gravar", "Erro ao buscar reservas previamente realizadas!");
 			e.printStackTrace();
 		}
 	}
@@ -581,9 +529,8 @@ public class ReservaBean extends JavaBean {
 	 */
 	private void gravaReservaSemanal(Reserva reserva) {
 		try {
-			List<Reserva> lista = ReservaService.criarRecorrente(
-					loginBean.getCampus(), loginBean.getPessoaLogin(), reserva,
-					repeticaoReservaEnum, campoDataFimRepete);
+			List<Reserva> lista = ReservaService.criarRecorrente(loginBean.getCampus(), loginBean.getPessoaLogin(),
+					reserva, repeticaoReservaEnum, campoDataFimRepete);
 
 			StatusReserva statusReserva = null;
 
@@ -593,26 +540,22 @@ public class ReservaBean extends JavaBean {
 
 			switch (statusReserva) {
 			case PENDENTE:
-				addWarnMessage(
-						"Reserva",
-						"Pré-Reserva de "
-								+ itemReservaGravacao.getNome()
-								+ " gravada com sucesso. Aguarde a confirmação da reserva por e-mail que será feita pelo responsável.");
+				addWarnMessage("Reserva", "Pré-Reserva de " + itemReservaGravacao.getNome()
+						+ " gravada com sucesso. Aguarde a confirmação da reserva por e-mail que será feita pelo responsável.");
 				break;
 			case EFETIVADA:
 				// Envia e-mail de confirmação das reservas
 				String emails[] = EmailService.getEmailFromReservas(lista);
-				EmailService.enviaEmailConfirmacao(loginBean.getCampus(),
-						lista, emails);
 
-				addInfoMessage("Reserva",
-						"Reserva de " + itemReservaGravacao.getNome()
-								+ " realizada com sucesso!");
+				if (enviaEmail) {
+					EmailService.enviaEmailConfirmacao(loginBean.getCampus(), lista, emails);
+				}
+
+				addInfoMessage("Reserva", "Reserva de " + itemReservaGravacao.getNome() + " realizada com sucesso!");
 				break;
 
 			case CANCELADA:
-				addErrorMessage("Reserva",
-						"A reserva foi cancelada! Informe o administrador do sistema!");
+				addErrorMessage("Reserva", "A reserva foi cancelada! Informe o administrador do sistema!");
 				break;
 
 			default:
@@ -629,8 +572,7 @@ public class ReservaBean extends JavaBean {
 			addWarnMessage("Gravar", msg);
 			addErrorMessage("Gravar", e.getMessage());
 		} catch (Exception e) {
-			addWarnMessage("Gravar",
-					"Houve um erro ao tentar gravar a reserva. Tente novamente.");
+			addWarnMessage("Gravar", "Houve um erro ao tentar gravar a reserva. Tente novamente.");
 			addErrorMessage("Gravar", e.getMessage());
 			e.printStackTrace();
 		}
@@ -683,10 +625,8 @@ public class ReservaBean extends JavaBean {
 			this.listaTipoReserva = null;
 
 			try {
-				listaCategoriaItemReserva = CategoriaItemReservaService
-						.pesquisar(loginBean.getCampus(), null, true);
-				listaTipoReserva = TipoReservaService.pesquisar(
-						loginBean.getCampus(), null, true);
+				listaCategoriaItemReserva = CategoriaItemReservaService.pesquisar(loginBean.getCampus(), null, true);
+				listaTipoReserva = TipoReservaService.pesquisar(loginBean.getCampus(), null, true);
 
 				// System.out.println("Lista de Período Letivo: " +
 				// listaPeriodoLetivo.size());
@@ -718,8 +658,8 @@ public class ReservaBean extends JavaBean {
 		// RequestContext.getCurrentInstance().openDialog("CancelaReserva",
 		// options, args);
 		// System.out.println("Passo 2");
-		listaReservaVO = ReservaService.listaReservaPorTransacao(
-				loginBean.getCampus(), r.getIdTransacao().getIdTransacao());
+		listaReservaVO = ReservaService.listaReservaPorTransacao(loginBean.getCampus(),
+				r.getIdTransacao().getIdTransacao());
 		this.showTab = 3;
 	}
 
@@ -727,10 +667,8 @@ public class ReservaBean extends JavaBean {
 	 * Exclui todas as reservas marcadas
 	 */
 	public void cancelaReservas() {
-		if (this.motivoCancelamento == null
-				|| this.motivoCancelamento.trim().length() == 0) {
-			this.addWarnMessage("Cancelamento",
-					"Motivo do cancelamento não preenchido!");
+		if (this.motivoCancelamento == null || this.motivoCancelamento.trim().length() == 0) {
+			this.addWarnMessage("Cancelamento", "Motivo do cancelamento não preenchido!");
 		} else {
 			if (listaReservaVO != null) {
 				List<Reserva> listExcluir = new ArrayList<Reserva>();
@@ -738,35 +676,30 @@ public class ReservaBean extends JavaBean {
 				for (ReservaVO vo : listaReservaVO) {
 					if (vo.isExcluir()) {
 						try {
-							Reserva r = ReservaService.pesquisaReservaPorId(vo
-									.getIdReserva());
+							Reserva r = ReservaService.pesquisaReservaPorId(vo.getIdReserva());
 							r.setStatus(StatusReserva.CANCELADA.getStatus());
 							listExcluir.add(r);
 						} catch (Exception e) {
-							addErrorMessage(
-									"Erro",
-									"Erro ao tentar carregar reserva "
-											+ vo.getIdReserva() + " de "
-											+ vo.getDataReserva());
+							addErrorMessage("Erro", "Erro ao tentar carregar reserva " + vo.getIdReserva() + " de "
+									+ vo.getDataReserva());
 						}
 					}
 				}
 
 				if (listExcluir.size() == 0) {
-					addWarnMessage("Reserva",
-							"Selecione ao menos uma reserva para cancelar.");
+					addWarnMessage("Reserva", "Selecione ao menos uma reserva para cancelar.");
 					return;
 				}
 
 				try {
-					String emails[] = EmailService
-							.getEmailFromReservas(listExcluir);
-					EmailService.enviaEmailCancelamento(loginBean.getCampus(),
-							listExcluir, emails, loginBean.getPessoaLogin(),
-							motivoCancelamento);
+					String emails[] = EmailService.getEmailFromReservas(listExcluir);
+
+					if (enviaEmail) {
+						EmailService.enviaEmailCancelamento(loginBean.getCampus(), listExcluir, emails,
+								loginBean.getPessoaLogin(), motivoCancelamento);
+					}
 				} catch (Exception e) {
-					addErrorMessage("Erro",
-							"Erro ao tentar criar e-mail de exclusão de reserva.");
+					addErrorMessage("Erro", "Erro ao tentar criar e-mail de exclusão de reserva.");
 					e.printStackTrace();
 				}
 
@@ -775,10 +708,7 @@ public class ReservaBean extends JavaBean {
 						// ReservaService.excluir(r);
 						ReservaService.cancelaReserva(r, motivoCancelamento);
 					} catch (Exception e) {
-						addErrorMessage(
-								"Erro",
-								"Erro ao tentar excluir reserva "
-										+ r.getIdReserva());
+						addErrorMessage("Erro", "Erro ao tentar excluir reserva " + r.getIdReserva());
 						e.printStackTrace();
 					}
 				}
@@ -789,8 +719,7 @@ public class ReservaBean extends JavaBean {
 				// Refaz pesquisa
 				pesquisa();
 
-				addInfoMessage(
-						"Reserva",
+				addInfoMessage("Reserva",
 						"Reservas canceladas com sucesso! A confirmação será enviada por e-mail em instantes.");
 			}
 		}
@@ -861,8 +790,7 @@ public class ReservaBean extends JavaBean {
 		return categoriaItemReserva;
 	}
 
-	public void setCategoriaItemReserva(
-			CategoriaItemReserva categoriaItemReserva) {
+	public void setCategoriaItemReserva(CategoriaItemReserva categoriaItemReserva) {
 		this.categoriaItemReserva = categoriaItemReserva;
 	}
 
@@ -878,8 +806,7 @@ public class ReservaBean extends JavaBean {
 		return listaCategoriaItemReserva;
 	}
 
-	public void setListaCategoriaItemReserva(
-			List<CategoriaItemReserva> listaCategoriaItemReserva) {
+	public void setListaCategoriaItemReserva(List<CategoriaItemReserva> listaCategoriaItemReserva) {
 		this.listaCategoriaItemReserva = listaCategoriaItemReserva;
 	}
 
@@ -1039,8 +966,7 @@ public class ReservaBean extends JavaBean {
 		return repeticaoReservaEnum;
 	}
 
-	public void setRepeticaoReservaEnum(
-			RepeticaoReservaEnum repeticaoReservaEnum) {
+	public void setRepeticaoReservaEnum(RepeticaoReservaEnum repeticaoReservaEnum) {
 		this.repeticaoReservaEnum = repeticaoReservaEnum;
 	}
 

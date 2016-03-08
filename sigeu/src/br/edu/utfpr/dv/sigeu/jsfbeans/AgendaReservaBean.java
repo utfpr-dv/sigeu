@@ -12,6 +12,9 @@ import javax.inject.Named;
 
 import org.omnifaces.cdi.ViewScoped;
 
+import com.adamiworks.utils.DateTimeUtils;
+import com.adamiworks.utils.StringUtils;
+
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.ItemReserva;
 import br.edu.utfpr.dv.sigeu.entities.Period;
@@ -23,9 +26,6 @@ import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
 import br.edu.utfpr.dv.sigeu.vo.PeriodoReservaVO;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
-
-import com.adamiworks.utils.DateTimeUtils;
-import com.adamiworks.utils.StringUtils;
 
 @Named
 @ViewScoped
@@ -52,6 +52,7 @@ public class AgendaReservaBean extends JavaBean {
 	private SimpleDateFormat formatData;
 	private PeriodoReservaVO horarioVO;
 	private String nomeUsuario;
+	private String motivo;
 
 	@PostConstruct
 	public void init() {
@@ -153,7 +154,7 @@ public class AgendaReservaBean extends JavaBean {
 				listaReservaVO = new ArrayList<ReservaVO>();
 
 				listaReserva = ReservaService.pesquisaReservasEfetivadas(loginBean.getCampus(), data, data2,
-						tipoReserva, categoria, itemReserva, nomeUsuario, true);
+						tipoReserva, categoria, itemReserva, nomeUsuario, motivo, true);
 
 				if (listaReserva.size() > 0) {
 					reservaParaAgenda();
@@ -171,6 +172,11 @@ public class AgendaReservaBean extends JavaBean {
 						vo.setUsuarioReserva(reserva.getNomeUsuario());
 						vo.setCor(reserva.getCor());
 						vo.setIdReserva(reserva.getIdReserva());
+						
+						SimpleDateFormat dateFormat = new SimpleDateFormat("EEE"); 
+						String asWeek = dateFormat.format(reserva.getData());
+						
+						vo.setDiaSemana(asWeek);
 
 						listaReservaVO.add(vo);
 					}
@@ -190,7 +196,7 @@ public class AgendaReservaBean extends JavaBean {
 	private void reservaParaAgenda() {
 		listaPeriodoReservaVO = new ArrayList<PeriodoReservaVO>();
 
-		System.out.println("---> Reservas: " + listaReserva.size());
+		//System.out.println("---> Reservas: " + listaReserva.size());
 
 		for (Reserva r : listaReserva) {
 			PeriodoReservaVO vo = new PeriodoReservaVO();
@@ -351,6 +357,14 @@ public class AgendaReservaBean extends JavaBean {
 
 	public void setData2(Date data2) {
 		this.data2 = data2;
+	}
+
+	public String getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
 	}
 
 }
