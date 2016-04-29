@@ -139,14 +139,14 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		return this.pesquisaObjetos(q, 0);
 	}
 
-	public List<Reserva> pesquisaReservaDoUsuario(Campus campus, StatusReserva status, Pessoa pessoa, Date data,
-			CategoriaItemReserva categoria, ItemReserva item, boolean importadas) {
+	public List<Reserva> pesquisaReservaDoUsuario(Campus campus, StatusReserva status, Pessoa pessoa, Date dataInicial,
+			Date dataFinal, CategoriaItemReserva categoria, ItemReserva item, boolean importadas) {
 		StringBuilder hql = new StringBuilder();
 		hql.append("SELECT o ");
-		hql.append("FROM Reserva o JOIN o.idCampus c JOIN o.idItemReserva i JOIN i.idCategoria c ");
-		hql.append("WHERE c.idCampus = :idCampus AND o.status = :status AND ");
+		hql.append("FROM Reserva o JOIN o.idCampus campus JOIN o.idItemReserva i JOIN i.idCategoria c JOIN i.pessoaList p ");
+		hql.append("WHERE campus.idCampus = :idCampus AND o.status = :status AND ");
 		hql.append("c.idCategoria = :idCategoria AND ");
-		hql.append("( o.idPessoa.idPessoa = :idPessoa OR o.idUsuario.idPessoa = :idPessoa ) AND ");
+		hql.append("( o.idPessoa.idPessoa = :idPessoa OR o.idUsuario.idPessoa = :idPessoa OR p.idPessoa = :idPessoa ) AND ");
 
 		if (item != null) {
 			hql.append("i.idItemReserva = :idItemReserva AND ");
@@ -156,7 +156,7 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 			hql.append("o.importado = :importado AND ");
 		}
 
-		hql.append("o.data = :data ");
+		hql.append("o.data BETWEEN :dataInicial AND :dataFinal ");
 		hql.append("ORDER BY i.nome, o.data ASC, o.horaInicio ASC, o.horaFim ASC ");
 
 		Query q = session.createQuery(hql.toString());
@@ -173,7 +173,8 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 			q.setBoolean("importado", false);
 		}
 
-		q.setDate("data", data);
+		q.setDate("dataInicial", dataInicial);
+		q.setDate("dataFinal", dataFinal);
 
 		return this.pesquisaObjetos(q, 0);
 	}

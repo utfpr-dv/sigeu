@@ -489,7 +489,7 @@ public class ReservaService {
 	 * 
 	 * @param pessoa
 	 *            Não pode ser null
-	 * @param data
+	 * @param dataInicial
 	 *            Não pode ser null
 	 * @param categoria
 	 *            pode ser null
@@ -500,7 +500,7 @@ public class ReservaService {
 	 * @throws Exception
 	 */
 	public static List<Reserva> pesquisaReservasEfetivadasDoUsuario(
-			Campus campus, Pessoa pessoa, Date data,
+			Campus campus, Pessoa pessoa, Date dataInicial, Date dataFinal,
 			CategoriaItemReserva categoria, ItemReserva item, boolean importadas)
 			throws Exception {
 		Transaction trans = new Transaction();
@@ -510,7 +510,7 @@ public class ReservaService {
 			ReservaDAO dao = new ReservaDAO(trans);
 
 			List<Reserva> lista = dao.pesquisaReservaDoUsuario(campus,
-					StatusReserva.EFETIVADA, pessoa, data, categoria, item,
+					StatusReserva.EFETIVADA, pessoa, dataInicial, dataFinal, categoria, item,
 					importadas);
 
 			if (lista != null && lista.size() > 0) {

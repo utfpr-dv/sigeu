@@ -47,6 +47,7 @@ public class ReservaBean extends JavaBean {
 	private String campoRepete = RepeticaoReservaEnum.SEM_REPETICAO.getId();
 	private Date campoDataFimRepete;
 	private Date campoData;
+	private Date campoDataFinal;
 	private Date campoHoraInicial;
 	private Date campoHoraFinal;
 	private String motivo;
@@ -59,7 +60,7 @@ public class ReservaBean extends JavaBean {
 	private Integer campoHoraF;
 	private Integer campoMinutoF;
 	private Boolean campoImportadas = true;
-	
+
 	// COORDENA ENVIO DE E-MAILS
 	private boolean enviaEmail = true;
 	//
@@ -258,6 +259,13 @@ public class ReservaBean extends JavaBean {
 			cc.set(Calendar.SECOND, 00);
 			cc.set(Calendar.MILLISECOND, 00);
 
+			Calendar cc2 = Calendar.getInstance();
+			cc2.setTime(campoDataFinal);
+			cc2.set(Calendar.HOUR_OF_DAY, 00);
+			cc2.set(Calendar.MINUTE, 00);
+			cc2.set(Calendar.SECOND, 00);
+			cc2.set(Calendar.MILLISECOND, 00);
+
 			Date dataReserva = cc.getTime();
 			PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(loginBean.getCampus(), dataReserva);
 
@@ -324,8 +332,8 @@ public class ReservaBean extends JavaBean {
 
 							// Preenche lista das minhas reservas
 							this.listaMinhasReservas = ReservaService.pesquisaReservasEfetivadasDoUsuario(
-									loginBean.getCampus(), loginBean.getPessoaLogin(), campoData, categoriaItemReserva,
-									itemReserva, campoImportadas);
+									loginBean.getCampus(), loginBean.getPessoaLogin(), campoData, campoDataFinal,
+									categoriaItemReserva, itemReserva, campoImportadas);
 
 							// Rola entre a lista de itens disponíveis para
 							// checar
@@ -608,6 +616,7 @@ public class ReservaBean extends JavaBean {
 			campoHoraInicial = hi.getTime();
 			campoHoraFinal = hf.getTime();
 			campoData = Calendar.getInstance().getTime();
+			campoDataFinal = Calendar.getInstance().getTime();
 			campoCategoria = null;
 			categoriaItemReserva = null;
 			campoItem = null;
@@ -734,6 +743,12 @@ public class ReservaBean extends JavaBean {
 		}
 
 		this.cancelaReservas();
+	}
+
+	public void checkPeriodo() {
+		if (this.campoData.compareTo(this.campoDataFinal) > 0) {
+			this.campoDataFinal = this.campoData;
+		}
 	}
 
 	/**********************************************************************************/
@@ -1000,6 +1015,14 @@ public class ReservaBean extends JavaBean {
 
 	public void setLoginBean(LoginBean loginBean) {
 		this.loginBean = loginBean;
+	}
+
+	public Date getCampoDataFinal() {
+		return campoDataFinal;
+	}
+
+	public void setCampoDataFinal(Date campoDataFinal) {
+		this.campoDataFinal = campoDataFinal;
 	}
 
 }

@@ -16,12 +16,27 @@
 					<div>
 						<p:panelGrid columns="12"
 							columnClasses="gridLabel, gridColumn, gridTip, gridLabel, gridColumn, gridTip, gridLabel, gridColumn, gridTip,  gridLabel, gridColumn, gridTip">
-							<p:outputLabel value="Data" for="data" />
-							<p:calendar label="Data da Reserva" id="data"
+							<p:outputLabel value="Data Inicial" for="data" />
+							<p:calendar label="Data Inicial" id="data"
 								value="#{reservaBean.campoData}" size="10" pattern="dd/MM/yyyy"
 								mask="true" required="true"
-								requiredMessage="Preencha a data da reserva" />
-							<p:tooltip id="toolTipData" for="data" value="Data da reserva." />
+								requiredMessage="Preencha a data inicial para pesquisa">
+								<p:ajax event="dateSelect"
+									listener="#{reservaBean.checkPeriodo}" update="dataf" />
+							</p:calendar>
+							<p:tooltip id="toolTipData" for="data"
+								value="Preencha a data inicial para pesquisa." />
+
+							<p:outputLabel value="Data Final" for="dataf" />
+							<p:calendar label="Data final" id="dataf"
+								value="#{reservaBean.campoDataFinal}" size="10"
+								pattern="dd/MM/yyyy" mask="true" required="true"
+								requiredMessage="Preencha a data final para pesquisa">
+								<p:ajax event="dateSelect"
+									listener="#{reservaBean.checkPeriodo}" update="dataf" />
+							</p:calendar>
+							<p:tooltip id="toolTipDataF" for="dataf"
+								value="Preencha a data final para pesquisa." />
 
 							<p:outputLabel value="Categoria" for="categoria" />
 							<p:selectOneMenu id="categoria"
