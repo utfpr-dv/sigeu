@@ -14,6 +14,8 @@ import com.adamiworks.utils.hibernate.DatabaseConfig;
 import com.adamiworks.utils.hibernate.DatabaseParameter;
 import com.adamiworks.utils.hibernate.HibernateEntityMappings;
 
+import br.edu.utfpr.dv.sigeu.config.Config;
+
 public class HibernateUtil {
 	public static final int HIBERNATE_BATCH_SIZE = 100;
 	private static HibernateUtil self;
@@ -55,7 +57,8 @@ public class HibernateUtil {
 		configuration.setProperty("hibernate.connection.password", password);
 		configuration.setProperty("hibernate.connection.autocommit", "false");
 		configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-		configuration.setProperty("hibernate.show_sql", "false");
+		//configuration.setProperty("hibernate.show_sql", "false");
+		configuration.setProperty("hibernate.show_sql", String.valueOf(Config.getInstance().isDebugMode()));
 		configuration.setProperty("hibernate.order_updates", "true");
 		configuration.setProperty("hibernate.default_schema", "public");
 		configuration.setProperty("hibernate.c3p0.acquire_increment", String.valueOf(poolInc));
