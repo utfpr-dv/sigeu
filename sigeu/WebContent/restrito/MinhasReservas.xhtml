@@ -71,9 +71,7 @@
 							<p:dataTable id="minhasReservasTable"
 								value="#{reservaBean.listaMinhasReservas}" var="i"
 								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado." rows="20"
-								paginator="true" paginatorAlwaysVisible="true"
-								paginatorPosition="bottom">
+								emptyMessage="Nenhum registro encontrado." >
 								<p:column headerText="Patrimonio" style="width: 60px">
 									<h:outputText value="#{i.idItemReserva.patrimonio}" />
 								</p:column>
@@ -85,6 +83,9 @@
 								</p:column>
 								<p:column headerText="Tipo" style="width: 100px">
 									<h:outputText value="#{i.idTipoReserva.descricao}" />
+								</p:column>
+								<p:column headerText="Autorizador">
+									<h:outputText value="#{i.idAutorizador.nomeCompleto}" />
 								</p:column>
 								<p:column headerText="Usuário">
 									<h:outputText value="#{i.nomeUsuario}" />

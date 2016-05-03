@@ -519,6 +519,7 @@ public class ReservaService {
 					Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
 					Hibernate.initialize(r.getIdTipoReserva());
 					Hibernate.initialize(r.getIdTransacao());
+					Hibernate.initialize(r.getIdAutorizador());
 				}
 			}
 

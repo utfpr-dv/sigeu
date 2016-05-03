@@ -1,12 +1,28 @@
+@font-face {
+	font-family: 'DroidSansMono';
+	src: url('../resources/css/DroidSansMono.ttf');
+}
+
+@font-face {
+	font-family: 'DroidSans';
+	src: url('../resources/css/DroidSans.ttf');
+}
+
+@font-face {
+	font-family: 'DroidSans';
+	font-weight: bold;
+	src: url('../resources/css/DroidSans-Bold.ttf');
+}
+
 h1 {
-	font-family: Arial, Helvetica, Sans-serif;
+	font-family: DroidSans;
 	font-size: x-large;
 	color: #BABACA;
 	margin: 10px 0px 10px 0px;
 }
 
 h2 {
-	font-family: Arial, Helvetica, Sans-serif;
+	font-family: DroidSans;
 	font-size: large;
 	color: #BABACA;
 	margin: 10px 0px 10px 0px;
@@ -17,18 +33,18 @@ h2 {
 }
 
 .ui-widget {
-	font-size: 9pt !important;
-	font-family: Arial, Helvetica, Sans-serif !important;
+	font-size: small !important;
+	font-family: DroidSans !important;
 }
 
 .ui-widget .ui-widget {
-	font-size: 9pt !important;
-	font-family: Arial, Helvetica, Sans-serif !important;
+	font-size: small !important;
+	font-family: DroidSans !important;
 }
 
 .ui-helper-reset {
-	font-size: 9pt !important;
-	font-family: Arial, Helvetica, Sans-serif !important;
+	font-size: small !important;
+	font-family: DroidSans !important;
 }
 
 .bodyBackground {
@@ -69,7 +85,7 @@ h2 {
 	border-radius: 15px 50px;
 	background: #FFF;
 	padding: 20px;
-	width: 320px;
+	width: 360px;
 }
 
 .gridLogin tr, .gridLogin td {
