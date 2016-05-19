@@ -7,6 +7,7 @@ package br.edu.utfpr.dv.sigeu.entities;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,46 +32,63 @@ import javax.persistence.Table;
 @NamedQueries({ @NamedQuery(name = "ItemReserva.findAll", query = "SELECT i FROM ItemReserva i") })
 public class ItemReserva implements Serializable {
 	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Basic(optional = false)
 	@Column(name = "id_item_reserva")
 	private Integer idItemReserva;
+
 	@Basic(optional = false)
 	private String nome;
+
 	@Basic(optional = false)
 	private String rotulo;
 	private String patrimonio;
 	private String detalhes;
+
 	@Basic(optional = false)
 	private boolean ativo;
 	private String codigo;
+
 	@Column(name = "numero_horas_antecedencia")
 	private Integer numeroHorasAntecedencia;
-	@JoinTable(name = "autorizacao_item_reserva", joinColumns = { @JoinColumn(name = "id_item_reserva", referencedColumnName = "id_item_reserva") }, inverseJoinColumns = { @JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa") })
+
+	@JoinTable(name = "autorizacao_item_reserva", joinColumns = {
+			@JoinColumn(name = "id_item_reserva", referencedColumnName = "id_item_reserva") }, inverseJoinColumns = {
+					@JoinColumn(name = "id_pessoa", referencedColumnName = "id_pessoa") })
 	@ManyToMany(fetch = FetchType.LAZY)
 	private List<Pessoa> pessoaList;
+
 	@JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private Campus idCampus;
+
 	@JoinColumn(name = "id_categoria", referencedColumnName = "id_categoria")
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private CategoriaItemReserva idCategoria;
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idItemReserva", fetch = FetchType.LAZY)
 	private List<Reserva> reservaList;
 
+	@Basic(optional = false)
+	@Column(name = "valida_periodo_letivo")
+	private boolean validaPeriodoLetivo;
+
 	public ItemReserva() {
+		this.validaPeriodoLetivo = true;
 	}
 
 	public ItemReserva(Integer idItemReserva) {
 		this.idItemReserva = idItemReserva;
+		this.validaPeriodoLetivo = true;
 	}
 
-	public ItemReserva(Integer idItemReserva, String nome, String rotulo,
-			boolean ativo) {
+	public ItemReserva(Integer idItemReserva, String nome, String rotulo, boolean ativo) {
 		this.idItemReserva = idItemReserva;
 		this.nome = nome;
 		this.rotulo = rotulo;
 		this.ativo = ativo;
+		this.validaPeriodoLetivo = true;
 	}
 
 	public Integer getIdItemReserva() {
@@ -169,6 +187,14 @@ public class ItemReserva implements Serializable {
 		this.numeroHorasAntecedencia = numeroHorasAntecedencia;
 	}
 
+	public boolean isValidaPeriodoLetivo() {
+		return validaPeriodoLetivo;
+	}
+
+	public void setValidaPeriodoLetivo(boolean validaPeriodoLetivo) {
+		this.validaPeriodoLetivo = validaPeriodoLetivo;
+	}
+
 	@Override
 	public int hashCode() {
 		int hash = 0;
@@ -185,8 +211,7 @@ public class ItemReserva implements Serializable {
 		}
 		ItemReserva other = (ItemReserva) object;
 		if ((this.idItemReserva == null && other.idItemReserva != null)
-				|| (this.idItemReserva != null && !this.idItemReserva
-						.equals(other.idItemReserva))) {
+				|| (this.idItemReserva != null && !this.idItemReserva.equals(other.idItemReserva))) {
 			return false;
 		}
 		return true;
@@ -194,8 +219,7 @@ public class ItemReserva implements Serializable {
 
 	@Override
 	public String toString() {
-		return "br.edu.utfpr.dv.sigeu.entities.ItemReserva[ idItemReserva="
-				+ idItemReserva + " ]";
+		return "br.edu.utfpr.dv.sigeu.entities.ItemReserva[ idItemReserva=" + idItemReserva + " ]";
 	}
 
 }

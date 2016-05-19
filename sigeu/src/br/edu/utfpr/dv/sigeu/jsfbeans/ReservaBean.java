@@ -252,110 +252,117 @@ public class ReservaBean extends JavaBean {
 	public void pesquisa() {
 		/** Valida período letivo atual */
 		try {
-			Calendar cc = Calendar.getInstance();
-			cc.setTime(campoData);
-			cc.set(Calendar.HOUR_OF_DAY, 00);
-			cc.set(Calendar.MINUTE, 00);
-			cc.set(Calendar.SECOND, 00);
-			cc.set(Calendar.MILLISECOND, 00);
+			// validaPeriodoLetivo();
 
-			Calendar cc2 = Calendar.getInstance();
-			cc2.setTime(campoDataFinal);
-			cc2.set(Calendar.HOUR_OF_DAY, 00);
-			cc2.set(Calendar.MINUTE, 00);
-			cc2.set(Calendar.SECOND, 00);
-			cc2.set(Calendar.MILLISECOND, 00);
+			categoriaItemReserva = null;
 
-			Date dataReserva = cc.getTime();
-			PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(loginBean.getCampus(), dataReserva);
-
-			if (pl == null) {
-				throw new Exception("Nenhum Período Letivo Cadastrado");
+			if (campoItem == null || campoItem.trim().equals("")) {
+				this.itemReserva = null;
 			}
 
-			if (campoData.after(pl.getDataFim())) {
-				addWarnMessage("Reservas",
-						"Não são permitidas reservas para o final do semestre atual. Consulte o DERDI.");
+			repeticaoReservaEnum = RepeticaoReservaEnum.getEnum(campoRepete);
+
+			if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
+				if (campoDataFimRepete == null || campoDataFimRepete.before(campoData)
+						|| campoDataFimRepete.compareTo(campoData) == 0) {
+					addWarnMessage("consulta", "A data limite de repetição deve ser maior que a data da reserva.");
+					// EditableValueHolder evh = (EditableValueHolder)
+					// FacesContext
+					// .getCurrentInstance().getViewRoot()
+					// .findComponent(":frmPesquisaReserva:dataRepete");
+					// evh.setValid(false);
+					return;
+				}
+			}
+
+			for (CategoriaItemReserva c : listaCategoriaItemReserva) {
+				if (c.getNome().equals(campoCategoria)) {
+					categoriaItemReserva = c;
+					break;
+				}
+			}
+
+			if (campoData == null || categoriaItemReserva == null || campoHoraInicial == null
+					|| campoHoraFinal == null) {
+				this.addErrorMessage("Informações insuficientes",
+						"Necessário informar: Categoria, Data e Horário para buscar reservas.");
 			} else {
 
-				categoriaItemReserva = null;
-
-				if (campoItem == null || campoItem.trim().equals("")) {
-					this.itemReserva = null;
-				}
-
-				repeticaoReservaEnum = RepeticaoReservaEnum.getEnum(campoRepete);
-
-				if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
-					if (campoDataFimRepete == null || campoDataFimRepete.before(campoData)
-							|| campoDataFimRepete.compareTo(campoData) == 0) {
-						addWarnMessage("consulta", "A data limite de repetição deve ser maior que a data da reserva.");
-						// EditableValueHolder evh = (EditableValueHolder)
-						// FacesContext
-						// .getCurrentInstance().getViewRoot()
-						// .findComponent(":frmPesquisaReserva:dataRepete");
-						// evh.setValid(false);
-						return;
-					}
-				}
-
-				for (CategoriaItemReserva c : listaCategoriaItemReserva) {
-					if (c.getNome().equals(campoCategoria)) {
-						categoriaItemReserva = c;
-						break;
-					}
-				}
-
-				if (campoData == null || categoriaItemReserva == null || campoHoraInicial == null
-						|| campoHoraFinal == null) {
-					this.addErrorMessage("Informações insuficientes",
-							"Necessário informar: Categoria, Data e Horário para buscar reservas.");
+				if (campoHoraInicial.after(campoHoraFinal) || campoHoraInicial.equals(campoHoraFinal)) {
+					this.addErrorMessage("Horário inválido", "Hora inicial deve ser menor que hora final.");
 				} else {
+					try {
+						// Preenche a lista de reservas do dia
+						// this.listaReservaDia =
+						// ReservaService.pesquisaReservasDoDia(campoData,
+						// categoriaItemReserva, itemReserva);
 
-					if (campoHoraInicial.after(campoHoraFinal) || campoHoraInicial.equals(campoHoraFinal)) {
-						this.addErrorMessage("Horário inválido", "Hora inicial deve ser menor que hora final.");
-					} else {
-						try {
-							// Preenche a lista de reservas do dia
-							// this.listaReservaDia =
-							// ReservaService.pesquisaReservasDoDia(campoData,
-							// categoriaItemReserva, itemReserva);
+						// Preenche a lista de itens disponíveis
+						listaItemDisponivel = ReservaService.pesquisaItemReservaDisponivel(loginBean.getCampus(),
+								campoData, campoHoraInicial, campoHoraFinal, categoriaItemReserva, itemReserva);
 
-							// Preenche a lista de itens disponíveis
-							listaItemDisponivel = ReservaService.pesquisaItemReservaDisponivel(loginBean.getCampus(),
-									campoData, campoHoraInicial, campoHoraFinal, categoriaItemReserva, itemReserva);
-
-							if (listaItemDisponivel == null || listaItemDisponivel.size() == 0) {
-								this.addWarnMessage("Item Disponível",
-										"Nenhum item disponível para a data e horário informados.");
-							}
-
-							// Preenche lista das minhas reservas
-							this.listaMinhasReservas = ReservaService.pesquisaReservasEfetivadasDoUsuario(
-									loginBean.getCampus(), loginBean.getPessoaLogin(), campoData, campoDataFinal,
-									categoriaItemReserva, itemReserva, campoImportadas);
-
-							// Rola entre a lista de itens disponíveis para
-							// checar
-							// se
-							// realmente está disponível com o repeteco
-							if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
-								listaItemDisponivel = ReservaService.removeItensNaoDisponiveisParaReservaRecorrente(
-										loginBean.getCampus(), loginBean.getPessoaLogin(), campoData, campoHoraInicial,
-										campoHoraFinal, repeticaoReservaEnum, campoDataFimRepete, listaItemDisponivel);
-							}
-
-						} catch (Exception e) {
-							addErrorMessage("Pesquisa", "Pesquisa falhou.");
-							addErrorMessage("Pesquisa", e.getMessage());
-							e.printStackTrace();
+						if (listaItemDisponivel == null || listaItemDisponivel.size() == 0) {
+							this.addWarnMessage("Item Disponível",
+									"Nenhum item disponível para a data e horário informados.");
 						}
+
+						// Preenche lista das minhas reservas
+						this.listaMinhasReservas = ReservaService.pesquisaReservasEfetivadasDoUsuario(
+								loginBean.getCampus(), loginBean.getPessoaLogin(), campoData, campoDataFinal,
+								categoriaItemReserva, itemReserva, campoImportadas);
+
+						// Rola entre a lista de itens disponíveis para
+						// checar
+						// se
+						// realmente está disponível com o repeteco
+						if (!repeticaoReservaEnum.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
+							listaItemDisponivel = ReservaService.removeItensNaoDisponiveisParaReservaRecorrente(
+									loginBean.getCampus(), loginBean.getPessoaLogin(), campoData, campoHoraInicial,
+									campoHoraFinal, repeticaoReservaEnum, campoDataFimRepete, listaItemDisponivel);
+						}
+
+					} catch (Exception e) {
+						addErrorMessage("Pesquisa", "Pesquisa falhou.");
+						addErrorMessage("Pesquisa", e.getMessage());
+						e.printStackTrace();
 					}
 				}
 			}
+
 		} catch (Exception e1) {
 			handleException(e1);
 		}
+	}
+
+	private boolean validaPeriodoLetivo() throws Exception {
+		Calendar cc = Calendar.getInstance();
+		cc.setTime(campoData);
+		cc.set(Calendar.HOUR_OF_DAY, 00);
+		cc.set(Calendar.MINUTE, 00);
+		cc.set(Calendar.SECOND, 00);
+		cc.set(Calendar.MILLISECOND, 00);
+
+		// Calendar cc2 = Calendar.getInstance();
+		// cc2.setTime(campoDataFinal);
+		// cc2.set(Calendar.HOUR_OF_DAY, 00);
+		// cc2.set(Calendar.MINUTE, 00);
+		// cc2.set(Calendar.SECOND, 00);
+		// cc2.set(Calendar.MILLISECOND, 00);
+
+		Date dataReserva = cc.getTime();
+		PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(loginBean.getCampus(), dataReserva);
+
+		if (pl == null) {
+			// throw new Exception("Nenhum Período Letivo Cadastrado");
+			addWarnMessage("Reservas", "Nenhum período letivo cadastrado. Consulte o DERDI.");
+			return false;
+		}
+
+		if (campoData.after(pl.getDataFim())) {
+			addWarnMessage("Reservas", "Não são permitidas reservas para o final do semestre atual. Consulte o DERDI.");
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -394,6 +401,18 @@ public class ReservaBean extends JavaBean {
 	}
 
 	public void reserva(ItemReserva i) {
+
+		if (i.isValidaPeriodoLetivo()) {
+			try {
+				if (!validaPeriodoLetivo()) {
+					return;
+				}
+			} catch (Exception e) {
+				addErrorMessage("Reserva", "Ocorreu um erro ao validar período letivo. Entre em contato com o DERDI.");
+				return;
+			}
+		}
+
 		/*
 		 * Valida o número de horas de antecedência para realizar a reserva
 		 */
