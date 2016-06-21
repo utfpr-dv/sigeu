@@ -74,23 +74,26 @@
 							<p:tooltip id="toolTipItem" for="item"
 								value="Recurso a ser reservado. Deixe em branco para exibir todos dentro da categoria selecionada." />
 
-							<p:outputLabel value="Repete" for="repete" />
-							<p:selectOneMenu id="repete" widgetVar="repete"
-								value="#{reservaBean.campoRepete}" required="true"
-								style="width: 120px">
-								<f:selectItem itemLabel="Não repete" itemValue="N" />
-								<f:selectItem itemLabel="Semanalmente" itemValue="S" />
-							</p:selectOneMenu>
-							<p:tooltip id="toolTipRepete" for="repete"
-								value="Informe o tipo de repetição para fazer reservas recorrentes em mais de uma data." />
+							<c:if test="#{loginBean.pessoaLogin.idPessoa eq 1}">
+								<p:outputLabel value="Repete" for="repete" />
+								<p:selectOneMenu id="repete" widgetVar="repete"
+									value="#{reservaBean.campoRepete}" required="true"
+									style="width: 120px">
+									<f:selectItem itemLabel="Não repete" itemValue="N" />
+									<f:selectItem itemLabel="Semanalmente" itemValue="S" />
+								</p:selectOneMenu>
+								<p:tooltip id="toolTipRepete" for="repete"
+									value="Informe o tipo de repetição para fazer reservas recorrentes em mais de uma data." />
 
-							<p:outputLabel value="Data Limite" for="dataRepete" />
-							<p:calendar label="Data fim de repetição" id="dataRepete"
-								widgetVar="dataRepete" value="#{reservaBean.campoDataFimRepete}"
-								size="10" pattern="dd/MM/yyyy" mask="true"
-								requiredMessage="Preencha a data limite para repetição de reservas" />
-							<p:tooltip id="toolTipDataRepete" for="dataRepete"
-								value="Data limite para recorrência de reservas. As reservas recorrentes não ultrapassam esta data." />
+								<p:outputLabel value="Data Limite" for="dataRepete" />
+								<p:calendar label="Data fim de repetição" id="dataRepete"
+									widgetVar="dataRepete"
+									value="#{reservaBean.campoDataFimRepete}" size="10"
+									pattern="dd/MM/yyyy" mask="true"
+									requiredMessage="Preencha a data limite para repetição de reservas" />
+								<p:tooltip id="toolTipDataRepete" for="dataRepete"
+									value="Data limite para recorrência de reservas. As reservas recorrentes não ultrapassam esta data." />
+							</c:if>
 						</p:panelGrid>
 					</div>
 					<div style="margin: 0 auto; text-align: center">
@@ -101,8 +104,8 @@
 
 					<p:dataTable id="reservaTable"
 						value="#{reservaBean.listaItemDisponivel}" var="i"
-						style="margin-top: 15px" emptyMessage="Nenhum registro encontrado."
-						
+						style="margin-top: 15px"
+						emptyMessage="Nenhum registro encontrado."
 						paginatorPosition="bottom">
 						<p:column headerText="Patrimonio" style="width: 80px">
 							<h:outputText value="#{i.patrimonio}" />
