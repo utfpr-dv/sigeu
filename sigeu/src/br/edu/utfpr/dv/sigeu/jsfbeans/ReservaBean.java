@@ -250,10 +250,11 @@ public class ReservaBean extends JavaBean {
 	}
 
 	public void pesquisa() {
-		this.listaItemReserva = null;
-		this.listaMinhasReservas = null;
-		this.listaReservaVO = null;
-		this.itemReserva = null;
+//		this.listaItemReserva = null;
+//		this.listaMinhasReservas = null;
+//		this.listaReservaVO = null;
+//		this.itemReserva = null;
+		this.listaItemDisponivel = null;
 		
 		/** Valida período letivo atual */
 		try {
