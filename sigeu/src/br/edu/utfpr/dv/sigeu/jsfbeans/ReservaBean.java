@@ -250,6 +250,11 @@ public class ReservaBean extends JavaBean {
 	}
 
 	public void pesquisa() {
+		this.listaItemReserva = null;
+		this.listaMinhasReservas = null;
+		this.listaReservaVO = null;
+		this.itemReserva = null;
+		
 		/** Valida período letivo atual */
 		try {
 			// validaPeriodoLetivo();
@@ -266,12 +271,19 @@ public class ReservaBean extends JavaBean {
 				if (campoDataFimRepete == null || campoDataFimRepete.before(campoData)
 						|| campoDataFimRepete.compareTo(campoData) == 0) {
 					addWarnMessage("consulta", "A data limite de repetição deve ser maior que a data da reserva.");
-					// EditableValueHolder evh = (EditableValueHolder)
-					// FacesContext
-					// .getCurrentInstance().getViewRoot()
-					// .findComponent(":frmPesquisaReserva:dataRepete");
-					// evh.setValid(false);
 					return;
+				}
+
+				/*
+				 * Validação de data de periodo letivo
+				 */
+				if (campoDataFimRepete != null) {
+					PeriodoLetivo pl = PeriodoLetivoService.encontreAtual(loginBean.getCampus(), campoDataFimRepete);
+					if (pl == null) {
+						addWarnMessage("consulta",
+								"A data limite de repetição deve respeitar o fim do calendário acadêmico vigente (último dia de aula).");
+						return;
+					}
 				}
 			}
 

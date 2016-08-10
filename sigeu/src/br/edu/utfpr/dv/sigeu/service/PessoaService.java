@@ -3,8 +3,6 @@ package br.edu.utfpr.dv.sigeu.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Hibernate;
-
 import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.GrupoPessoa;
@@ -71,12 +69,6 @@ public class PessoaService {
 			PessoaDAO dao = new PessoaDAO(trans);
 			p = dao.encontrePorId(id);
 
-			if (p != null) {
-				Hibernate.initialize(p.getIdCampus());
-				Hibernate.initialize(p.getIdCampus().getIdInstituicao());
-				Hibernate.initialize(p.getIdCampus().getLdapServerList());
-				Hibernate.initialize(p.getGrupoPessoaList());
-			}
 
 			// if (carregaGrupos) {
 			// for (GrupoPessoa gp : p.getGrupoPessoaList()) {
@@ -109,14 +101,6 @@ public class PessoaService {
 		Pessoa p;
 		try {
 			p = dao.encontrePorEmail(email, campus);
-
-			if (p != null) {
-				Hibernate.initialize(p.getIdCampus());
-				Hibernate.initialize(p.getIdCampus().getIdInstituicao());
-				Hibernate.initialize(p.getIdCampus().getLdapServerList());
-				Hibernate.initialize(p.getGrupoPessoaList());
-			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -167,13 +151,6 @@ public class PessoaService {
 				lista = dao.pesquisa(campus, textoPesquisa, 0);
 			}
 
-			if (lista != null) {
-				for (Pessoa p : lista) {
-					Hibernate.initialize(p.getIdCampus());
-					Hibernate.initialize(p.getIdCampus().getIdInstituicao());
-				}
-			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception(e);
@@ -210,14 +187,7 @@ public class PessoaService {
 			} else {
 				lista = dao.pesquisa(campus, query, ativo, limit);
 			}
-
-			if (lista != null) {
-				for (Pessoa p : lista) {
-					Hibernate.initialize(p.getIdCampus());
-					Hibernate.initialize(p.getIdCampus().getIdInstituicao());
-				}
-			}
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception(e);
@@ -257,14 +227,6 @@ public class PessoaService {
 				lista = dao.pesquisa(campus, ativo, limit);
 			} else {
 				lista = dao.pesquisa(campus, query, ativo, limit);
-			}
-
-			if (lista != null) {
-				for (Pessoa p : lista) {
-					Hibernate.initialize(p.getIdCampus());
-					Hibernate.initialize(p.getIdCampus().getIdInstituicao());
-					Hibernate.initialize(p.getGrupoPessoaList());
-				}
 			}
 
 			listaRetorno = lista;

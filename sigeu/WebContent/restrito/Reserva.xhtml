@@ -39,19 +39,9 @@
 							<p:tooltip id="toolTipFinal" for="final"
 								value="Hora final do período de reserva." />
 
-							<c:if test="#{loginBean.pessoaLogin.admin eq true}">
-								<p:outputLabel value="Importadas" for="campoImportadas" />
-								<p:selectBooleanCheckbox id="campoImportadas"
-									value="#{reservaBean.campoImportadas}" />
-								<p:tooltip id="toolTipCampoImportadas" for="campoImportadas"
-									value="Se marcado exibe também as reservas importadas do sistema acadêmico na aba 'Minhas Reservas'." />
-							</c:if>
-
-							<c:if test="#{loginBean.pessoaLogin.admin eq false}">
-								<p:outputLabel value="" />
-								<p:outputLabel value="" />
-								<p:outputLabel value="" />
-							</c:if>
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
 
 							<p:outputLabel value="Categoria" for="categoria" />
 							<p:selectOneMenu id="categoria"
@@ -74,7 +64,8 @@
 							<p:tooltip id="toolTipItem" for="item"
 								value="Recurso a ser reservado. Deixe em branco para exibir todos dentro da categoria selecionada." />
 
-							<c:if test="#{loginBean.pessoaLogin.idPessoa eq 1}">
+							<c:if
+								test="#{loginBean.pessoaLogin.idPessoa eq 1 or loginBean.permiteReservaRecorrente eq true }">
 								<p:outputLabel value="Repete" for="repete" />
 								<p:selectOneMenu id="repete" widgetVar="repete"
 									value="#{reservaBean.campoRepete}" required="true"

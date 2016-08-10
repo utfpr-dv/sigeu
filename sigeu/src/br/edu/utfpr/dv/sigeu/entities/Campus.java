@@ -25,271 +25,283 @@ import javax.persistence.OneToOne;
  * @author Tiago
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "Campus.findAll", query = "SELECT c FROM Campus c")})
+@NamedQueries({ @NamedQuery(name = "Campus.findAll", query = "SELECT c FROM Campus c") })
 public class Campus implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Basic(optional = false)
-    @Column(name = "id_campus")
-    private Integer idCampus;
-    @Basic(optional = false)
-    private String sigla;
-    @Basic(optional = false)
-    private String nome;
-    @Column(name = "url_logo")
-    private String urlLogo;
-    @Basic(optional = false)
-    private boolean ativo;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<ItemReserva> itemReservaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<Pessoa> pessoaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<Transacao> transacaoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<LdapServer> ldapServerList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<Disciplina> disciplinaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<Reserva> reservaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<TipoReserva> tipoReservaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<PeriodoLetivo> periodoLetivoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<Classe> classeList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<UriPermissao> uriPermissaoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<CategoriaItemReserva> categoriaItemReservaList;
-    @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Instituicao idInstituicao;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<Timetable> timetableList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<Professor> professorList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<GrupoPessoa> grupoPessoaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
-    private List<Feriado> feriadoList;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "campus", fetch = FetchType.LAZY)
-    private MailServer mailServer;
+	private static final long serialVersionUID = 1L;
+	@Id
+	@Basic(optional = false)
+	@Column(name = "id_campus")
+	private Integer idCampus;
+	@Basic(optional = false)
+	private String sigla;
+	@Basic(optional = false)
+	private String nome;
+	@Column(name = "url_logo")
+	private String urlLogo;
+	@Basic(optional = false)
+	private boolean ativo;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<ItemReserva> itemReservaList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Pessoa> pessoaList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Transacao> transacaoList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<LdapServer> ldapServerList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Disciplina> disciplinaList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Reserva> reservaList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<TipoReserva> tipoReservaList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<PeriodoLetivo> periodoLetivoList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Classe> classeList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<UriPermissao> uriPermissaoList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<CategoriaItemReserva> categoriaItemReservaList;
+	@JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	private Instituicao idInstituicao;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Timetable> timetableList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Professor> professorList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<GrupoPessoa> grupoPessoaList;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Feriado> feriadoList;
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "campus", fetch = FetchType.LAZY)
+	private MailServer mailServer;
 
-    public Campus() {
-    }
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idCampus", fetch = FetchType.LAZY)
+	private List<Direito> direitoList;
 
-    public Campus(Integer idCampus) {
-        this.idCampus = idCampus;
-    }
+	public Campus() {
+	}
 
-    public Campus(Integer idCampus, String sigla, String nome, boolean ativo) {
-        this.idCampus = idCampus;
-        this.sigla = sigla;
-        this.nome = nome;
-        this.ativo = ativo;
-    }
+	public Campus(Integer idCampus) {
+		this.idCampus = idCampus;
+	}
 
-    public Integer getIdCampus() {
-        return idCampus;
-    }
+	public Campus(Integer idCampus, String sigla, String nome, boolean ativo) {
+		this.idCampus = idCampus;
+		this.sigla = sigla;
+		this.nome = nome;
+		this.ativo = ativo;
+	}
 
-    public void setIdCampus(Integer idCampus) {
-        this.idCampus = idCampus;
-    }
+	public Integer getIdCampus() {
+		return idCampus;
+	}
 
-    public String getSigla() {
-        return sigla;
-    }
+	public void setIdCampus(Integer idCampus) {
+		this.idCampus = idCampus;
+	}
 
-    public void setSigla(String sigla) {
-        this.sigla = sigla;
-    }
+	public String getSigla() {
+		return sigla;
+	}
 
-    public String getNome() {
-        return nome;
-    }
+	public void setSigla(String sigla) {
+		this.sigla = sigla;
+	}
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+	public String getNome() {
+		return nome;
+	}
 
-    public String getUrlLogo() {
-        return urlLogo;
-    }
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
-    public void setUrlLogo(String urlLogo) {
-        this.urlLogo = urlLogo;
-    }
+	public String getUrlLogo() {
+		return urlLogo;
+	}
 
-    public boolean getAtivo() {
-        return ativo;
-    }
+	public void setUrlLogo(String urlLogo) {
+		this.urlLogo = urlLogo;
+	}
 
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
+	public boolean getAtivo() {
+		return ativo;
+	}
 
-    public List<ItemReserva> getItemReservaList() {
-        return itemReservaList;
-    }
+	public void setAtivo(boolean ativo) {
+		this.ativo = ativo;
+	}
 
-    public void setItemReservaList(List<ItemReserva> itemReservaList) {
-        this.itemReservaList = itemReservaList;
-    }
+	public List<ItemReserva> getItemReservaList() {
+		return itemReservaList;
+	}
 
-    public List<Pessoa> getPessoaList() {
-        return pessoaList;
-    }
+	public void setItemReservaList(List<ItemReserva> itemReservaList) {
+		this.itemReservaList = itemReservaList;
+	}
 
-    public void setPessoaList(List<Pessoa> pessoaList) {
-        this.pessoaList = pessoaList;
-    }
+	public List<Pessoa> getPessoaList() {
+		return pessoaList;
+	}
 
-    public List<Transacao> getTransacaoList() {
-        return transacaoList;
-    }
+	public void setPessoaList(List<Pessoa> pessoaList) {
+		this.pessoaList = pessoaList;
+	}
 
-    public void setTransacaoList(List<Transacao> transacaoList) {
-        this.transacaoList = transacaoList;
-    }
+	public List<Transacao> getTransacaoList() {
+		return transacaoList;
+	}
 
-    public List<LdapServer> getLdapServerList() {
-        return ldapServerList;
-    }
+	public void setTransacaoList(List<Transacao> transacaoList) {
+		this.transacaoList = transacaoList;
+	}
 
-    public void setLdapServerList(List<LdapServer> ldapServerList) {
-        this.ldapServerList = ldapServerList;
-    }
+	public List<LdapServer> getLdapServerList() {
+		return ldapServerList;
+	}
 
-    public List<Disciplina> getDisciplinaList() {
-        return disciplinaList;
-    }
+	public void setLdapServerList(List<LdapServer> ldapServerList) {
+		this.ldapServerList = ldapServerList;
+	}
 
-    public void setDisciplinaList(List<Disciplina> disciplinaList) {
-        this.disciplinaList = disciplinaList;
-    }
+	public List<Disciplina> getDisciplinaList() {
+		return disciplinaList;
+	}
 
-    public List<Reserva> getReservaList() {
-        return reservaList;
-    }
+	public void setDisciplinaList(List<Disciplina> disciplinaList) {
+		this.disciplinaList = disciplinaList;
+	}
 
-    public void setReservaList(List<Reserva> reservaList) {
-        this.reservaList = reservaList;
-    }
+	public List<Reserva> getReservaList() {
+		return reservaList;
+	}
 
-    public List<TipoReserva> getTipoReservaList() {
-        return tipoReservaList;
-    }
+	public void setReservaList(List<Reserva> reservaList) {
+		this.reservaList = reservaList;
+	}
 
-    public void setTipoReservaList(List<TipoReserva> tipoReservaList) {
-        this.tipoReservaList = tipoReservaList;
-    }
+	public List<TipoReserva> getTipoReservaList() {
+		return tipoReservaList;
+	}
 
-    public List<PeriodoLetivo> getPeriodoLetivoList() {
-        return periodoLetivoList;
-    }
+	public void setTipoReservaList(List<TipoReserva> tipoReservaList) {
+		this.tipoReservaList = tipoReservaList;
+	}
 
-    public void setPeriodoLetivoList(List<PeriodoLetivo> periodoLetivoList) {
-        this.periodoLetivoList = periodoLetivoList;
-    }
+	public List<PeriodoLetivo> getPeriodoLetivoList() {
+		return periodoLetivoList;
+	}
 
-    public List<Classe> getClasseList() {
-        return classeList;
-    }
+	public void setPeriodoLetivoList(List<PeriodoLetivo> periodoLetivoList) {
+		this.periodoLetivoList = periodoLetivoList;
+	}
 
-    public void setClasseList(List<Classe> classeList) {
-        this.classeList = classeList;
-    }
+	public List<Classe> getClasseList() {
+		return classeList;
+	}
 
-    public List<UriPermissao> getUriPermissaoList() {
-        return uriPermissaoList;
-    }
+	public void setClasseList(List<Classe> classeList) {
+		this.classeList = classeList;
+	}
 
-    public void setUriPermissaoList(List<UriPermissao> uriPermissaoList) {
-        this.uriPermissaoList = uriPermissaoList;
-    }
+	public List<UriPermissao> getUriPermissaoList() {
+		return uriPermissaoList;
+	}
 
-    public List<CategoriaItemReserva> getCategoriaItemReservaList() {
-        return categoriaItemReservaList;
-    }
+	public void setUriPermissaoList(List<UriPermissao> uriPermissaoList) {
+		this.uriPermissaoList = uriPermissaoList;
+	}
 
-    public void setCategoriaItemReservaList(List<CategoriaItemReserva> categoriaItemReservaList) {
-        this.categoriaItemReservaList = categoriaItemReservaList;
-    }
+	public List<CategoriaItemReserva> getCategoriaItemReservaList() {
+		return categoriaItemReservaList;
+	}
 
-    public Instituicao getIdInstituicao() {
-        return idInstituicao;
-    }
+	public void setCategoriaItemReservaList(List<CategoriaItemReserva> categoriaItemReservaList) {
+		this.categoriaItemReservaList = categoriaItemReservaList;
+	}
 
-    public void setIdInstituicao(Instituicao idInstituicao) {
-        this.idInstituicao = idInstituicao;
-    }
+	public Instituicao getIdInstituicao() {
+		return idInstituicao;
+	}
 
-    public List<Timetable> getTimetableList() {
-        return timetableList;
-    }
+	public void setIdInstituicao(Instituicao idInstituicao) {
+		this.idInstituicao = idInstituicao;
+	}
 
-    public void setTimetableList(List<Timetable> timetableList) {
-        this.timetableList = timetableList;
-    }
+	public List<Timetable> getTimetableList() {
+		return timetableList;
+	}
 
-    public List<Professor> getProfessorList() {
-        return professorList;
-    }
+	public void setTimetableList(List<Timetable> timetableList) {
+		this.timetableList = timetableList;
+	}
 
-    public void setProfessorList(List<Professor> professorList) {
-        this.professorList = professorList;
-    }
+	public List<Professor> getProfessorList() {
+		return professorList;
+	}
 
-    public List<GrupoPessoa> getGrupoPessoaList() {
-        return grupoPessoaList;
-    }
+	public void setProfessorList(List<Professor> professorList) {
+		this.professorList = professorList;
+	}
 
-    public void setGrupoPessoaList(List<GrupoPessoa> grupoPessoaList) {
-        this.grupoPessoaList = grupoPessoaList;
-    }
+	public List<GrupoPessoa> getGrupoPessoaList() {
+		return grupoPessoaList;
+	}
 
-    public List<Feriado> getFeriadoList() {
-        return feriadoList;
-    }
+	public void setGrupoPessoaList(List<GrupoPessoa> grupoPessoaList) {
+		this.grupoPessoaList = grupoPessoaList;
+	}
 
-    public void setFeriadoList(List<Feriado> feriadoList) {
-        this.feriadoList = feriadoList;
-    }
+	public List<Feriado> getFeriadoList() {
+		return feriadoList;
+	}
 
-    public MailServer getMailServer() {
-        return mailServer;
-    }
+	public void setFeriadoList(List<Feriado> feriadoList) {
+		this.feriadoList = feriadoList;
+	}
 
-    public void setMailServer(MailServer mailServer) {
-        this.mailServer = mailServer;
-    }
+	public MailServer getMailServer() {
+		return mailServer;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (idCampus != null ? idCampus.hashCode() : 0);
-        return hash;
-    }
+	public void setMailServer(MailServer mailServer) {
+		this.mailServer = mailServer;
+	}
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Campus)) {
-            return false;
-        }
-        Campus other = (Campus) object;
-        if ((this.idCampus == null && other.idCampus != null) || (this.idCampus != null && !this.idCampus.equals(other.idCampus))) {
-            return false;
-        }
-        return true;
-    }
+	public List<Direito> getDireitoList() {
+		return direitoList;
+	}
 
-    @Override
-    public String toString() {
-        return "br.edu.utfpr.dv.sigeu.entities.Campus[ idCampus=" + idCampus + " ]";
-    }
-    
+	public void setDireitoList(List<Direito> direitoList) {
+		this.direitoList = direitoList;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		hash += (idCampus != null ? idCampus.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		// TODO: Warning - this method won't work in the case the id fields are
+		// not set
+		if (!(object instanceof Campus)) {
+			return false;
+		}
+		Campus other = (Campus) object;
+		if ((this.idCampus == null && other.idCampus != null)
+				|| (this.idCampus != null && !this.idCampus.equals(other.idCampus))) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "br.edu.utfpr.dv.sigeu.entities.Campus[ idCampus=" + idCampus + " ]";
+	}
+
 }

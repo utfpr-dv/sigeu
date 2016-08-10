@@ -7,6 +7,7 @@ package br.edu.utfpr.dv.sigeu.entities;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,29 +31,39 @@ import javax.persistence.OneToMany;
 @NamedQueries({ @NamedQuery(name = "Pessoa.findAll", query = "SELECT p FROM Pessoa p") })
 public class Pessoa implements Serializable {
 	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic(optional = false)
 	@Column(name = "id_pessoa")
 	private Integer idPessoa;
+	
 	@Basic(optional = false)
 	private String email;
+	
 	@Basic(optional = false)
 	@Column(name = "nome_completo")
 	private String nomeCompleto;
+	
 	@Basic(optional = false)
 	@Column(name = "senha_md5")
 	private String senhaMd5;
+	
 	@Basic(optional = false)
 	@Column(name = "pessoa_fisica")
 	private boolean pessoaFisica;
+	
 	@Column(name = "cnpj_cpf")
 	private String cnpjCpf;
+	
 	private String matricula;
+	
 	@Basic(optional = false)
 	private boolean ativo;
+	
 	@Basic(optional = false)
 	private boolean admin;
+	
 	@Basic(optional = false)
 	private boolean externo;
 
@@ -62,23 +73,34 @@ public class Pessoa implements Serializable {
 
 	@ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
 	private List<GrupoPessoa> grupoPessoaList;
+	
 	@ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
 	private List<ItemReserva> itemReservaList;
+	
 	@JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private Campus idCampus;
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
 	private List<Transacao> transacaoList;
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
 	private List<ProfessorPessoa> professorPessoaList;
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idAutorizador", fetch = FetchType.LAZY)
 	private List<Reserva> reservaList;
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
 	private List<Reserva> reservaList1;
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario", fetch = FetchType.LAZY)
 	private List<Reserva> reservaList2;
 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
+	private List<Direito> direitoList;
+	
 	public Pessoa() {
+		
 	}
 
 	public Pessoa(Integer idPessoa) {
@@ -249,6 +271,16 @@ public class Pessoa implements Serializable {
 		this.ldapCampus = ldapCampus;
 	}
 
+	
+	
+	public List<Direito> getDireitoList() {
+		return direitoList;
+	}
+
+	public void setDireitoList(List<Direito> direitoList) {
+		this.direitoList = direitoList;
+	}
+	
 	@Override
 	public int hashCode() {
 		int hash = 0;

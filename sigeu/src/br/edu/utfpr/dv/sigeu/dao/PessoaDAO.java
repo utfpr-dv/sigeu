@@ -18,6 +18,20 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 		super(transaction);
 	}
 
+	/**
+	 * Default initialization of objects
+	 */
+	private void init(Pessoa p) {
+		if (p != null) {
+			Hibernate.initialize(p.getDireitoList());
+			Hibernate.initialize(p.getGrupoPessoaList());
+			Hibernate.initialize(p.getIdCampus());
+			Hibernate.initialize(p.getIdCampus().getIdInstituicao());
+			Hibernate.initialize(p.getIdCampus().getLdapServerList());
+			Hibernate.initialize(p.getProfessorPessoaList());
+		}
+	}
+
 	@Override
 	public Pessoa encontrePorId(Integer id) {
 		String hql = "from Pessoa o where o.idPessoa = :id";
@@ -25,13 +39,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 		q.setInteger("id", id);
 		Pessoa p = (Pessoa) q.uniqueResult();
 
-		if (p != null) {
-			Hibernate.initialize(p.getIdCampus());
-			Hibernate.initialize(p.getIdCampus().getIdInstituicao());
-			Hibernate.initialize(p.getIdCampus().getLdapServerList());
-			Hibernate.initialize(p.getGrupoPessoaList());
-			Hibernate.initialize(p.getProfessorPessoaList());
-		}
+		init(p);
 
 		return p;
 	}
@@ -44,8 +52,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 	 * @return
 	 * @throws Exception
 	 */
-	public Pessoa encontrePorEmail(String email, Campus campus)
-			throws Exception {
+	public Pessoa encontrePorEmail(String email, Campus campus) throws Exception {
 		String hql = "from Pessoa o where o.email = :email and o.idCampus.idCampus = :campus";
 		Query q = session.createQuery(hql);
 		q.setCacheMode(CacheMode.REFRESH);
@@ -53,21 +60,19 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 		q.setInteger("campus", campus.getIdCampus());
 
 		Pessoa p = (Pessoa) q.uniqueResult();
-		if (p != null) {
-			Hibernate.initialize(p.getIdCampus().getLdapServerList());
-			Hibernate.initialize(p.getGrupoPessoaList());
-		}
+		init(p);
 
 		return p;
 	}
 
-	public Pessoa encontrePorCnpjCpf(Campus campus, String cnpjCpf)
-			throws Exception {
+	public Pessoa encontrePorCnpjCpf(Campus campus, String cnpjCpf) throws Exception {
 		String hql = "from Pessoa o where o.cnpjCpf = :cnpjCpf and o.idCampus.idCampus = :idCampus";
 		Query q = session.createQuery(hql);
 		q.setString("cnpjCpf", cnpjCpf);
 		q.setInteger("idCampus", campus.getIdCampus());
-		return (Pessoa) q.uniqueResult();
+		Pessoa p = (Pessoa) q.uniqueResult();
+		init(p);
+		return p;
 	}
 
 	@Override
@@ -105,6 +110,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 
 			for (Object o : list) {
 				Pessoa p = (Pessoa) o;
+				init(p);
 				retorno.add(p);
 			}
 			return retorno;
@@ -112,8 +118,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 		return null;
 	}
 
-	public List<Pessoa> pesquisaPorGrupo(Campus campus, String nomeGrupo,
-			int limit) {
+	public List<Pessoa> pesquisaPorGrupo(Campus campus, String nomeGrupo, int limit) {
 		String hql = "SELECT o from Pessoa o Join o.grupoPessoaList g where o.idCampus.idCampus = :idCampus AND upper(g.nome) = :q order by o.ativo DESC, o.nomeCompleto ASC";
 		Query q = session.createQuery(hql);
 		q.setString("q", nomeGrupo.trim().toUpperCase());
@@ -130,6 +135,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 
 			for (Object o : list) {
 				Pessoa p = (Pessoa) o;
+				init(p);
 				retorno.add(p);
 			}
 			return retorno;
@@ -151,7 +157,9 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 			List<Pessoa> retorno = new ArrayList<Pessoa>();
 
 			for (Object o : list) {
-				retorno.add((Pessoa) o);
+				Pessoa p = (Pessoa) o;
+				init(p);
+				retorno.add(p);
 			}
 			return retorno;
 		}
@@ -173,6 +181,8 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 			List<Pessoa> retorno = new ArrayList<Pessoa>();
 
 			for (Object o : list) {
+				Pessoa p = (Pessoa) o;
+				init(p);
 				retorno.add((Pessoa) o);
 			}
 			return retorno;
@@ -180,8 +190,7 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 		return null;
 	}
 
-	public List<Pessoa> pesquisa(Campus campus, String query, boolean ativo,
-			int limit) {
+	public List<Pessoa> pesquisa(Campus campus, String query, boolean ativo, int limit) {
 		if (query == null || query.trim().equals("")) {
 			return this.pesquisa(campus, ativo, limit);
 		}
@@ -201,6 +210,8 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 			List<Pessoa> retorno = new ArrayList<Pessoa>();
 
 			for (Object o : list) {
+				Pessoa p = (Pessoa) o;
+				init(p);
 				retorno.add((Pessoa) o);
 			}
 			return retorno;

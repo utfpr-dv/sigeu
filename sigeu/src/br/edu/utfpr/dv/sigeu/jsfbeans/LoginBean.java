@@ -11,6 +11,7 @@ import org.hibernate.exception.GenericJDBCException;
 
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
+import br.edu.utfpr.dv.sigeu.entities.Direito;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
@@ -35,10 +36,12 @@ public class LoginBean extends JavaBean {
 	private String nomeUsuario;
 
 	private String serverInfo;
-	
+
 	private String appInfo;
 
 	private Pessoa pessoaLogin;
+
+	private boolean permiteReservaRecorrente;
 
 	// Usado quando for escolher outro campus diferente do campus de cadastro da
 	// pessoa
@@ -48,8 +51,8 @@ public class LoginBean extends JavaBean {
 		boolean ok = true;
 
 		this.serverInfo = "Server: " + DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_URL);
-		
-		this.appInfo = Config.APPLICATION_NAME + " - " + Config.APPLICATION_CODE + " v"+Config.APPLICATION_VERSION;
+
+		this.appInfo = Config.APPLICATION_NAME + " - " + Config.APPLICATION_CODE + " v" + Config.APPLICATION_VERSION;
 
 		try {
 			pessoaLogin = LoginService.autentica(email, password);
@@ -73,6 +76,17 @@ public class LoginBean extends JavaBean {
 
 					request.getSession().setAttribute(LoginFilter.SESSION_CAMPUS, campus);
 
+					/*
+					 * Define se a pessoa pode fazer reservas recorrentes
+					 */
+					if (pessoaLogin.getDireitoList() != null && pessoaLogin.getDireitoList().size() > 0) {
+						for (Direito d : pessoaLogin.getDireitoList()) {
+							if(d.getProcesso().equals("RESERVA_SEMANAL")){
+								this.setPermiteReservaRecorrente(d.isAutoriza());
+								break;
+							}
+						}
+					}
 				}
 			}
 		} catch (CommunicationException e) {
@@ -114,8 +128,6 @@ public class LoginBean extends JavaBean {
 		return "/Logoff";
 	}
 
-	
-	
 	@Override
 	public String toString() {
 		return "LoginBean [email=" + email + ", password=" + StringUtils.generateMD5Hash(password) + "]";
@@ -176,4 +188,13 @@ public class LoginBean extends JavaBean {
 	public void setAppInfo(String appInfo) {
 		this.appInfo = appInfo;
 	}
+
+	public boolean isPermiteReservaRecorrente() {
+		return permiteReservaRecorrente;
+	}
+
+	public void setPermiteReservaRecorrente(boolean permiteReservaRecorrente) {
+		this.permiteReservaRecorrente = permiteReservaRecorrente;
+	}
+
 }
