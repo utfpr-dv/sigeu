@@ -1,0 +1,46 @@
+<ui:composition template="/WEB-INF/template/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://openfaces.org/">
+
+	<ui:define name="titulo">SIGEU: Agenda de Reservas</ui:define>
+
+	<ui:define name="corpo">
+		<div id="divOnCenter1" class="divOnCenter">
+			<div id="errorMessage" style="margin: 20px 20px 20px 20px">
+				<table class="tableDiv">
+					<tr>
+						<td><div class="headerLogo">
+								<h:link outcome="/restrito/Home.xhtml">
+									<h:graphicImage library="img" name="utfpr_logo.png" />
+								</h:link>
+							</div></td>
+						<td valign="bottom" align="right"><div class="headerInfo">
+								<p:outputLabel value="#{loginBean.nomeUsuario}"
+									style="font-weight: bold; font-size: small" />
+								<input id="LogoffButton" type="button" value="Logoff"
+									onclick="doLogoff();" />
+							</div></td>
+					</tr>
+				</table>
+				<h2 style="color: #000;">Oops!</h2>
+				<p>Você não tem as credenciais necessárias para acessar esta
+					página.</p>
+			</div>
+		</div>
+		<script>
+			function getContextPath() {
+				return window.location.pathname.substring(0,
+						window.location.pathname.indexOf("/", 2));
+			}
+
+			var ctx = getContextPath();
+
+			function doLogoff() {
+				window.location = ctx + "/Logoff";
+			}
+		</script>
+	</ui:define>
+</ui:composition>

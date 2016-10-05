@@ -39,6 +39,7 @@
 		</plugins>
 	</build>
 
+
 	<repositories>
 		<repository>
 			<id>prime-repo</id>
@@ -46,12 +47,14 @@
 			<url>http://repository.primefaces.org</url>
 		</repository>
 	</repositories>
+	
 	<dependencies>
-		<dependency>
+		<!--  < dependency>
 			<groupId>org.primefaces.themes</groupId>
 			<artifactId>all-themes</artifactId>
 			<version>1.0.10</version>
-		</dependency>
+		</dependency > -->
+		
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>

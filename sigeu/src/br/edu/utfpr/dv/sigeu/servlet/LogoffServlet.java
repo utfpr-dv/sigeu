@@ -26,7 +26,15 @@ public class LogoffServlet extends HttpServlet {
 	}
 
 	private void logoff(HttpServletRequest req, HttpServletResponse resp) {
-		req.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
+		resp.setContentType("text/html;charset=UTF-8");
+		try {
+			req.getSession().invalidate();
+		} finally {
+			//
+		}
+
+		// req.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
+		// req.getSession().removeAttribute("loginBean");
 		String url = req.getContextPath();
 
 		// Set response content type

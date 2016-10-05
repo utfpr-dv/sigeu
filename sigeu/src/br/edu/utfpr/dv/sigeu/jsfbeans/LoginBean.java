@@ -22,7 +22,7 @@ import com.adamiworks.utils.StringUtils;
 import com.adamiworks.utils.hibernate.DatabaseConfig;
 import com.adamiworks.utils.hibernate.DatabaseParameter;
 
-@Named
+@Named(value="loginBean")
 @SessionScoped
 /*
  * ATENÇÃO: Quando se usa named Bean precisa ser
