@@ -7,6 +7,7 @@ import javax.naming.CommunicationException;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.GenericJDBCException;
 
 import br.edu.utfpr.dv.sigeu.config.Config;
@@ -22,7 +23,7 @@ import com.adamiworks.utils.StringUtils;
 import com.adamiworks.utils.hibernate.DatabaseConfig;
 import com.adamiworks.utils.hibernate.DatabaseParameter;
 
-@Named(value="loginBean")
+@Named(value = "loginBean")
 @SessionScoped
 /*
  * ATENÇÃO: Quando se usa named Bean precisa ser
@@ -81,7 +82,7 @@ public class LoginBean extends JavaBean {
 					 */
 					if (pessoaLogin.getDireitoList() != null && pessoaLogin.getDireitoList().size() > 0) {
 						for (Direito d : pessoaLogin.getDireitoList()) {
-							if(d.getProcesso().equals("RESERVA_SEMANAL")){
+							if (d.getProcesso().equals("RESERVA_SEMANAL")) {
 								this.setPermiteReservaRecorrente(d.isAutoriza());
 								break;
 							}
@@ -104,6 +105,13 @@ public class LoginBean extends JavaBean {
 		} catch (GenericJDBCException e) {
 			ok = false;
 			handleException(e);
+		} catch (ConstraintViolationException e) {
+			ok = false;
+			handleException("Erro de gravação no banco de dados: {"+
+					e.getSQLException().getMessage() + "}",e);
+//			handleException("Erro de gravação no banco de dados: {"+
+//					e.getSQLException().getMessage() + "\n " + (e.getSQLException().getNextException() != null
+//							? e.getSQLException().getNextException().getMessage() : "") + "}",e);
 		} catch (Exception e) {
 			ok = false;
 			handleException("Ocorreu um erro ao tentar comunicar com o servidor de autenticação", e);

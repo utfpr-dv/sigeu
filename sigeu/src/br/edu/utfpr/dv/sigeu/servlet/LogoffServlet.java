@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.edu.utfpr.dv.sigeu.util.LoginFilter;
-
 public class LogoffServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 4453764842741961297L;
@@ -33,8 +31,6 @@ public class LogoffServlet extends HttpServlet {
 			//
 		}
 
-		// req.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
-		// req.getSession().removeAttribute("loginBean");
 		String url = req.getContextPath();
 
 		// Set response content type

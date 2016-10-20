@@ -116,6 +116,7 @@ public class LoginService {
 			} else {
 				// Usuários não externos autentica no LDAP
 				ldapUtils.authenticate(uid, password);
+				hash="";
 			}
 
 			// Se chegou aqui é porque a validação ocorreu com sucesso sem
@@ -131,7 +132,7 @@ public class LoginService {
 			pessoa.setAtivo(true);
 			pessoa.setCnpjCpf(cnpjCpf);
 			pessoa.setEmail(email);
-			pessoa.setIdCampus(ldap.getIdCampus());
+			//pessoa.setIdCampus(ldap.getIdCampus());
 			pessoa.setMatricula(matricula);
 			pessoa.setNomeCompleto(nomeCompleto);
 			pessoa.setPessoaFisica(true);
