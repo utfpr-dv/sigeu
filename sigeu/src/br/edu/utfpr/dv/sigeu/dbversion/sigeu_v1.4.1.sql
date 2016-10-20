@@ -1,0 +1,1 @@
+UPDATE public.parametro SET valor = '1.4.1' WHERE codigo = 'versao_database';

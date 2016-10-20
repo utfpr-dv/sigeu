@@ -120,7 +120,7 @@ public class LoginService {
 			}
 
 			// Se chegou aqui é porque a validação ocorreu com sucesso sem
-			// exception. Então pesquisa se já existe essa pessoa cadastrada
+			// exception. Então pesquisa se já existe essa pessoa cadaservice strada
 			// Recupera dados do usuário no LDAP
 			Map<String, String> dataLdap = ldapUtils.getLdapProperties(uid);
 
