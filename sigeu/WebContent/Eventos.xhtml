@@ -9,26 +9,7 @@
 
 	<ui:define name="corpo">
 		<div id="divOnCenter1" class="divOnCenter">
-			<div id="errorMessage" style="margin: 20px 20px 20px 20px">
-				<table class="tableDiv">
-					<tr>
-						<td><div class="headerLogo">
-								<h:link outcome="/restrito/Home.xhtml">
-									<h:graphicImage library="img" name="utfpr_logo.png" />
-								</h:link>
-							</div></td>
-						<td valign="bottom" align="right"><div class="headerInfo">
-								<p:outputLabel value="#{loginBean.nomeUsuario}"
-									style="font-weight: bold; font-size: small" />
-								<input id="LogoffButton" type="button" value="Logoff"
-									onclick="doLogoff();" />
-							</div></td>
-					</tr>
-				</table>
-				<h2 style="color: #000;">Oops!</h2>
-				<p>Você não tem as credenciais necessárias para acessar esta
-					página.</p>
-			</div>
+			<h1>Eventos</h1>
 		</div>
 		<script>
 			function getContextPath() {
