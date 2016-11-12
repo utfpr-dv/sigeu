@@ -115,7 +115,7 @@ public class LdapServerService {
 	 * Remove
 	 * 
 	 * @param i
-	 * @throws EntidadePossuiRelacionamentoException
+	 * @throws MessagingException
 	 * @throws Exception
 	 */
 	public static void remover(LdapServer i) throws EntidadePossuiRelacionamentoException, Exception {

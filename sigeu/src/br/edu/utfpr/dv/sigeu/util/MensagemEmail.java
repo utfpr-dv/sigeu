@@ -15,8 +15,7 @@ import com.adamiworks.utils.mailsender.MailSenderMessage;
 
 public class MensagemEmail {
 
-	private static final byte[] MAIL_KEY_PASSWORD = { -112, 78, -12, 45, -13,
-			51, -84, 8 };
+	private static final byte[] MAIL_KEY_PASSWORD = { -112, 78, -12, 45, -13, 51, -84, 8 };
 
 	private List<MailSenderMessage> mensagens;
 
@@ -36,8 +35,8 @@ public class MensagemEmail {
 	 * @param conteudo
 	 * @throws DestinatarioInexistenteException
 	 */
-	public void criaMensagemTextoSimples(String to, String cc, String assunto,
-			String conteudo) throws DestinatarioInexistenteException {
+	public void criaMensagemTextoSimples(String to, String cc, String assunto, String conteudo)
+			throws DestinatarioInexistenteException {
 		String aTo[] = new String[] { to };
 		String aCc[] = new String[] { cc };
 		this.criaMensagem(aTo, aCc, null, assunto, conteudo, false, null);
@@ -53,8 +52,8 @@ public class MensagemEmail {
 	 * @param html
 	 * @throws DestinatarioInexistenteException
 	 */
-	public void criaMensagemHtml(String to, String cc, String assunto,
-			String html) throws DestinatarioInexistenteException {
+	public void criaMensagemHtml(String to, String cc, String assunto, String html)
+			throws DestinatarioInexistenteException {
 		String aTo[] = new String[] { to };
 		String aCc[] = new String[] { cc };
 		this.criaMensagem(aTo, aCc, null, assunto, html, true, null);
@@ -73,10 +72,8 @@ public class MensagemEmail {
 	 * @param pathArquivosAnexos
 	 * @throws DestinatarioInexistenteException
 	 */
-	public void criaMensagem(String to[], String cc[], String bcc[],
-			String assunto, String conteudo, boolean conteudoHtml,
-			List<String> pathArquivosAnexos)
-			throws DestinatarioInexistenteException {
+	public void criaMensagem(String to[], String cc[], String bcc[], String assunto, String conteudo,
+			boolean conteudoHtml, List<String> pathArquivosAnexos) throws DestinatarioInexistenteException {
 		if (to == null && cc == null && bcc == null) {
 			throw new DestinatarioInexistenteException();
 		}
@@ -85,7 +82,7 @@ public class MensagemEmail {
 			mensagens = new ArrayList<MailSenderMessage>();
 		}
 
-		MailSenderMessage mensagem = new MailSenderMessage();
+		MailSenderMessage mensagem = new MailSenderMessage("SIGEU UTFPR DV", campus.getMailServer().getFromEmail());
 
 		if (to != null) {
 			for (String s : to) {
@@ -141,10 +138,8 @@ public class MensagemEmail {
 			MailServer server = MailServerService.encontrePorCampus(campus);
 			String password = cu.decrypt(server.getPassword());
 
-			MailSender sender = new MailSender(
-					server.getAuthenticationRequired(), server.getHost(),
-					server.getPort(), server.getSsl(), server.getStarttls(),
-					server.getPlainTextOverTls(), server.getFromEmail(),
+			MailSender sender = new MailSender(server.getAuthenticationRequired(), server.getHost(), server.getPort(),
+					server.getSsl(), server.getStarttls(), server.getPlainTextOverTls(), server.getFromEmail(),
 					server.getUserName(), password);
 
 			for (MailSenderMessage message : mensagens) {

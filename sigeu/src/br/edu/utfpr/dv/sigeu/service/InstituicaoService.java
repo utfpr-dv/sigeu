@@ -103,7 +103,7 @@ public class InstituicaoService {
 	 * Remove
 	 * 
 	 * @param i
-	 * @throws EntidadePossuiRelacionamentoException
+	 * @throws MessagingException
 	 * @throws Exception
 	 */
 	public static void remover(Instituicao i) throws EntidadePossuiRelacionamentoException, Exception {

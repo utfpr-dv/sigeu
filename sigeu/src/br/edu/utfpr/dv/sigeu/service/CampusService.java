@@ -166,7 +166,7 @@ public class CampusService {
 	 * Remove
 	 * 
 	 * @param i
-	 * @throws EntidadePossuiRelacionamentoException
+	 * @throws MessagingException
 	 * @throws Exception
 	 */
 	public static void remover(Campus i) throws EntidadePossuiRelacionamentoException, Exception {
