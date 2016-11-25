@@ -10,6 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.GenericJDBCException;
 
+import com.adamiworks.utils.StringUtils;
+import com.adamiworks.utils.hibernate.DatabaseConfig;
+import com.adamiworks.utils.hibernate.DatabaseParameter;
+
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Direito;
@@ -18,10 +22,6 @@ import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
 import br.edu.utfpr.dv.sigeu.service.LoginService;
 import br.edu.utfpr.dv.sigeu.util.LoginFilter;
-
-import com.adamiworks.utils.StringUtils;
-import com.adamiworks.utils.hibernate.DatabaseConfig;
-import com.adamiworks.utils.hibernate.DatabaseParameter;
 
 @Named(value = "loginBean")
 @SessionScoped
@@ -61,6 +61,11 @@ public class LoginBean extends JavaBean {
 			if (pessoaLogin == null) {
 				this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");
 			} else {
+				// Fix Erro LDAP na Reitoria
+				if (pessoaLogin.getLdapCampus() == null || pessoaLogin.getLdapCampus().isEmpty()) {
+					pessoaLogin.setLdapCampus("DV");
+				}
+
 				if (!pessoaLogin.getAtivo()) {
 					this.addErrorMessage("Login", "Acesso inativado. Informe ao administrador do sistema.");
 				} else {
@@ -107,11 +112,12 @@ public class LoginBean extends JavaBean {
 			handleException(e);
 		} catch (ConstraintViolationException e) {
 			ok = false;
-			handleException("Erro de gravação no banco de dados: {"+
-					e.getSQLException().getMessage() + "}",e);
-//			handleException("Erro de gravação no banco de dados: {"+
-//					e.getSQLException().getMessage() + "\n " + (e.getSQLException().getNextException() != null
-//							? e.getSQLException().getNextException().getMessage() : "") + "}",e);
+			handleException("Erro de gravação no banco de dados: {" + e.getSQLException().getMessage() + "}", e);
+			// handleException("Erro de gravação no banco de dados: {"+
+			// e.getSQLException().getMessage() + "\n " +
+			// (e.getSQLException().getNextException() != null
+			// ? e.getSQLException().getNextException().getMessage() : "") +
+			// "}",e);
 		} catch (Exception e) {
 			ok = false;
 			handleException("Ocorreu um erro ao tentar comunicar com o servidor de autenticação", e);
@@ -120,6 +126,10 @@ public class LoginBean extends JavaBean {
 			if (Config.getInstance().isDebugMode()) {
 				this.addErrorMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
 			}
+
+			// DEBUG
+			// this.sendTestMail(campus);
+
 			return "/restrito/Home.xhtml";
 		}
 		// }
@@ -204,5 +214,19 @@ public class LoginBean extends JavaBean {
 	public void setPermiteReservaRecorrente(boolean permiteReservaRecorrente) {
 		this.permiteReservaRecorrente = permiteReservaRecorrente;
 	}
+
+	// private void sendTestMail(Campus campus) {
+	// MensagemEmail me = new MensagemEmail(campus);
+	//
+	// try {
+	// me.criaMensagemTextoSimples("adamitj@gmail.com", null, "Teste SIGEU",
+	// "Teste de E-mail");
+	// me.enviaMensagens();
+	// } catch (DestinatarioInexistenteException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// }
 
 }

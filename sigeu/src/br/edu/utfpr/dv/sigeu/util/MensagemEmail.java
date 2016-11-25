@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.MailServer;
 import br.edu.utfpr.dv.sigeu.exception.DestinatarioInexistenteException;
@@ -155,7 +156,11 @@ public class MensagemEmail {
 	}
 
 	public void enviaMensagens() {
-		ThreadEnviaMensagemEmail thread = new ThreadEnviaMensagemEmail(this);
-		thread.start();
+		if (!Config.getInstance().isDebugMode()) {
+			ThreadEnviaMensagemEmail thread = new ThreadEnviaMensagemEmail(this);
+			thread.start();
+		} else {
+			this.enviarMensagensThread();
+		}
 	}
 }

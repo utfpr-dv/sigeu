@@ -68,7 +68,7 @@ public class Pessoa implements Serializable {
 	private boolean externo;
 
 	@Column(name = "ldap_campus")
-	@Basic(optional = false)
+	@Basic(optional = true)
 	private String ldapCampus;
 
 	@ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
