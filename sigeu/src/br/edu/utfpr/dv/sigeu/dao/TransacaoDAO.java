@@ -55,7 +55,6 @@ public class TransacaoDAO extends HibernateDAO<Transacao> {
 
 	@Override
 	public void preAlteracao(Transacao o) {
-		// TODO Auto-generated method stub
 		
 	}
 

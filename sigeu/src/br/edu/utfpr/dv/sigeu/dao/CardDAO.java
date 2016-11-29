@@ -33,7 +33,6 @@ public class CardDAO extends HibernateDAO<Card> {
 
 	@Override
 	public void preAlteracao(Card o) {
-		// TODO Auto-generated method stub
 		
 	}
 

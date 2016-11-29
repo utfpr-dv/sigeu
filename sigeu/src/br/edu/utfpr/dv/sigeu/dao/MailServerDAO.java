@@ -37,7 +37,6 @@ public class MailServerDAO extends HibernateDAO<MailServer> {
 
 	@Override
 	public void preAlteracao(MailServer o) {
-		// TODO Auto-generated method stub
 		
 	}
 

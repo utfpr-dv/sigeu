@@ -33,7 +33,6 @@ public class TeacherDAO extends HibernateDAO<Teacher> {
 
 	@Override
 	public void preAlteracao(Teacher o) {
-		// TODO Auto-generated method stub
 		
 	}
 

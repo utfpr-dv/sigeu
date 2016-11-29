@@ -56,7 +56,6 @@ public class SequenciaDAO extends HibernateDAO<Sequencia> {
 
 	@Override
 	public void preAlteracao(Sequencia o) {
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -50,7 +50,6 @@ public class ProfessorPessoaDAO extends HibernateDAO<ProfessorPessoa> {
 
 	@Override
 	public void preAlteracao(ProfessorPessoa o) {
-		// TODO Auto-generated method stub
 		
 	}
 

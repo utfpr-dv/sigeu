@@ -215,18 +215,4 @@ public class LoginBean extends JavaBean {
 		this.permiteReservaRecorrente = permiteReservaRecorrente;
 	}
 
-	// private void sendTestMail(Campus campus) {
-	// MensagemEmail me = new MensagemEmail(campus);
-	//
-	// try {
-	// me.criaMensagemTextoSimples("adamitj@gmail.com", null, "Teste SIGEU",
-	// "Teste de E-mail");
-	// me.enviaMensagens();
-	// } catch (DestinatarioInexistenteException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	//
-	// }
-
 }

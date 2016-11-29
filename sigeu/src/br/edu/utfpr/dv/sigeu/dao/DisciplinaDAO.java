@@ -58,7 +58,6 @@ public class DisciplinaDAO extends HibernateDAO<Disciplina> {
 
 	@Override
 	public void preAlteracao(Disciplina o) {
-		// TODO Auto-generated method stub
 		
 	}
 

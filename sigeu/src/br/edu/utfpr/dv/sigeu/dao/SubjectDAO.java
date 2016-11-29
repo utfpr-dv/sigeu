@@ -33,7 +33,6 @@ public class SubjectDAO extends HibernateDAO<Subject> {
 
 	@Override
 	public void preAlteracao(Subject o) {
-		// TODO Auto-generated method stub
 		
 	}
 

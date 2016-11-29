@@ -272,7 +272,6 @@ public class EmailService {
 			// Envia as mensagens por Thread
 			email.enviaMensagens();
 		} catch (DestinatarioInexistenteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -94,7 +94,6 @@ public class CampusDAO extends HibernateDAO<Campus> {
 
 	@Override
 	public void preAlteracao(Campus o) {
-		// TODO Auto-generated method stub
 
 	}
 

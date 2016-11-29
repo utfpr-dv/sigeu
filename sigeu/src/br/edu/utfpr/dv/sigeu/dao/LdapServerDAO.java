@@ -117,7 +117,6 @@ public class LdapServerDAO extends HibernateDAO<LdapServer> {
 
 	@Override
 	public void preAlteracao(LdapServer o) {
-		// TODO Auto-generated method stub
 
 	}
 }

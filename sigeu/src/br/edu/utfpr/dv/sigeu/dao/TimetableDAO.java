@@ -96,7 +96,6 @@ public class TimetableDAO extends HibernateDAO<Timetable> {
 
 	@Override
 	public void preAlteracao(Timetable o) {
-		// TODO Auto-generated method stub
 
 	}
 }

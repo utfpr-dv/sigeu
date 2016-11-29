@@ -62,7 +62,6 @@ public class PeriodDAO extends HibernateDAO<Period> {
 
 	@Override
 	public void preAlteracao(Period o) {
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -51,7 +51,6 @@ public class LessonDAO extends HibernateDAO<Lesson> {
 
 	@Override
 	public void preAlteracao(Lesson o) {
-		// TODO Auto-generated method stub
 
 	}
 

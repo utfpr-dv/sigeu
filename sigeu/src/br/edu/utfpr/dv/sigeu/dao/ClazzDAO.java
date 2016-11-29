@@ -33,7 +33,6 @@ public class ClazzDAO extends HibernateDAO<Clazz> {
 
 	@Override
 	public void preAlteracao(Clazz o) {
-		// TODO Auto-generated method stub
 		
 	}
 

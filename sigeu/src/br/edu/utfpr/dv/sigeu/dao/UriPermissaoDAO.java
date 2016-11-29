@@ -54,7 +54,6 @@ public class UriPermissaoDAO extends HibernateDAO<UriPermissao> {
 
 	@Override
 	public void preAlteracao(UriPermissao o) {
-		// TODO Auto-generated method stub
 
 	}
 }
