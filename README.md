@@ -1,7 +1,7 @@
-# derdi-dv
-Repositório oficial do DERDI campus Dois Vizinhos
+# SIGEU
+Repositório oficial do SIGEU
 
-Cada pasta dentro do repositório corresponde a um projeto do Eclipse. Seguem requisitos de cada projeto:
+O repositório compreende apenas os códigos fontes do projeto SIGEU e aplicativos correlatos
 
 SIGEU:
 - Java JDK 1.8
