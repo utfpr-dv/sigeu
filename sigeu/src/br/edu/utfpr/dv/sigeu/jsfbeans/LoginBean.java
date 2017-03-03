@@ -18,6 +18,7 @@ import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Direito;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
+import br.edu.utfpr.dv.sigeu.exception.ManutencaoException;
 import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
 import br.edu.utfpr.dv.sigeu.service.LoginService;
@@ -55,82 +56,95 @@ public class LoginBean extends JavaBean {
 
 		this.appInfo = Config.APPLICATION_NAME + " - " + Config.APPLICATION_CODE + " v" + Config.APPLICATION_VERSION;
 
-		try {
-			pessoaLogin = LoginService.autentica(email, password);
+		boolean manutencao = Config.getInstance().isAdminMode();
 
-			if (pessoaLogin == null) {
-				this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");
-			} else {
-				// Fix Erro LDAP na Reitoria
-				if (pessoaLogin.getLdapCampus() == null || pessoaLogin.getLdapCampus().isEmpty()) {
-					pessoaLogin.setLdapCampus("DV");
-				}
+		if (manutencao && !email.toLowerCase().equals("admin")) {
+			this.addErrorMessage("Login", "SISTEMA EM MANUTENÇÃO. AGUARDE OS SERVIÇOS SEREM REESTABELECIDOS.");
+			// try {
+			// throw new ManutencaoException();
+			// } catch (ManutencaoException e) {
+			// handleException("", e);
+			// }
 
-				if (!pessoaLogin.getAtivo()) {
-					this.addErrorMessage("Login", "Acesso inativado. Informe ao administrador do sistema.");
+			ok = false;
+		} else {
+			try {
+				pessoaLogin = LoginService.autentica(email, password);
+
+				if (pessoaLogin == null) {
+					this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");
 				} else {
-					this.setNomeUsuario(pessoaLogin.getNomeCompleto());
+					// Fix Erro LDAP na Reitoria
+					if (pessoaLogin.getLdapCampus() == null || pessoaLogin.getLdapCampus().isEmpty()) {
+						pessoaLogin.setLdapCampus("DV");
+					}
 
-					campus = pessoaLogin.getIdCampus();
+					if (!pessoaLogin.getAtivo()) {
+						this.addErrorMessage("Login", "Acesso inativado. Informe ao administrador do sistema.");
+					} else {
+						this.setNomeUsuario(pessoaLogin.getNomeCompleto());
 
-					HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-							.getExternalContext().getRequest();
+						campus = pessoaLogin.getIdCampus();
 
-					request.getSession().setAttribute(LoginFilter.SESSION_EMAIL_LOGIN, email);
+						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+								.getExternalContext().getRequest();
 
-					request.getSession().setAttribute(LoginFilter.SESSION_PESSOA_LOGIN, pessoaLogin);
+						request.getSession().setAttribute(LoginFilter.SESSION_EMAIL_LOGIN, email);
 
-					request.getSession().setAttribute(LoginFilter.SESSION_CAMPUS, campus);
+						request.getSession().setAttribute(LoginFilter.SESSION_PESSOA_LOGIN, pessoaLogin);
 
-					/*
-					 * Define se a pessoa pode fazer reservas recorrentes
-					 */
-					if (pessoaLogin.getDireitoList() != null && pessoaLogin.getDireitoList().size() > 0) {
-						for (Direito d : pessoaLogin.getDireitoList()) {
-							if (d.getProcesso().equals("RESERVA_SEMANAL")) {
-								this.setPermiteReservaRecorrente(d.isAutoriza());
-								break;
+						request.getSession().setAttribute(LoginFilter.SESSION_CAMPUS, campus);
+
+						/*
+						 * Define se a pessoa pode fazer reservas recorrentes
+						 */
+						if (pessoaLogin.getDireitoList() != null && pessoaLogin.getDireitoList().size() > 0) {
+							for (Direito d : pessoaLogin.getDireitoList()) {
+								if (d.getProcesso().equals("RESERVA_SEMANAL")) {
+									this.setPermiteReservaRecorrente(d.isAutoriza());
+									break;
+								}
 							}
 						}
 					}
 				}
+			} catch (CommunicationException e) {
+				ok = false;
+				handleException("Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.", e);
+			} catch (NamingException e) {
+				ok = false;
+				handleException("Usuário ou senha inválidos.", null);
+			} catch (ServidorLdapNaoCadastradoException e) {
+				ok = false;
+				handleException("Servidor de autenticação não cadastrado para o endereço de e-mail especificado.", e);
+			} catch (UsuarioDesativadoException e) {
+				ok = false;
+				handleException("Usuário não autorizado. Entre em contato com o Administrador do sistema.", e);
+			} catch (GenericJDBCException e) {
+				ok = false;
+				handleException(e);
+			} catch (ConstraintViolationException e) {
+				ok = false;
+				handleException("Erro de gravação no banco de dados: {" + e.getSQLException().getMessage() + "}", e);
+				// handleException("Erro de gravação no banco de dados: {"+
+				// e.getSQLException().getMessage() + "\n " +
+				// (e.getSQLException().getNextException() != null
+				// ? e.getSQLException().getNextException().getMessage() : "") +
+				// "}",e);
+			} catch (Exception e) {
+				ok = false;
+				handleException("Ocorreu um erro ao tentar comunicar com o servidor de autenticação", e);
 			}
-		} catch (CommunicationException e) {
-			ok = false;
-			handleException("Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.", e);
-		} catch (NamingException e) {
-			ok = false;
-			handleException("Usuário ou senha inválidos.", null);
-		} catch (ServidorLdapNaoCadastradoException e) {
-			ok = false;
-			handleException("Servidor de autenticação não cadastrado para o endereço de e-mail especificado.", e);
-		} catch (UsuarioDesativadoException e) {
-			ok = false;
-			handleException("Usuário não autorizado. Entre em contato com o Administrador do sistema.", e);
-		} catch (GenericJDBCException e) {
-			ok = false;
-			handleException(e);
-		} catch (ConstraintViolationException e) {
-			ok = false;
-			handleException("Erro de gravação no banco de dados: {" + e.getSQLException().getMessage() + "}", e);
-			// handleException("Erro de gravação no banco de dados: {"+
-			// e.getSQLException().getMessage() + "\n " +
-			// (e.getSQLException().getNextException() != null
-			// ? e.getSQLException().getNextException().getMessage() : "") +
-			// "}",e);
-		} catch (Exception e) {
-			ok = false;
-			handleException("Ocorreu um erro ao tentar comunicar com o servidor de autenticação", e);
-		}
-		if (ok) {
-			if (Config.getInstance().isDebugMode()) {
-				this.addErrorMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
+			if (ok) {
+				if (Config.getInstance().isDebugMode()) {
+					this.addErrorMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
+				}
+
+				// DEBUG
+				// this.sendTestMail(campus);
+
+				return "/restrito/Home.xhtml";
 			}
-
-			// DEBUG
-			// this.sendTestMail(campus);
-
-			return "/restrito/Home.xhtml";
 		}
 		// }
 

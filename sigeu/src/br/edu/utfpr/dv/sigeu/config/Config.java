@@ -12,7 +12,9 @@ public class Config {
 
 	public static final String APPLICATION_NAME = "Sistema Integrado de Gestão Universitária";
 	public static final String APPLICATION_CODE = "SIGEU";
-	public static final String APPLICATION_VERSION = "1.4.2";
+	public static final String APPLICATION_VERSION = "1.4.4";
+	public static final String CONFIG_ADMIN = "admin";
+	public static final String CONFIG_DEBUG = "debug";
 	public static final String CONFIG_PATH_UPLOAD = "path.upload";
 	public static final String CONFIG_FILE = "config.properties";
 	public static final String NOME_GRUPO_EXTERNO = "EXTERNO";
@@ -21,6 +23,7 @@ public class Config {
 	//
 	private Properties config;
 	private boolean debugMode;
+	private boolean adminMode;
 	private int threadMax = 2;
 	private String url;
 
@@ -36,9 +39,24 @@ public class Config {
 			e.printStackTrace();
 		}
 
+		this.adminMode = false;
+		try {
+			System.out.print("Validando modo Admin: [");
+			String admin = config.getProperty(CONFIG_ADMIN).trim().toLowerCase();
+			System.out.println(admin + "]");
+			if (admin != null) {
+				if (admin.toLowerCase().equals("true")) {
+					System.out.println("*** SISTEMA ESTÁ EM MANUTENÇÃO ***");
+					this.adminMode = true;
+				}
+			}
+		} catch (Exception e) {
+			// ignora
+		}
+
 		this.debugMode = false;
 		try {
-			String debug = config.getProperty("debug").trim().toLowerCase();
+			String debug = config.getProperty(CONFIG_DEBUG).trim().toLowerCase();
 			if (debug != null) {
 				if (debug.equals("true")) {
 					this.debugMode = true;
@@ -65,6 +83,9 @@ public class Config {
 	}
 
 	public static Config getInstance() {
+		// if (self == null) {
+		// self = new Config();
+		// }
 		return self;
 	}
 
@@ -115,5 +136,9 @@ public class Config {
 	public String getUrl() {
 		return url;
 	}
-	
+
+	public boolean isAdminMode() {
+		return adminMode;
+	}
+
 }
