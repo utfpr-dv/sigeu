@@ -9,3 +9,5 @@ SIGEU:
 - Eclipse Luna
   - EGit plugin
   - Maven Plugin
+  
+NOTA: Existem dependências via eclipse do projeto https://github.com/adamitj/oss-adamiworks que precisam ser satisfeitas.
