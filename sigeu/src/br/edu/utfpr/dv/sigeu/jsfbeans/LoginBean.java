@@ -18,7 +18,6 @@ import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Direito;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
-import br.edu.utfpr.dv.sigeu.exception.ManutencaoException;
 import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
 import br.edu.utfpr.dv.sigeu.service.LoginService;
@@ -87,7 +86,7 @@ public class LoginBean extends JavaBean {
 						campus = pessoaLogin.getIdCampus();
 
 						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-								.getExternalContext().getRequest();
+						        .getExternalContext().getRequest();
 
 						request.getSession().setAttribute(LoginFilter.SESSION_EMAIL_LOGIN, email);
 
@@ -140,6 +139,10 @@ public class LoginBean extends JavaBean {
 					this.addErrorMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
 				}
 
+				if (!Config.getInstance().isSendMail()) {
+					this.addWarnMessage("E-MAILS", "ENVIO DE E-MAILS DESABILITADO.");
+				}
+
 				// DEBUG
 				// this.sendTestMail(campus);
 
@@ -153,7 +156,7 @@ public class LoginBean extends JavaBean {
 
 	public String logoff() {
 		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
-				.getRequest();
+		        .getRequest();
 
 		request.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
 

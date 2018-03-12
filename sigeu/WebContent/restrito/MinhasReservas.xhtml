@@ -11,7 +11,8 @@
 		<h:form id="frmPesquisaReserva" prependId="false">
 			<p:tabView styleClass="tabCentered">
 
-				<p:tab id="tabPesquisa" title="Lista das minhas reservas ou dos ambientes dos quais sou autorizador"
+				<p:tab id="tabPesquisa"
+					title="Lista das minhas reservas ou dos ambientes dos quais sou autorizador"
 					rendered="#{reservaBean.showTab eq 1}">
 					<div>
 						<p:panelGrid columns="12"
@@ -71,8 +72,11 @@
 							<p:dataTable id="minhasReservasTable"
 								value="#{reservaBean.listaMinhasReservas}" var="i"
 								style="margin-top: 5px"
-								emptyMessage="Nenhum registro encontrado." >
-								<p:column headerText="Patrimonio" style="width: 60px">
+								emptyMessage="Nenhum registro encontrado.">
+								<p:column headerText="ID" style="width: 40px">
+									<h:outputText value="#{i.idReserva}" />
+								</p:column>
+								<p:column headerText="Patrimonio" style="width: 70px">
 									<h:outputText value="#{i.idItemReserva.patrimonio}" />
 								</p:column>
 								<p:column headerText="Nome do Recurso" style="width: 120px">

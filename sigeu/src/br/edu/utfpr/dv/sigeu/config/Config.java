@@ -12,12 +12,13 @@ public class Config {
 
 	public static final String APPLICATION_NAME = "Sistema Integrado de Gestão Universitária";
 	public static final String APPLICATION_CODE = "SIGEU";
-	public static final String APPLICATION_VERSION = "1.4.4";
+	public static final String APPLICATION_VERSION = "1.4.5";
 	public static final String CONFIG_ADMIN = "admin";
 	public static final String CONFIG_DEBUG = "debug";
 	public static final String CONFIG_PATH_UPLOAD = "path.upload";
 	public static final String CONFIG_FILE = "config.properties";
 	public static final String NOME_GRUPO_EXTERNO = "EXTERNO";
+	public static final String SEND_MAIL = "sendmail";
 	//
 	private static Config self;
 	//
@@ -26,6 +27,7 @@ public class Config {
 	private boolean adminMode;
 	private int threadMax = 2;
 	private String url;
+	private boolean sendMail = false;
 
 	static {
 		self = new Config();
@@ -55,6 +57,7 @@ public class Config {
 		}
 
 		this.debugMode = false;
+
 		try {
 			String debug = config.getProperty(CONFIG_DEBUG).trim().toLowerCase();
 			if (debug != null) {
@@ -77,6 +80,19 @@ public class Config {
 
 		try {
 			url = config.getProperty("url").trim().toLowerCase();
+		} catch (Exception e) {
+			// ignora
+		}
+
+		this.sendMail = true;
+
+		try {
+			String sendMailstr = config.getProperty(SEND_MAIL).trim().toLowerCase();
+			if (sendMailstr != null) {
+				if (sendMailstr.equals("false")) {
+					this.sendMail = false;
+				}
+			}
 		} catch (Exception e) {
 			// ignora
 		}
@@ -139,6 +155,10 @@ public class Config {
 
 	public boolean isAdminMode() {
 		return adminMode;
+	}
+
+	public boolean isSendMail() {
+		return sendMail;
 	}
 
 }

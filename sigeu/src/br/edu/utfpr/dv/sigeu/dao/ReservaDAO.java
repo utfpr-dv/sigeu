@@ -146,7 +146,8 @@ public class ReservaDAO extends HibernateDAO<Reserva> {
 		hql.append("FROM Reserva o JOIN o.idCampus campus JOIN o.idItemReserva i JOIN i.idCategoria c LEFT JOIN i.pessoaList p ");
 		hql.append("WHERE campus.idCampus = :idCampus AND o.status = :status AND ");
 		hql.append("c.idCategoria = :idCategoria AND ");
-		hql.append("( o.idPessoa.idPessoa = :idPessoa OR o.idUsuario.idPessoa = :idPessoa OR COALESCE(p.idPessoa,:idPessoa) = :idPessoa ) AND ");
+		//hql.append("( o.idPessoa.idPessoa = :idPessoa OR o.idUsuario.idPessoa = :idPessoa OR COALESCE(p.idPessoa,:idPessoa) = :idPessoa ) AND ");
+		hql.append("( o.idPessoa.idPessoa = :idPessoa OR o.idUsuario.idPessoa = :idPessoa OR p.idPessoa = :idPessoa ) AND ");
 
 		if (item != null) {
 			hql.append("i.idItemReserva = :idItemReserva AND ");

@@ -8,9 +8,10 @@
 	<ui:define name="titulo">SIGEU: Agenda de Reservas</ui:define>
 
 	<ui:define name="corpo">
-		<p:tabView styleClass="tabCentered">
-			<p:tab id="tabPesquisa" title="Agenda de Reservas">
-				<h:form id="frmAgendaReserva" prependId="false">
+		<h:form id="frmAgendaReserva" prependId="false">
+			<p:tabView styleClass="tabCentered">
+				<p:tab id="tabPesquisa" title="Agenda de Reservas"
+					rendered="#{agendaReservaBean.showTab eq 1}">
 					<div style="margin: 0 auto; text-align: center">
 						<p:panelGrid columns="12" style="margin: 0 auto">
 							<p:outputLabel value="Período de" for="data" />
@@ -49,9 +50,8 @@
 							</p:autoComplete>
 
 							<p:outputLabel value="  Motivo" for="motivo" />
-							<p:inputText id="motivo"
-								value="#{agendaReservaBean.motivo}" size="20"
-								maxlength="200" />
+							<p:inputText id="motivo" value="#{agendaReservaBean.motivo}"
+								size="20" maxlength="200" />
 
 							<p:outputLabel value="  Usuário" for="nomeUsuario" />
 							<p:inputText id="nomeUsuario"
@@ -97,7 +97,7 @@
 							style="text-align: center;  width: 40px">
 							<h:outputText value="#{r.diaSemana}" />
 						</p:column>
-						
+
 						<p:column headerText="Data"
 							style="text-align: center;  width: 80px">
 							<h:outputText value="#{r.dataReserva}" />
@@ -108,11 +108,59 @@
 							<h:outputText value="#{r.horaReserva}" />
 						</p:column>
 
+						<p:column headerText="Ações"
+							style="text-align: center; width: 100px"
+							rendered="#{loginBean.pessoaLogin.admin eq true}">
+							<p:commandButton value="Cancelar" icon="ui-icon-trash"
+								action="#{agendaReservaBean.cancelaReserva(r.reserva)}"
+								update="@form" />
+						</p:column>
+					</p:dataTable>
+				</p:tab>
+
+				<p:tab id="tabCancelarReserva" title="Cancelar Reserva"
+					rendered="#{agendaReservaBean.showTab eq 2}">
+					<p:dataTable id="cancelaReservasTable"
+						value="#{agendaReservaBean.listaReservaCancelamentoVO}" var="i"
+						style="margin-top: 15px" emptyMessage="Nenhum registro encontrado.">
+
+						<p:column headerText="Data"
+							style="text-align: center; width: 70px">
+							<h:outputText value="#{i.dataReserva}" />
+						</p:column>
+						<p:column headerText="Recurso/Item"
+							style="text-align: center; width: 200px">
+							<h:outputText value="#{i.nomeItemReserva}" />
+						</p:column>
+						<p:column headerText="Horário"
+							style="text-align: center; width: 140px">
+							<h:outputText value="#{i.horaReserva}" />
+						</p:column>
+						<p:column headerText="Usuário">
+							<h:outputText value="#{i.usuarioReserva}" />
+						</p:column>
 					</p:dataTable>
 
-				</h:form>
-			</p:tab>
-		</p:tabView>
+					<p:inputTextarea style="margin-top: 20px" id="motivoCancelamento"
+						value="#{agendaReservaBean.motivoCancelamento}" rows="3" cols="80"
+						maxlength="2000" required="true"
+						requiredMessage="É obrigatório informar o motivo do cancelamento" />
+
+					<div id="divButtons" style="margin-top: 10px">
+						<p:commandButton id="idb1" value="Excluir" icon="ui-icon-trash"
+							style="width:120px;"
+							action="#{agendaReservaBean.gravaCancelamentoReserva}"
+							update="@form" />
+
+						<p:commandButton id="idb3" value="Cancelar"
+							icon="ui-icon-arrowreturn-1-w" style="width:120px;"
+							action="#{agendaReservaBean.cancelaUi}" update="@form"
+							process="@this" immediate="true" />
+					</div>
+				</p:tab>
+
+			</p:tabView>
+		</h:form>
 	</ui:define>
 
 </ui:composition>

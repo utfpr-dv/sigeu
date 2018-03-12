@@ -21,6 +21,7 @@ import br.edu.utfpr.dv.sigeu.entities.Period;
 import br.edu.utfpr.dv.sigeu.entities.Reserva;
 import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
+import br.edu.utfpr.dv.sigeu.service.EmailService;
 import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 import br.edu.utfpr.dv.sigeu.service.ReservaService;
 import br.edu.utfpr.dv.sigeu.service.TipoReservaService;
@@ -45,6 +46,7 @@ public class AgendaReservaBean extends JavaBean {
 	private List<Period> listaPeriod;
 	private List<PeriodoReservaVO> listaPeriodoReservaVO;
 	private List<ReservaVO> listaReservaVO;
+	private List<ReservaVO> listaReservaCancelamentoVO;
 	private TipoReserva tipoReserva;
 	private List<TipoReserva> listaTipoReserva;
 
@@ -53,6 +55,9 @@ public class AgendaReservaBean extends JavaBean {
 	private PeriodoReservaVO horarioVO;
 	private String nomeUsuario;
 	private String motivo;
+	private int showTab = 1;
+	private String motivoCancelamento;
+	private Reserva reservaCancelar;
 
 	@PostConstruct
 	public void init() {
@@ -152,9 +157,10 @@ public class AgendaReservaBean extends JavaBean {
 				}
 
 				listaReservaVO = new ArrayList<ReservaVO>();
+				listaReservaCancelamentoVO = new ArrayList<ReservaVO>();
 
 				listaReserva = ReservaService.pesquisaReservasEfetivadas(loginBean.getCampus(), data, data2,
-						tipoReserva, categoria, itemReserva, nomeUsuario, motivo, true);
+				        tipoReserva, categoria, itemReserva, nomeUsuario, motivo, true);
 
 				if (listaReserva.size() > 0) {
 					reservaParaAgenda();
@@ -165,17 +171,19 @@ public class AgendaReservaBean extends JavaBean {
 						vo.setCampus(reserva.getIdCampus());
 						vo.setDataReserva(formatData.format(reserva.getData()));
 						vo.setHoraReserva(formatHora.format(reserva.getHoraInicio()) + " a "
-								+ formatHora.format(reserva.getHoraFim()));
+						        + formatHora.format(reserva.getHoraFim()));
 						vo.setMotivoReserva(reserva.getMotivo());
 						vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());
 						vo.setTipoReserva(reserva.getIdTipoReserva().getDescricao());
 						vo.setUsuarioReserva(reserva.getNomeUsuario());
 						vo.setCor(reserva.getCor());
 						vo.setIdReserva(reserva.getIdReserva());
-						
-						SimpleDateFormat dateFormat = new SimpleDateFormat("EEE"); 
+
+						vo.setReserva(reserva);
+
+						SimpleDateFormat dateFormat = new SimpleDateFormat("EEE");
 						String asWeek = dateFormat.format(reserva.getData());
-						
+
 						vo.setDiaSemana(asWeek);
 
 						listaReservaVO.add(vo);
@@ -196,7 +204,7 @@ public class AgendaReservaBean extends JavaBean {
 	private void reservaParaAgenda() {
 		listaPeriodoReservaVO = new ArrayList<PeriodoReservaVO>();
 
-		//System.out.println("---> Reservas: " + listaReserva.size());
+		// System.out.println("---> Reservas: " + listaReserva.size());
 
 		for (Reserva r : listaReserva) {
 			PeriodoReservaVO vo = new PeriodoReservaVO();
@@ -249,6 +257,70 @@ public class AgendaReservaBean extends JavaBean {
 		System.out.println("---> Recursos: " + listaPeriodoReservaVO.size());
 	}
 
+	public void cancelaReserva(Reserva r) {
+		listaReservaCancelamentoVO = new ArrayList<ReservaVO>();
+		ReservaVO vo = new ReservaVO();
+		vo.setCampus(r.getIdCampus());
+		vo.setDataReserva(formatData.format(r.getData()));
+		vo.setHoraReserva(formatHora.format(r.getHoraInicio()) + " a " + formatHora.format(r.getHoraFim()));
+		vo.setMotivoReserva(r.getMotivo());
+		vo.setNomeItemReserva(r.getIdItemReserva().getNome());
+		vo.setTipoReserva(r.getIdTipoReserva().getDescricao());
+		vo.setUsuarioReserva(r.getNomeUsuario());
+		vo.setCor(r.getCor());
+		vo.setIdReserva(r.getIdReserva());
+
+		vo.setReserva(r);
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("EEE");
+		String asWeek = dateFormat.format(r.getData());
+
+		vo.setDiaSemana(asWeek);
+
+		listaReservaCancelamentoVO.add(vo);
+		this.reservaCancelar = r;
+		this.showTab = 2;
+	}
+
+	public void gravaCancelamentoReserva() {
+
+		// listaReservaCancelamentoVO =
+		// ReservaService.listaReservaPorTransacao(loginBean.getCampus(),
+		// r.getIdTransacao().getIdTransacao());
+
+		List<Reserva> listExcluir = new ArrayList<Reserva>();
+		listExcluir.add(reservaCancelar);
+
+		try {
+			String emails[] = EmailService.getEmailFromReservas(listExcluir);
+
+			EmailService.enviaEmailCancelamento(loginBean.getCampus(), listExcluir, emails, loginBean.getPessoaLogin(),
+			        motivoCancelamento);
+		} catch (Exception e) {
+			addErrorMessage("Erro", "Erro ao tentar criar e-mail de exclusão de reserva.");
+			e.printStackTrace();
+		}
+
+		try {
+			ReservaService.cancelaReserva(reservaCancelar, motivoCancelamento);
+		} catch (Exception e) {
+			addErrorMessage("Erro", "Erro ao tentar excluir reserva " + reservaCancelar.getIdReserva());
+			e.printStackTrace();
+		}
+
+		this.showTab = 1;
+		// this.motivoCancelamento = "";
+
+		// Refaz pesquisa
+		pesquisa();
+
+		addInfoMessage("Reserva", "Reserva cancelada com sucesso! A confirmação será enviada por e-mail em instantes.");
+	}
+
+	public void cancelaUi() {
+		this.showTab = 1;
+	}
+	
 	public void checkPeriodo() {
 		if (this.data.compareTo(this.data2) > 0) {
 			this.data2 = this.data;
@@ -365,6 +437,38 @@ public class AgendaReservaBean extends JavaBean {
 
 	public void setMotivo(String motivo) {
 		this.motivo = motivo;
+	}
+
+	public int getShowTab() {
+		return showTab;
+	}
+
+	public void setShowTab(int showTab) {
+		this.showTab = showTab;
+	}
+
+	public String getMotivoCancelamento() {
+		return motivoCancelamento;
+	}
+
+	public void setMotivoCancelamento(String motivoCancelamento) {
+		this.motivoCancelamento = motivoCancelamento;
+	}
+
+	public List<ReservaVO> getListaReservaCancelamentoVO() {
+		return listaReservaCancelamentoVO;
+	}
+
+	public void setListaReservaCancelamentoVO(List<ReservaVO> listaReservaCancelamentoVO) {
+		this.listaReservaCancelamentoVO = listaReservaCancelamentoVO;
+	}
+
+	public Reserva getReservaCancelar() {
+		return reservaCancelar;
+	}
+
+	public void setReservaCancelar(Reserva reservaCancelar) {
+		this.reservaCancelar = reservaCancelar;
 	}
 
 }
