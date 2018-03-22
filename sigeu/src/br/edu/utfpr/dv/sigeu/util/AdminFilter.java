@@ -22,8 +22,8 @@ public class AdminFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+	        throws IOException, ServletException {
 
 		boolean loginOk = false;
 
@@ -34,8 +34,7 @@ public class AdminFilter implements Filter {
 
 		if (request instanceof HttpServletRequest) {
 			uri = requestHttp.getRequestURI();
-			pessoaLogin = (Pessoa) requestHttp.getSession().getAttribute(
-					LoginFilter.SESSION_PESSOA_LOGIN);
+			pessoaLogin = (Pessoa) requestHttp.getSession().getAttribute(LoginFilter.SESSION_PESSOA_LOGIN);
 		}
 
 		// if (uri.startsWith("/sigeu/admin/")) {
@@ -44,15 +43,13 @@ public class AdminFilter implements Filter {
 		// loginOk = true;
 		// }
 
-		if (uri.trim().toLowerCase().equals("/sigeu/logoff")
-				|| uri.trim().toLowerCase().equals("/sigeu/login")
-				|| uri.trim().toLowerCase().equals("/sigeu/oops.xhtml")
-				|| uri.trim().toLowerCase().startsWith("/sigeu/javax")) {
+		if (uri.trim().toLowerCase().equals("/sigeu/logoff") || uri.trim().toLowerCase().equals("/sigeu/login")
+		        || uri.trim().toLowerCase().equals("/sigeu/oops.xhtml")
+		        || uri.trim().toLowerCase().startsWith("/sigeu/javax")) {
 			loginOk = true;
 		} else {
 			if (pessoaLogin != null) {
-				loginOk = UriPermissaoService.verificaPermissaoDeAcesso(
-						pessoaLogin, uri);
+				loginOk = UriPermissaoService.verificaPermissaoDeAcesso(pessoaLogin, uri);
 			} else {
 				loginOk = true;
 			}
@@ -61,8 +58,7 @@ public class AdminFilter implements Filter {
 		if (!loginOk) {
 			// Manda para página de erro
 			String contextPath = requestHttp.getContextPath();
-			((HttpServletResponse) response).sendRedirect(contextPath
-					+ "/Oops.xhtml");
+			((HttpServletResponse) response).sendRedirect(contextPath + "/Oops.xhtml");
 		} else {
 			// Continua na página solicitada
 			chain.doFilter(request, response);

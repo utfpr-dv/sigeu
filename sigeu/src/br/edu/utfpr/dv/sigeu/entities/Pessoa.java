@@ -37,35 +37,38 @@ public class Pessoa implements Serializable {
 	@Basic(optional = false)
 	@Column(name = "id_pessoa")
 	private Integer idPessoa;
-	
+
 	@Basic(optional = false)
 	private String email;
-	
+
 	@Basic(optional = false)
 	@Column(name = "nome_completo")
 	private String nomeCompleto;
-	
+
 	@Basic(optional = false)
 	@Column(name = "senha_md5")
 	private String senhaMd5;
-	
+
 	@Basic(optional = false)
 	@Column(name = "pessoa_fisica")
 	private boolean pessoaFisica;
-	
+
 	@Column(name = "cnpj_cpf")
 	private String cnpjCpf;
-	
+
 	private String matricula;
-	
+
 	@Basic(optional = false)
 	private boolean ativo;
-	
+
 	@Basic(optional = false)
 	private boolean admin;
-	
+
 	@Basic(optional = false)
 	private boolean externo;
+
+	@Basic(optional = false)
+	private boolean externoReserva;
 
 	@Column(name = "ldap_campus")
 	@Basic(optional = true)
@@ -73,34 +76,34 @@ public class Pessoa implements Serializable {
 
 	@ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
 	private List<GrupoPessoa> grupoPessoaList;
-	
+
 	@ManyToMany(mappedBy = "pessoaList", fetch = FetchType.LAZY)
 	private List<ItemReserva> itemReservaList;
-	
+
 	@JoinColumn(name = "id_campus", referencedColumnName = "id_campus")
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private Campus idCampus;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
 	private List<Transacao> transacaoList;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
 	private List<ProfessorPessoa> professorPessoaList;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idAutorizador", fetch = FetchType.LAZY)
 	private List<Reserva> reservaList;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
 	private List<Reserva> reservaList1;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario", fetch = FetchType.LAZY)
 	private List<Reserva> reservaList2;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "idPessoa", fetch = FetchType.LAZY)
 	private List<Direito> direitoList;
-	
+
 	public Pessoa() {
-		
+
 	}
 
 	public Pessoa(Integer idPessoa) {
@@ -108,7 +111,7 @@ public class Pessoa implements Serializable {
 	}
 
 	public Pessoa(Integer idPessoa, String email, String nomeCompleto, String senhaMd5, boolean pessoaFisica,
-			boolean ativo, boolean admin, boolean externo) {
+	        boolean ativo, boolean admin, boolean externo) {
 		this.idPessoa = idPessoa;
 		this.email = email;
 		this.nomeCompleto = nomeCompleto;
@@ -271,8 +274,14 @@ public class Pessoa implements Serializable {
 		this.ldapCampus = ldapCampus;
 	}
 
-	
-	
+	public boolean isExternoReserva() {
+		return externoReserva;
+	}
+
+	public void setExternoReserva(boolean externoReserva) {
+		this.externoReserva = externoReserva;
+	}
+
 	public List<Direito> getDireitoList() {
 		return direitoList;
 	}
@@ -280,7 +289,7 @@ public class Pessoa implements Serializable {
 	public void setDireitoList(List<Direito> direitoList) {
 		this.direitoList = direitoList;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hash = 0;
@@ -296,7 +305,7 @@ public class Pessoa implements Serializable {
 		}
 		Pessoa other = (Pessoa) object;
 		if ((this.idPessoa == null && other.idPessoa != null)
-				|| (this.idPessoa != null && !this.idPessoa.equals(other.idPessoa))) {
+		        || (this.idPessoa != null && !this.idPessoa.equals(other.idPessoa))) {
 			return false;
 		}
 		return true;

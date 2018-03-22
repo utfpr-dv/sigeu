@@ -11,16 +11,14 @@ import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 public class UriPermissaoService {
 
-	public static UriPermissao pesquisaPorNomeGrupoPessoa(Campus campus,
-			String nomeGrupo, String uri) {
+	public static UriPermissao pesquisaPorNomeGrupoPessoa(Campus campus, String nomeGrupo, String uri) {
 		Transaction trans = null;
 
 		try {
 			trans = new Transaction();
 			trans.begin();
 			UriPermissaoDAO dao = new UriPermissaoDAO(trans);
-			UriPermissao per = dao.pesquisaUriPorNomeGrupoPessoa(campus,
-					nomeGrupo, uri);
+			UriPermissao per = dao.pesquisaUriPorNomeGrupoPessoa(campus, nomeGrupo, uri);
 			return per;
 		} catch (Exception e) {
 			throw e;
@@ -41,30 +39,34 @@ public class UriPermissaoService {
 	public static boolean verificaPermissaoDeAcesso(Pessoa pessoa, String uri) {
 		Transaction trans = null;
 
+		//System.out.println("     "+uri);
+		
+		if (pessoa.getExterno() && pessoa.isExternoReserva() && uri.equals("/sigeu/restrito/Reserva.xhtml")) {
+			return true;
+		}
+
 		try {
 			trans = new Transaction();
 			trans.begin();
 			UriPermissaoDAO dao = new UriPermissaoDAO(trans);
 
 			// Recupera a lista de permissoes por grupo do campus
-			List<UriPermissao> list = dao.pesquisaPermissoesPorUri(
-					pessoa.getIdCampus(), uri);
+			List<UriPermissao> list = dao.pesquisaPermissoesPorUri(pessoa.getIdCampus(), uri);
 
 			/**
-			 * Verifica se há bloqueio em pelo menos 1 grupo da pessoa. Se
-			 * houver, está bloqueado. Bloqueio sempre haverá precedência sobre
-			 * permissao.
+			 * Verifica se há bloqueio em pelo menos 1 grupo da pessoa. Se houver, está
+			 * bloqueado. Bloqueio sempre haverá precedência sobre permissao.
 			 */
 			List<GrupoPessoa> grupos = pessoa.getGrupoPessoaList();
 
 			for (GrupoPessoa g : grupos) {
 				// Verifica se o grupo da pessoa está cadastrado
-				
-				//System.out.println("Grupo Pessoa = "+g.getIdGrupoPessoa());
+
+				// System.out.println("Grupo Pessoa = "+g.getIdGrupoPessoa());
 				for (UriPermissao u : list) {
-					//System.out.println("  Grupo Permissao = "+u.getIdGrupoPessoa().getIdGrupoPessoa());
-					if (u.getIdGrupoPessoa().getIdGrupoPessoa() == g
-							.getIdGrupoPessoa()) {
+					// System.out.println(" Grupo Permissao =
+					// "+u.getIdGrupoPessoa().getIdGrupoPessoa());
+					if (u.getIdGrupoPessoa().getIdGrupoPessoa() == g.getIdGrupoPessoa()) {
 						return u.getAcesso();
 					}
 				}
