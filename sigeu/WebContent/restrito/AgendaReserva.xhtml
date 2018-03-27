@@ -13,7 +13,7 @@
 				<p:tab id="tabPesquisa" title="Agenda de Reservas"
 					rendered="#{agendaReservaBean.showTab eq 1}">
 					<div style="margin: 0 auto; text-align: center">
-						<p:panelGrid columns="12" style="margin: 0 auto">
+						<p:panelGrid columns="9" style="margin: 0 auto">
 							<p:outputLabel value="Período de" for="data" />
 							<p:calendar label="Data da Reserva" id="data"
 								value="#{agendaReservaBean.data}" size="10" pattern="dd/MM/yyyy"
@@ -29,6 +29,25 @@
 								pattern="dd/MM/yyyy" mask="true" required="true"
 								requiredMessage="Preencha a data" locale="pt" />
 
+							<p:outputLabel value="Hora Inicial" for="inicio" />
+							<p:calendar label="Hora Inicial" id="inicio"
+								value="#{agendaReservaBean.horaInicial}" size="5"
+								pattern="HH:mm" timeOnly="true" mask="false" required="true"
+								requiredMessage="Preencha a hora inicial e final da reserva" />
+							<p:tooltip id="toolTipInicio" for="inicio"
+								value="Hora inicial do período de reserva." />
+
+							<p:outputLabel value="Hora Final" for="final" />
+							<p:calendar label="Hora Final" id="final"
+								value="#{agendaReservaBean.horaFinal}" size="5" pattern="HH:mm"
+								timeOnly="true" mask="false" required="true"
+								requiredMessage="Preencha a hora inicial e final da reserva" />
+							<p:tooltip id="toolTipFinal" for="final"
+								value="Hora final do período de reserva." />
+
+						</p:panelGrid>
+						
+						<p:panelGrid columns="9" style="margin: 0 auto">
 							<p:outputLabel value="  Tipo" for="item" />
 							<p:selectOneMenu id="tipoReserva"
 								value="#{agendaReservaBean.tipoReserva}" required="false"
@@ -122,7 +141,8 @@
 					rendered="#{agendaReservaBean.showTab eq 2}">
 					<p:dataTable id="cancelaReservasTable"
 						value="#{agendaReservaBean.listaReservaCancelamentoVO}" var="i"
-						style="margin-top: 15px" emptyMessage="Nenhum registro encontrado.">
+						style="margin-top: 15px"
+						emptyMessage="Nenhum registro encontrado.">
 
 						<p:column headerText="Data"
 							style="text-align: center; width: 70px">

@@ -44,8 +44,7 @@ public class ReservaService {
 		}
 	}
 
-	public static void criar(Campus campus, Pessoa pessoaLogin, Reserva reserva)
-			throws Exception {
+	public static void criar(Campus campus, Pessoa pessoaLogin, Reserva reserva) throws Exception {
 		boolean usuarioLoginAutorizador = false;
 
 		if (reserva.getCor() == null) {
@@ -61,7 +60,7 @@ public class ReservaService {
 
 		Transaction trans = new Transaction();
 		Transacao transacao = TransacaoService.criar(campus, pessoaLogin,
-				"Reserva do item " + reserva.getIdItemReserva().getNome());
+		        "Reserva do item " + reserva.getIdItemReserva().getNome());
 		reserva.setIdTransacao(transacao);
 
 		try {
@@ -69,8 +68,7 @@ public class ReservaService {
 			ReservaDAO dao = new ReservaDAO(trans);
 			ItemReservaDAO itemDAO = new ItemReservaDAO(trans);
 
-			ItemReserva ir = itemDAO.encontrePorId(reserva.getIdItemReserva()
-					.getIdItemReserva());
+			ItemReserva ir = itemDAO.encontrePorId(reserva.getIdItemReserva().getIdItemReserva());
 
 			reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
 
@@ -98,12 +96,10 @@ public class ReservaService {
 			trans.commit();
 
 			if (!usuarioLoginAutorizador) {
-				List<Pessoa> autorizadores = reserva.getIdItemReserva()
-						.getPessoaList();
+				List<Pessoa> autorizadores = reserva.getIdItemReserva().getPessoaList();
 
 				for (Pessoa a : autorizadores) {
-					EmailService.enviaEmailAutorizador(campus, a,
-							reserva.getIdItemReserva());
+					EmailService.enviaEmailAutorizador(campus, a, reserva.getIdItemReserva());
 				}
 			}
 		} catch (Exception e) {
@@ -121,19 +117,16 @@ public class ReservaService {
 	 * @param motivoTransacao
 	 * @throws Exception
 	 */
-	public static void alterar(Campus campus, Pessoa pessoaLogin,
-			List<Reserva> listaReserva, String motivoTransacao)
-			throws Exception {
+	public static void alterar(Campus campus, Pessoa pessoaLogin, List<Reserva> listaReserva, String motivoTransacao)
+	        throws Exception {
 		Transaction trans = new Transaction();
-		Transacao transacao = TransacaoService.criar(campus, pessoaLogin,
-				motivoTransacao);
+		Transacao transacao = TransacaoService.criar(campus, pessoaLogin, motivoTransacao);
 
 		try {
 			trans.begin();
 
 			for (Reserva reserva : listaReserva) {
-				StatusReserva statusReserva = StatusReserva
-						.getFromStatus(reserva.getStatus());
+				StatusReserva statusReserva = StatusReserva.getFromStatus(reserva.getStatus());
 
 				switch (statusReserva) {
 				case EFETIVADA:
@@ -201,10 +194,8 @@ public class ReservaService {
 	 * @param dataLimite
 	 * @throws Exception
 	 */
-	public static List<Reserva> criarRecorrente(Campus campus,
-			Pessoa pessoaLogin, Reserva reserva,
-			RepeticaoReservaEnum tipoRecorrencia, Date dataLimite)
-			throws Exception {
+	public static List<Reserva> criarRecorrente(Campus campus, Pessoa pessoaLogin, Reserva reserva,
+	        RepeticaoReservaEnum tipoRecorrencia, Date dataLimite) throws Exception {
 
 		boolean usuarioLoginAutorizador = false;
 
@@ -222,8 +213,7 @@ public class ReservaService {
 		if (tipoRecorrencia.equals(RepeticaoReservaEnum.SEMANAL)) {
 			Transaction trans = new Transaction();
 			Transacao transacao = TransacaoService.criar(campus, pessoaLogin,
-					"Reserva do item " + reserva.getIdItemReserva().getNome()
-							+ " semanal");
+			        "Reserva do item " + reserva.getIdItemReserva().getNome() + " semanal");
 			reserva.setIdTransacao(transacao);
 
 			try {
@@ -232,8 +222,7 @@ public class ReservaService {
 				ReservaDAO dao = new ReservaDAO(trans);
 				ItemReservaDAO itemDAO = new ItemReservaDAO(trans);
 
-				ItemReserva ir = itemDAO.encontrePorId(reserva
-						.getIdItemReserva().getIdItemReserva());
+				ItemReserva ir = itemDAO.encontrePorId(reserva.getIdItemReserva().getIdItemReserva());
 
 				reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
 
@@ -282,8 +271,7 @@ public class ReservaService {
 						Reserva r = ReservaService.duplicar(reserva);
 						r.setData(calData.getTime());
 
-						existeConcorrencia = ReservaService
-								.existeConcorrente(r);
+						existeConcorrencia = ReservaService.existeConcorrente(r);
 
 						if (!existeConcorrencia) {
 							listaGravacao.add(r);
@@ -310,12 +298,10 @@ public class ReservaService {
 				}
 
 				if (!usuarioLoginAutorizador) {
-					List<Pessoa> autorizadores = reserva.getIdItemReserva()
-							.getPessoaList();
+					List<Pessoa> autorizadores = reserva.getIdItemReserva().getPessoaList();
 
 					for (Pessoa a : autorizadores) {
-						EmailService.enviaEmailAutorizador(campus, a,
-								reserva.getIdItemReserva());
+						EmailService.enviaEmailAutorizador(campus, a, reserva.getIdItemReserva());
 					}
 				}
 
@@ -344,10 +330,9 @@ public class ReservaService {
 			trans.begin();
 			ItemReservaDAO dao = new ItemReservaDAO(trans);
 
-			List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(reserva
-					.getIdCampus(), reserva.getData(), reserva.getHoraInicio(),
-					reserva.getHoraFim(), reserva.getIdItemReserva()
-							.getIdCategoria(), reserva.getIdItemReserva());
+			List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(reserva.getIdCampus(), reserva.getData(),
+			        reserva.getHoraInicio(), reserva.getHoraFim(), reserva.getIdItemReserva().getIdCategoria(),
+			        reserva.getIdItemReserva());
 
 			if (lista != null && lista.size() == 0) {
 				return true;
@@ -363,8 +348,8 @@ public class ReservaService {
 	}
 
 	/**
-	 * Busca todas as reservas do dia para uma categoria e item, se ele não
-	 * estiver null
+	 * Busca todas as reservas do dia para uma categoria e item, se ele não estiver
+	 * null
 	 * 
 	 * @param data
 	 * @param tipoReserva
@@ -374,18 +359,17 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus,
-			Date data, TipoReserva tipoReserva, CategoriaItemReserva categoria,
-			ItemReserva item, String usuario) throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date horaI, Date horaF,
+	        TipoReserva tipoReserva, CategoriaItemReserva categoria, ItemReserva item, String usuario)
+	        throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReserva(campus,
-					StatusReserva.EFETIVADA, data, tipoReserva, categoria,
-					item, usuario);
+			List<Reserva> lista = dao.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, horaI, horaF, tipoReserva,
+			        categoria, item, usuario);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -408,19 +392,17 @@ public class ReservaService {
 		}
 	}
 
-	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus,
-			Date data, Date data2, TipoReserva tipoReserva,
-			CategoriaItemReserva categoria, ItemReserva item, String usuario, String motivo, boolean incluiItemDesativado)
-			throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date data2, Date horaI, Date horaF,
+	        TipoReserva tipoReserva, CategoriaItemReserva categoria, ItemReserva item, String usuario, String motivo,
+	        boolean incluiItemDesativado) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReserva(campus,
-					StatusReserva.EFETIVADA, data, data2, tipoReserva,
-					categoria, item, usuario, motivo, incluiItemDesativado);
+			List<Reserva> lista = dao.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, data2, horaI, horaF,
+			        tipoReserva, categoria, item, usuario, motivo, incluiItemDesativado);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -444,8 +426,8 @@ public class ReservaService {
 	}
 
 	/**
-	 * Busca todos os itens que estão disponíveis para a data e horário,
-	 * categoria e item (Se não estiver null)
+	 * Busca todos os itens que estão disponíveis para a data e horário, categoria e
+	 * item (Se não estiver null)
 	 * 
 	 * @param data
 	 * @param horaInicial
@@ -455,17 +437,16 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<ItemReserva> pesquisaItemReservaDisponivel(
-			Campus campus, Date data, Date horaInicial, Date horaFinal,
-			CategoriaItemReserva categoria, ItemReserva item) throws Exception {
+	public static List<ItemReserva> pesquisaItemReservaDisponivel(Campus campus, Date data, Date horaInicial,
+	        Date horaFinal, CategoriaItemReserva categoria, ItemReserva item) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ItemReservaDAO dao = new ItemReservaDAO(trans);
 
-			List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(campus,
-					data, horaInicial, horaFinal, categoria, item);
+			List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(campus, data, horaInicial, horaFinal, categoria,
+			        item);
 
 			if (lista != null && lista.size() > 0) {
 				for (ItemReserva i : lista) {
@@ -499,19 +480,16 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Reserva> pesquisaReservasEfetivadasDoUsuario(
-			Campus campus, Pessoa pessoa, Date dataInicial, Date dataFinal,
-			CategoriaItemReserva categoria, ItemReserva item, boolean importadas)
-			throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadasDoUsuario(Campus campus, Pessoa pessoa, Date dataInicial,
+	        Date dataFinal, CategoriaItemReserva categoria, ItemReserva item, boolean importadas) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReservaDoUsuario(campus,
-					StatusReserva.EFETIVADA, pessoa, dataInicial, dataFinal, categoria, item,
-					importadas);
+			List<Reserva> lista = dao.pesquisaReservaDoUsuario(campus, StatusReserva.EFETIVADA, pessoa, dataInicial,
+			        dataFinal, categoria, item, importadas);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -575,8 +553,7 @@ public class ReservaService {
 	 * @param status
 	 * @throws Exception
 	 */
-	public static void modificaStatus(Reserva r, StatusReserva status)
-			throws Exception {
+	public static void modificaStatus(Reserva r, StatusReserva status) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
@@ -603,8 +580,7 @@ public class ReservaService {
 	 * @param motivo
 	 * @throws Exception
 	 */
-	public static void cancelaReserva(Reserva r, String motivo)
-			throws Exception {
+	public static void cancelaReserva(Reserva r, String motivo) throws Exception {
 		r.setMotivoCancelamento(motivo);
 		ReservaService.modificaStatus(r, StatusReserva.CANCELADA);
 	}
@@ -620,18 +596,16 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus,
-			Date data, Date horaInicial, Date horaFinal,
-			CategoriaItemReserva categoria, ItemReserva item) throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date horaInicial, Date horaFinal,
+	        CategoriaItemReserva categoria, ItemReserva item) throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReserva(campus,
-					StatusReserva.EFETIVADA, data, horaInicial, horaFinal,
-					categoria, item);
+			List<Reserva> lista = dao.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, horaInicial, horaFinal,
+			        categoria, item);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -669,16 +643,15 @@ public class ReservaService {
 		}
 	}
 
-	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus,
-			Date data, TipoReserva tipoReserva) throws Exception {
+	public static List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, TipoReserva tipoReserva)
+	        throws Exception {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.pesquisaReserva(campus,
-					StatusReserva.EFETIVADA, data, tipoReserva);
+			List<Reserva> lista = dao.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, tipoReserva);
 
 			if (lista != null && lista.size() > 0) {
 				for (Reserva r : lista) {
@@ -711,11 +684,9 @@ public class ReservaService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<ItemReserva> removeItensNaoDisponiveisParaReservaRecorrente(
-			Campus campus, Pessoa pessoaLogin, Date data, Date horaInicio,
-			Date horaFim, RepeticaoReservaEnum tipoRecorrencia,
-			Date dataLimite, List<ItemReserva> listaItemReserva)
-			throws Exception {
+	public static List<ItemReserva> removeItensNaoDisponiveisParaReservaRecorrente(Campus campus, Pessoa pessoaLogin,
+	        Date data, Date horaInicio, Date horaFim, RepeticaoReservaEnum tipoRecorrencia, Date dataLimite,
+	        List<ItemReserva> listaItemReserva) throws Exception {
 
 		if (!tipoRecorrencia.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
 			// Somente se o tipo de recorrência for diferente de SEM_REPETICAO
@@ -741,10 +712,8 @@ public class ReservaService {
 			int diaDaSemana = calendarAtual.get(Calendar.DAY_OF_WEEK);
 
 			while (true) {
-				long milissecondsCalendarAtual = calendarAtual
-						.getTimeInMillis();
-				long milissecondsCalendarLimite = calendarLimite
-						.getTimeInMillis();
+				long milissecondsCalendarAtual = calendarAtual.getTimeInMillis();
+				long milissecondsCalendarLimite = calendarLimite.getTimeInMillis();
 
 				if (milissecondsCalendarAtual > milissecondsCalendarLimite) {
 					break;
@@ -811,8 +780,8 @@ public class ReservaService {
 
 	/**
 	 * Verifica no banco de dados se existe mais que uma reserva para a mesma
-	 * transação, caracterizando reserva recorrente. Se não houver, retorna
-	 * null. Se houver, retorna a data final das reservas recorrentes.
+	 * transação, caracterizando reserva recorrente. Se não houver, retorna null. Se
+	 * houver, retorna a data final das reservas recorrentes.
 	 * 
 	 * @param r
 	 * @return
@@ -824,9 +793,8 @@ public class ReservaService {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
 
-			List<Reserva> lista = dao.listaReservaPorTransacao(campus,
-					StatusReserva.EFETIVADA, r.getIdTransacao()
-							.getIdTransacao());
+			List<Reserva> lista = dao.listaReservaPorTransacao(campus, StatusReserva.EFETIVADA,
+			        r.getIdTransacao().getIdTransacao());
 
 			if (lista != null && lista.size() > 0) {
 				return lista.get(lista.size() - 1).getData();
@@ -848,8 +816,7 @@ public class ReservaService {
 	 * 
 	 * @param idTransacao
 	 */
-	public static void removerReservasPorTransacao(Campus campus,
-			Integer idTransacao) {
+	public static void removerReservasPorTransacao(Campus campus, Integer idTransacao) {
 		Transaction trans = new Transaction();
 
 		try {
@@ -874,8 +841,8 @@ public class ReservaService {
 			vo.setExcluir(false);
 			vo.setCampus(reserva.getIdCampus());
 			vo.setDataReserva(DateTimeUtils.format(reserva.getData(), "dd/MM/yyyy"));
-			vo.setHoraReserva(DateTimeUtils.format(reserva.getHoraInicio(), "HH:mm")
-					+ "-" + DateTimeUtils.format(reserva.getHoraFim(), "HH:mm"));
+			vo.setHoraReserva(DateTimeUtils.format(reserva.getHoraInicio(), "HH:mm") + "-"
+			        + DateTimeUtils.format(reserva.getHoraFim(), "HH:mm"));
 			vo.setIdReserva(reserva.getIdReserva());
 			vo.setMotivoReserva(reserva.getMotivo());
 			vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());
@@ -896,15 +863,13 @@ public class ReservaService {
 	 * @param idTransacao
 	 * @return
 	 */
-	public static List<ReservaVO> listaReservaPorTransacao(Campus campus,
-			Integer idTransacao) {
+	public static List<ReservaVO> listaReservaPorTransacao(Campus campus, Integer idTransacao) {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
-			List<Reserva> list = dao.listaReservaPorTransacao(campus,
-					StatusReserva.EFETIVADA, idTransacao);
+			List<Reserva> list = dao.listaReservaPorTransacao(campus, StatusReserva.EFETIVADA, idTransacao);
 
 			return ReservaService.listToVO(list);
 		} catch (Exception e) {
@@ -921,15 +886,13 @@ public class ReservaService {
 	 * @param autorizador
 	 * @return
 	 */
-	public static List<ReservaVO> listaReservasPendentes(Campus campus,
-			Pessoa autorizador) {
+	public static List<ReservaVO> listaReservasPendentes(Campus campus, Pessoa autorizador) {
 		Transaction trans = new Transaction();
 
 		try {
 			trans.begin();
 			ReservaDAO dao = new ReservaDAO(trans);
-			List<Reserva> list = dao
-					.listaReservasPendentes(campus, autorizador);
+			List<Reserva> list = dao.listaReservasPendentes(campus, autorizador);
 
 			return ReservaService.listToVO(list);
 		} catch (Exception e) {
@@ -940,8 +903,7 @@ public class ReservaService {
 		}
 	}
 
-	public static List<Reserva> pesquisaPorTransacao(Campus campus,
-			Integer idTransacao) {
+	public static List<Reserva> pesquisaPorTransacao(Campus campus, Integer idTransacao) {
 		Transaction trans = new Transaction();
 
 		try {

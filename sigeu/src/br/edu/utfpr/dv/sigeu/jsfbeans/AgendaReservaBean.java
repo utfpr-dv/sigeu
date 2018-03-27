@@ -39,6 +39,8 @@ public class AgendaReservaBean extends JavaBean {
 	private String campoItem;
 	private Date data;
 	private Date data2;
+	private Date horaInicial;
+	private Date horaFinal;
 
 	private ItemReserva itemReserva;
 	private List<Reserva> listaReserva;
@@ -67,6 +69,18 @@ public class AgendaReservaBean extends JavaBean {
 			data2 = Calendar.getInstance().getTime();
 			formatHora = new SimpleDateFormat("HH:mm");
 			formatData = new SimpleDateFormat("dd/MM/yyyy");
+
+			Calendar hi = Calendar.getInstance();
+			Calendar hf = Calendar.getInstance();
+
+			hi.set(Calendar.HOUR_OF_DAY, 0);
+			hi.set(Calendar.MINUTE, 1);
+
+			hf.set(Calendar.HOUR_OF_DAY, 23);
+			hf.set(Calendar.MINUTE, 59);
+
+			horaInicial = hi.getTime();
+			horaFinal = hf.getTime();
 
 			horarioVO = new PeriodoReservaVO();
 
@@ -138,66 +152,70 @@ public class AgendaReservaBean extends JavaBean {
 	 * Pesquisa todas as reservas de um determinado dia
 	 */
 	public void pesquisa() {
-		if (data == null || data2 == null) {
-			this.addErrorMessage("Período", "Período inválido!");
+		if (horaInicial.after(horaFinal) || horaInicial.equals(horaFinal)) {
+			this.addErrorMessage("Horário inválido", "Hora inicial deve ser menor que hora final.");
 		} else {
-			if (campoItem == null || campoItem.trim().length() == 0) {
-				itemReserva = null;
-			}
-			// if (itemReserva == null) {
-			// this.addWarnMessage("Item",
-			// "Item de reserva não pode estar vazio!");
-			// } else {
-
-			try {
-				CategoriaItemReserva categoria = null;
-
-				if (itemReserva != null) {
-					categoria = itemReserva.getIdCategoria();
+			if (data == null || data2 == null) {
+				this.addErrorMessage("Período", "Período inválido!");
+			} else {
+				if (campoItem == null || campoItem.trim().length() == 0) {
+					itemReserva = null;
 				}
+				// if (itemReserva == null) {
+				// this.addWarnMessage("Item",
+				// "Item de reserva não pode estar vazio!");
+				// } else {
 
-				listaReservaVO = new ArrayList<ReservaVO>();
-				listaReservaCancelamentoVO = new ArrayList<ReservaVO>();
+				try {
+					CategoriaItemReserva categoria = null;
 
-				listaReserva = ReservaService.pesquisaReservasEfetivadas(loginBean.getCampus(), data, data2,
-				        tipoReserva, categoria, itemReserva, nomeUsuario, motivo, true);
-
-				if (listaReserva.size() > 0) {
-					reservaParaAgenda();
-
-					// Processa a lista de reserva VO
-					for (Reserva reserva : listaReserva) {
-						ReservaVO vo = new ReservaVO();
-						vo.setCampus(reserva.getIdCampus());
-						vo.setDataReserva(formatData.format(reserva.getData()));
-						vo.setHoraReserva(formatHora.format(reserva.getHoraInicio()) + " a "
-						        + formatHora.format(reserva.getHoraFim()));
-						vo.setMotivoReserva(reserva.getMotivo());
-						vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());
-						vo.setTipoReserva(reserva.getIdTipoReserva().getDescricao());
-						vo.setUsuarioReserva(reserva.getNomeUsuario());
-						vo.setCor(reserva.getCor());
-						vo.setIdReserva(reserva.getIdReserva());
-
-						vo.setReserva(reserva);
-
-						SimpleDateFormat dateFormat = new SimpleDateFormat("EEE");
-						String asWeek = dateFormat.format(reserva.getData());
-
-						vo.setDiaSemana(asWeek);
-
-						listaReservaVO.add(vo);
+					if (itemReserva != null) {
+						categoria = itemReserva.getIdCategoria();
 					}
 
-				} else {
-					addInfoMessage("Reserva", "Nenhuma reserva encontrada!");
-				}
+					listaReservaVO = new ArrayList<ReservaVO>();
+					listaReservaCancelamentoVO = new ArrayList<ReservaVO>();
 
-			} catch (Exception e) {
-				this.addErrorMessage("Reserva", "Erro ao pesquisar reservas!");
-				e.printStackTrace();
+					listaReserva = ReservaService.pesquisaReservasEfetivadas(loginBean.getCampus(), data, data2,
+					        horaInicial, horaFinal, tipoReserva, categoria, itemReserva, nomeUsuario, motivo, true);
+
+					if (listaReserva.size() > 0) {
+						reservaParaAgenda();
+
+						// Processa a lista de reserva VO
+						for (Reserva reserva : listaReserva) {
+							ReservaVO vo = new ReservaVO();
+							vo.setCampus(reserva.getIdCampus());
+							vo.setDataReserva(formatData.format(reserva.getData()));
+							vo.setHoraReserva(formatHora.format(reserva.getHoraInicio()) + " a "
+							        + formatHora.format(reserva.getHoraFim()));
+							vo.setMotivoReserva(reserva.getMotivo());
+							vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());
+							vo.setTipoReserva(reserva.getIdTipoReserva().getDescricao());
+							vo.setUsuarioReserva(reserva.getNomeUsuario());
+							vo.setCor(reserva.getCor());
+							vo.setIdReserva(reserva.getIdReserva());
+
+							vo.setReserva(reserva);
+
+							SimpleDateFormat dateFormat = new SimpleDateFormat("EEE");
+							String asWeek = dateFormat.format(reserva.getData());
+
+							vo.setDiaSemana(asWeek);
+
+							listaReservaVO.add(vo);
+						}
+
+					} else {
+						addInfoMessage("Reserva", "Nenhuma reserva encontrada!");
+					}
+
+				} catch (Exception e) {
+					this.addErrorMessage("Reserva", "Erro ao pesquisar reservas!");
+					e.printStackTrace();
+				}
+				// }
 			}
-			// }
 		}
 	}
 
@@ -320,7 +338,7 @@ public class AgendaReservaBean extends JavaBean {
 	public void cancelaUi() {
 		this.showTab = 1;
 	}
-	
+
 	public void checkPeriodo() {
 		if (this.data.compareTo(this.data2) > 0) {
 			this.data2 = this.data;
@@ -469,6 +487,22 @@ public class AgendaReservaBean extends JavaBean {
 
 	public void setReservaCancelar(Reserva reservaCancelar) {
 		this.reservaCancelar = reservaCancelar;
+	}
+
+	public Date getHoraInicial() {
+		return horaInicial;
+	}
+
+	public void setHoraInicial(Date horaInicial) {
+		this.horaInicial = horaInicial;
+	}
+
+	public Date getHoraFinal() {
+		return horaFinal;
+	}
+
+	public void setHoraFinal(Date horaFinal) {
+		this.horaFinal = horaFinal;
 	}
 
 }
