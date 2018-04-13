@@ -12,7 +12,7 @@ public class Config {
 
 	public static final String APPLICATION_NAME = "Sistema Integrado de Gestão Universitária";
 	public static final String APPLICATION_CODE = "SIGEU";
-	public static final String APPLICATION_VERSION = "1.4.7";
+	public static final String APPLICATION_VERSION = "1.4.8";
 	public static final String CONFIG_ADMIN = "admin";
 	public static final String CONFIG_DEBUG = "debug";
 	public static final String CONFIG_PATH_UPLOAD = "path.upload";

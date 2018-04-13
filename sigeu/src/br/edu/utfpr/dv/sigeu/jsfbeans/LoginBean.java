@@ -85,8 +85,7 @@ public class LoginBean extends JavaBean {
 
 						campus = pessoaLogin.getIdCampus();
 
-						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-						        .getExternalContext().getRequest();
+						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 						request.getSession().setAttribute(LoginFilter.SESSION_EMAIL_LOGIN, email);
 
@@ -155,8 +154,7 @@ public class LoginBean extends JavaBean {
 	}
 
 	public String logoff() {
-		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
-		        .getRequest();
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 		request.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
 

@@ -1,5 +1,4 @@
-<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="titulo">SIGEU: Pessoa</ui:define>
 
@@ -9,15 +8,14 @@
 
 			<table style="border: 10px; spacing: 0px; width: 100%">
 				<tr>
-					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" /> <p:inputText id="textoPesquisa" size="64" value="#{pesquisaPessoaBean.textoPesquisa}" />
-						<p:commandButton value="Pesquisar" icon="ui-icon-search" style="width:100px" action="#{pesquisaPessoaBean.pesquisa}" update="@form" /></td>
+					<td><p:outputLabel value="Pesquisar " for="textoPesquisa" /> <p:inputText id="textoPesquisa" size="64" value="#{pesquisaPessoaBean.textoPesquisa}" /> <p:commandButton value="Pesquisar" icon="ui-icon-search" style="width:100px" action="#{pesquisaPessoaBean.pesquisa}" update="@form" /></td>
+					<td align="right"><p:button value="Novo" outcome="/admin/Pessoa.xhtml" icon="ui-icon-circle-plus" style="width:100px" /></td>
 				</tr>
 			</table>
 
-			<p:dataTable id="entTable" value="#{pesquisaPessoaBean.lista}" var="ent" style="margin-top: 20px" emptyMessage="Nenhum registro encontrado." rows="7"
-				paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
+			<p:dataTable id="entTable" value="#{pesquisaPessoaBean.lista}" var="ent" style="margin-top: 20px" emptyMessage="Nenhum registro encontrado." rows="20" paginator="true" paginatorAlwaysVisible="true" paginatorPosition="bottom">
 
-				<p:column headerText="ID" style="text-align: center; width: 80px">
+				<p:column headerText="ID" style="text-align: center; width: 30px">
 					<h:outputText value="#{ent.idPessoa}" />
 				</p:column>
 
@@ -37,9 +35,14 @@
 					<h:outputText value="#{ent.nomeCompleto}" />
 				</p:column>
 
-				<p:column headerText="Ativo" style="text-align: center; width: 80px">
+				<p:column headerText="Ativo" style="text-align: center; width: 36px">
 					<p:selectBooleanCheckbox value="#{ent.ativo}" disabled="true" />
 				</p:column>
+
+				<p:column headerText="Externo" style="text-align: center; width: 36px">
+					<p:selectBooleanCheckbox value="#{ent.externo}" disabled="true" />
+				</p:column>
+
 
 				<p:column style="width: 104px; text-align: center">
 					<p:button value="Editar" outcome="/admin/Pessoa.xhtml" icon="ui-icon-pencil" title="Editar" style="width: 100px">

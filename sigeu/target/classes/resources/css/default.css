@@ -15,14 +15,14 @@
 }
 
 h1 {
-	font-family: DroidSans;
+	font-family: sans-serif;
 	font-size: x-large;
 	color: #BABACA;
 	margin: 10px 0px 10px 0px;
 }
 
 h2 {
-	font-family: DroidSans;
+	font-family: sans-serif;
 	font-size: large;
 	color: #BABACA;
 	margin: 10px 0px 10px 0px;
@@ -34,17 +34,17 @@ h2 {
 
 .ui-widget {
 	font-size: small !important;
-	font-family: DroidSans !important;
+	font-family: sans-serif !important;
 }
 
 .ui-widget .ui-widget {
 	font-size: small !important;
-	font-family: DroidSans !important;
+	font-family: sans-serif !important;
 }
 
 .ui-helper-reset {
 	font-size: small !important;
-	font-family: DroidSans !important;
+	font-family: sans-serif !important;
 }
 
 .bodyBackground {

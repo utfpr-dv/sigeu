@@ -1,5 +1,4 @@
-<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/WEB-INF/template/template.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="titulo">SIGEU: Pessoa</ui:define>
 
@@ -17,24 +16,33 @@
 				<p:outputLabel value="Campus" />
 				<p:outputLabel value="#{pessoaBean.pessoa.idCampus.sigla} - #{pessoaBean.pessoa.idCampus.nome}" />
 
-				<p:outputLabel value="Nome Completo" />
-				<p:outputLabel value="#{pessoaBean.pessoa.nomeCompleto}" />
+				<p:outputLabel value="Nome Completo" for="nomecompleto" />
+				<p:outputLabel value="#{pessoaBean.pessoa.nomeCompleto}" rendered="#{pessoaBean.pessoa.externo eq false}" />
+				<p:inputText label="Nome Completo" value="#{pessoaBean.pessoa.nomeCompleto}" id="nomecompleto" size="100" maxlength="128" rendered="#{pessoaBean.pessoa.externo eq true}" />
 
-				<p:outputLabel value="E-mail" />
-				<p:outputLabel value="#{pessoaBean.pessoa.email}" />
+				<p:outputLabel value="E-mail" for="email" />
+				<p:outputLabel value="#{pessoaBean.pessoa.email}" rendered="#{pessoaBean.pessoa.externo eq false}" />
+				<p:inputText label="E-mail" value="#{pessoaBean.pessoa.email}" id="email" size="100" maxlength="128" rendered="#{pessoaBean.pessoa.externo eq true}" />
 
 				<p:outputLabel value="Pessoa Física" />
 				<p:selectBooleanCheckbox id="pessoaFisica" value="#{pessoaBean.pessoa.pessoaFisica}" style="width:80px" disabled="true" />
 
-				<p:outputLabel value="CNPJ ou CPF" />
-				<p:outputLabel value="#{pessoaBean.pessoa.cnpjCpf}" />
+				<p:outputLabel value="CNPJ ou CPF" for="cnpjcpf" />
+				<p:outputLabel value="#{pessoaBean.pessoa.cnpjCpf}" rendered="#{pessoaBean.pessoa.externo eq false}" />
+				<p:inputText value="#{pessoaBean.pessoa.cnpjCpf}" id="cnpjcpf" size="32" maxlength="16" rendered="#{pessoaBean.pessoa.externo eq true}" />
 
-				<p:outputLabel value="Matrícula" />
-				<p:outputLabel value="#{pessoaBean.pessoa.matricula}" />
+				<p:outputLabel value="Matrícula" for="matricula" />
+				<p:outputLabel value="#{pessoaBean.pessoa.matricula}" rendered="#{pessoaBean.pessoa.externo eq false}" />
+				<p:inputText value="#{pessoaBean.pessoa.matricula}" id="matricula" size="20" maxlength="10" rendered="#{pessoaBean.pessoa.externo eq true}" />
+
+				<p:outputLabel value="Senha" for="senha" rendered="#{pessoaBean.pessoa.externo eq true}" />
+				<p:password value="#{pessoaBean.password}" id="senha" size="40" maxlength="40" rendered="#{pessoaBean.pessoa.externo eq true}">
+					<p:ajax event="keyup" listener="#{pessoaBean.passwordChanged}" />
+				</p:password>
+
 
 				<p:outputLabel value="Ativo" for="ativo" />
-				<p:selectBooleanCheckbox id="ativo" value="#{pessoaBean.pessoa.ativo}" onLabel="Ativo" offLabel="Inativo" onIcon="ui-icon-check" offIcon="ui-icon-close"
-					style="width:80px" />
+				<p:selectBooleanCheckbox id="ativo" value="#{pessoaBean.pessoa.ativo}" onLabel="Ativo" offLabel="Inativo" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:80px" />
 			</p:panelGrid>
 
 			<div id="buttons" style="margin-top: 15px">

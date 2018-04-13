@@ -96,6 +96,8 @@ public class PessoaDAO extends HibernateDAO<Pessoa> {
 			return this.pesquisa(campus, limit);
 		}
 
+		textoPesquisa = textoPesquisa.toUpperCase();
+		
 		String hql = "from Pessoa o where (upper(o.email) like upper(:q) or o.nomeCompleto like upper(:q)) and o.idCampus.idCampus = :idCampus order by o.ativo DESC, o.nomeCompleto ASC";
 		Query q = session.createQuery(hql);
 		q.setString("q", "%" + textoPesquisa + "%");
