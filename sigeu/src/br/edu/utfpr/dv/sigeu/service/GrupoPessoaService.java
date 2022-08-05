@@ -193,6 +193,24 @@ public class GrupoPessoaService {
 
 		return gp;
 	}
+	
+	public GrupoPessoa encontrePorDescricaoCerto(Campus campus, String descricao)
+		throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
+	    Transaction trans = new Transaction();
+	    trans.begin();
+	    
+	    GrupoPessoaDAO dao = new GrupoPessoaDAO(trans);
+	    GrupoPessoa gp = dao.encontrePorDescricao(campus, descricao);
+	    
+	    if (gp != null) {
+		Hibernate.initialize(gp.getIdCampus());
+		Hibernate.initialize(gp.getIdCampus().getIdInstituicao());
+	    }
+	    // trans.commit();
+	    trans.close();
+	    
+	    return gp;
+	}
 
 	/**
 	 * Retorna um grupo de pessoa por seu ID

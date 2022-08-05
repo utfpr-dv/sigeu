@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.edu.utfpr.dv</groupId>
 	<artifactId>sigeu</artifactId>
@@ -7,30 +6,17 @@
 	<packaging>war</packaging>
 	<name>SIGEU</name>
 	<description>Sistema Integrado de Gestão Universitária</description>
-
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.5</version>
+				<version>3.3.1</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<failOnMissingWebXml>true</failOnMissingWebXml>
@@ -38,8 +24,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 	<repositories>
 		<repository>
 			<id>prime-repo</id>
@@ -47,17 +31,12 @@
 			<url>http://repository.primefaces.org</url>
 		</repository>
 	</repositories>
-
 	<dependencies>
-		<!-- < dependency> <groupId>org.primefaces.themes</groupId> <artifactId>all-themes</artifactId> 
-			<version>1.0.10</version> </dependency > -->
-
 		<dependency>
 			<groupId>org.simplejavamail</groupId>
 			<artifactId>simple-java-mail</artifactId>
 			<version>4.1.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -74,13 +53,6 @@
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
 			<version>5.3</version>
-			<!-- <version>6.2</version> -->
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>c3p0</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -95,17 +67,12 @@
 			<version>2.2.8-04</version>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-impl</artifactId>
 			<version>2.2.8-04</version>
 			<scope>compile</scope>
 		</dependency>
-
-		<!-- <dependency> <groupId>org.primefaces.extensions</groupId> <artifactId>all-themes</artifactId> 
-			<version>1.0.8</version> </dependency> -->
-
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -196,13 +163,11 @@
 			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.omnifaces</groupId>
 			<artifactId>omnifaces</artifactId>
 			<version>2.1</version>
 			<scope>compile</scope>
 		</dependency>
-
 	</dependencies>
 </project>
