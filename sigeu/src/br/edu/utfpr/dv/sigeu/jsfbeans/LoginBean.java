@@ -1,19 +1,22 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.CommunicationException;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.exception.GenericJDBCException;
-
 import com.adamiworks.utils.StringUtils;
 import com.adamiworks.utils.hibernate.DatabaseConfig;
 import com.adamiworks.utils.hibernate.DatabaseParameter;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.GenericJDBCException;
+
+import br.edu.utfpr.dv.sigeu.SessionSingleton;
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Direito;
@@ -30,204 +33,221 @@ import br.edu.utfpr.dv.sigeu.util.LoginFilter;
  * javax.enterprise.context.SessionScoped
  */
 public class LoginBean extends JavaBean {
-	private static final long serialVersionUID = 6545494024577623349L;
 
-	private String email;
-	private String password;
-	private String nomeUsuario;
+    private static final long serialVersionUID = 6545494024577623349L;
 
-	private String serverInfo;
+    @EJB
+    private LoginService loginService;
 
-	private String appInfo;
+    private String email;
+    private String password;
+    private String nomeUsuario;
 
-	private Pessoa pessoaLogin;
+    private String serverInfo;
 
-	private boolean permiteReservaRecorrente;
+    private String appInfo;
 
-	// Usado quando for escolher outro campus diferente do campus de cadastro da
-	// pessoa
-	private Campus campus;
+    private Pessoa pessoaLogin;
 
-	public String login() {
-		boolean ok = true;
+    private boolean permiteReservaRecorrente;
 
-		this.serverInfo = "Server: " + DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_URL);
+    // Usado quando for escolher outro campus diferente do campus de cadastro da
+    // pessoa
+    private Campus campus;
 
-		this.appInfo = Config.APPLICATION_NAME + " - " + Config.APPLICATION_CODE + " v" + Config.APPLICATION_VERSION;
+//    @PersistenceContext(unitName = "sigeuPU")
+//    private Session session;
 
-		boolean manutencao = Config.getInstance().isAdminMode();
+    @Inject
+    private SessionSingleton sessionSingleton;
 
-		if (manutencao && !email.toLowerCase().equals("admin")) {
-			this.addErrorMessage("Login", "SISTEMA EM MANUTENÇÃO. AGUARDE OS SERVIÇOS SEREM REESTABELECIDOS.");
-			// try {
-			// throw new ManutencaoException();
-			// } catch (ManutencaoException e) {
-			// handleException("", e);
-			// }
+    public String login() {
 
-			ok = false;
+	System.out.println("1111111111");
+	System.out.println(sessionSingleton.getSession().get(Campus.class, 100));
+	System.out.println("1111111111");
+
+	boolean ok = true;
+
+	this.serverInfo = "Server: " + DatabaseConfig.getInstance().getProperty(DatabaseParameter.DATABASE_URL);
+
+	this.appInfo = Config.APPLICATION_NAME + " - " + Config.APPLICATION_CODE + " v" + Config.APPLICATION_VERSION;
+
+	boolean manutencao = Config.getInstance().isAdminMode();
+
+	if (manutencao && !email.toLowerCase().equals("admin")) {
+	    this.addErrorMessage("Login", "SISTEMA EM MANUTENÇÃO. AGUARDE OS SERVIÇOS SEREM REESTABELECIDOS.");
+	    // try {
+	    // throw new ManutencaoException();
+	    // } catch (ManutencaoException e) {
+	    // handleException("", e);
+	    // }
+
+	    ok = false;
+	} else {
+	    try {
+		pessoaLogin = loginService.autentica(email, password);
+
+		if (pessoaLogin == null) {
+		    this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");
 		} else {
-			try {
-				pessoaLogin = LoginService.autentica(email, password);
+		    // Fix Erro LDAP na Reitoria
+		    if (pessoaLogin.getLdapCampus() == null || pessoaLogin.getLdapCampus().isEmpty()) {
+			pessoaLogin.setLdapCampus("DV");
+		    }
 
-				if (pessoaLogin == null) {
-					this.addErrorMessage("Login", "E-mail não cadastrado ou senha inválida!");
-				} else {
-					// Fix Erro LDAP na Reitoria
-					if (pessoaLogin.getLdapCampus() == null || pessoaLogin.getLdapCampus().isEmpty()) {
-						pessoaLogin.setLdapCampus("DV");
-					}
+		    if (!pessoaLogin.getAtivo()) {
+			this.addErrorMessage("Login", "Acesso inativado. Informe ao administrador do sistema.");
+		    } else {
+			this.setNomeUsuario(pessoaLogin.getNomeCompleto());
 
-					if (!pessoaLogin.getAtivo()) {
-						this.addErrorMessage("Login", "Acesso inativado. Informe ao administrador do sistema.");
-					} else {
-						this.setNomeUsuario(pessoaLogin.getNomeCompleto());
+			campus = pessoaLogin.getIdCampus();
 
-						campus = pessoaLogin.getIdCampus();
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+				.getExternalContext().getRequest();
 
-						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.getSession().setAttribute(LoginFilter.SESSION_EMAIL_LOGIN, email);
 
-						request.getSession().setAttribute(LoginFilter.SESSION_EMAIL_LOGIN, email);
+			request.getSession().setAttribute(LoginFilter.SESSION_PESSOA_LOGIN, pessoaLogin);
 
-						request.getSession().setAttribute(LoginFilter.SESSION_PESSOA_LOGIN, pessoaLogin);
+			request.getSession().setAttribute(LoginFilter.SESSION_CAMPUS, campus);
 
-						request.getSession().setAttribute(LoginFilter.SESSION_CAMPUS, campus);
-
-						/*
-						 * Define se a pessoa pode fazer reservas recorrentes
-						 */
-						if (pessoaLogin.getDireitoList() != null && pessoaLogin.getDireitoList().size() > 0) {
-							for (Direito d : pessoaLogin.getDireitoList()) {
-								if (d.getProcesso().equals("RESERVA_SEMANAL")) {
-									this.setPermiteReservaRecorrente(d.isAutoriza());
-									break;
-								}
-							}
-						}
-					}
+			/*
+			 * Define se a pessoa pode fazer reservas recorrentes
+			 */
+			if (pessoaLogin.getDireitoList() != null && pessoaLogin.getDireitoList().size() > 0) {
+			    for (Direito d : pessoaLogin.getDireitoList()) {
+				if (d.getProcesso().equals("RESERVA_SEMANAL")) {
+				    this.setPermiteReservaRecorrente(d.isAutoriza());
+				    break;
 				}
-			} catch (CommunicationException e) {
-				ok = false;
-				handleException("Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.", e);
-			} catch (NamingException e) {
-				ok = false;
-				handleException("Usuário ou senha inválidos.", null);
-			} catch (ServidorLdapNaoCadastradoException e) {
-				ok = false;
-				handleException("Servidor de autenticação não cadastrado para o endereço de e-mail especificado.", e);
-			} catch (UsuarioDesativadoException e) {
-				ok = false;
-				handleException("Usuário não autorizado. Entre em contato com o Administrador do sistema.", e);
-			} catch (GenericJDBCException e) {
-				ok = false;
-				handleException(e);
-			} catch (ConstraintViolationException e) {
-				ok = false;
-				handleException("Erro de gravação no banco de dados: {" + e.getSQLException().getMessage() + "}", e);
-				// handleException("Erro de gravação no banco de dados: {"+
-				// e.getSQLException().getMessage() + "\n " +
-				// (e.getSQLException().getNextException() != null
-				// ? e.getSQLException().getNextException().getMessage() : "") +
-				// "}",e);
-			} catch (Exception e) {
-				ok = false;
-				handleException("Ocorreu um erro ao tentar comunicar com o servidor de autenticação", e);
+			    }
 			}
-			if (ok) {
-				if (Config.getInstance().isDebugMode()) {
-					this.addErrorMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
-				}
-
-				if (!Config.getInstance().isSendMail()) {
-					this.addWarnMessage("E-MAILS", "ENVIO DE E-MAILS DESABILITADO.");
-				}
-
-				// DEBUG
-				// this.sendTestMail(campus);
-
-				return "/restrito/Home.xhtml";
-			}
+		    }
 		}
-		// }
+	    } catch (CommunicationException e) {
+		ok = false;
+		handleException("Erro de comunicação com o servidor LDAP. Informe ao administrador do sistema.", e);
+	    } catch (NamingException e) {
+		ok = false;
+		handleException("Usuário ou senha inválidos.", null);
+	    } catch (ServidorLdapNaoCadastradoException e) {
+		ok = false;
+		handleException("Servidor de autenticação não cadastrado para o endereço de e-mail especificado.", e);
+	    } catch (UsuarioDesativadoException e) {
+		ok = false;
+		handleException("Usuário não autorizado. Entre em contato com o Administrador do sistema.", e);
+	    } catch (GenericJDBCException e) {
+		ok = false;
+		handleException(e);
+	    } catch (ConstraintViolationException e) {
+		ok = false;
+		handleException("Erro de gravação no banco de dados: {" + e.getSQLException().getMessage() + "}", e);
+		// handleException("Erro de gravação no banco de dados: {"+
+		// e.getSQLException().getMessage() + "\n " +
+		// (e.getSQLException().getNextException() != null
+		// ? e.getSQLException().getNextException().getMessage() : "") +
+		// "}",e);
+	    } catch (Exception e) {
+		ok = false;
+		handleException("Ocorreu um erro ao tentar comunicar com o servidor de autenticação", e);
+	    }
+	    if (ok) {
+		if (Config.getInstance().isDebugMode()) {
+		    this.addErrorMessage("DEBUG", "EXECUTANDO EM MODO DEBUG!");
+		}
 
-		return null;
+		if (!Config.getInstance().isSendMail()) {
+		    this.addWarnMessage("E-MAILS", "ENVIO DE E-MAILS DESABILITADO.");
+		}
+
+		// DEBUG
+		// this.sendTestMail(campus);
+
+		return "/restrito/Home.xhtml";
+	    }
 	}
+	// }
 
-	public String logoff() {
-		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+	return null;
+    }
 
-		request.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
+    public String logoff() {
+	HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
+		.getRequest();
 
-		return "/Logoff";
-	}
+	request.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
 
-	@Override
-	public String toString() {
-		return "LoginBean [email=" + email + ", password=" + StringUtils.generateMD5Hash(password) + "]";
-	}
+	return "/Logoff";
+    }
 
-	public Pessoa getPessoaLogin() {
-		return pessoaLogin;
-	}
+    @Override
+    public String toString() {
+	return "LoginBean [email=" + email + ", password=" + StringUtils.generateMD5Hash(password) + "]";
+    }
 
-	public void setPessoaLogin(Pessoa pessoaLogin) {
-		this.pessoaLogin = pessoaLogin;
-	}
+    public Pessoa getPessoaLogin() {
+	return pessoaLogin;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setPessoaLogin(Pessoa pessoaLogin) {
+	this.pessoaLogin = pessoaLogin;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getEmail() {
+	return email;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public void setEmail(String email) {
+	this.email = email;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public String getPassword() {
+	return password;
+    }
 
-	public String getNomeUsuario() {
-		return nomeUsuario;
-	}
+    public void setPassword(String password) {
+	this.password = password;
+    }
 
-	public void setNomeUsuario(String nomeUsuario) {
-		this.nomeUsuario = nomeUsuario;
-	}
+    public String getNomeUsuario() {
+	return nomeUsuario;
+    }
 
-	public String getServerInfo() {
-		return serverInfo;
-	}
+    public void setNomeUsuario(String nomeUsuario) {
+	this.nomeUsuario = nomeUsuario;
+    }
 
-	public void setServerInfo(String serverInfo) {
-		this.serverInfo = serverInfo;
-	}
+    public String getServerInfo() {
+	return serverInfo;
+    }
 
-	public Campus getCampus() {
-		return campus;
-	}
+    public void setServerInfo(String serverInfo) {
+	this.serverInfo = serverInfo;
+    }
 
-	public void setCampus(Campus campus) {
-		this.campus = campus;
-	}
+    public Campus getCampus() {
+	return campus;
+    }
 
-	public String getAppInfo() {
-		return appInfo;
-	}
+    public void setCampus(Campus campus) {
+	this.campus = campus;
+    }
 
-	public void setAppInfo(String appInfo) {
-		this.appInfo = appInfo;
-	}
+    public String getAppInfo() {
+	return appInfo;
+    }
 
-	public boolean isPermiteReservaRecorrente() {
-		return permiteReservaRecorrente;
-	}
+    public void setAppInfo(String appInfo) {
+	this.appInfo = appInfo;
+    }
 
-	public void setPermiteReservaRecorrente(boolean permiteReservaRecorrente) {
-		this.permiteReservaRecorrente = permiteReservaRecorrente;
-	}
+    public boolean isPermiteReservaRecorrente() {
+	return permiteReservaRecorrente;
+    }
+
+    public void setPermiteReservaRecorrente(boolean permiteReservaRecorrente) {
+	this.permiteReservaRecorrente = permiteReservaRecorrente;
+    }
 
 }

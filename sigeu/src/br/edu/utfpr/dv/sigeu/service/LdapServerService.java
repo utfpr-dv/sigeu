@@ -2,6 +2,9 @@ package br.edu.utfpr.dv.sigeu.service;
 
 import java.util.List;
 
+import javax.ejb.Stateless;
+import javax.mail.MessagingException;
+
 import org.hibernate.Hibernate;
 
 import br.edu.utfpr.dv.sigeu.dao.LdapServerDAO;
@@ -11,147 +14,149 @@ import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
 import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
+@Stateless
 public class LdapServerService {
-	/**
-	 * Cria novo
-	 * 
-	 * @param i
-	 */
-	public static void criar(LdapServer i) {
-		Transaction trans = new Transaction();
-		trans.begin();
 
-		LdapServerDAO dao = new LdapServerDAO(trans);
-		dao.criar(i);
+    /**
+     * Cria novo
+     * 
+     * @param i
+     */
+    public void criar(LdapServer i) {
+	Transaction trans = new Transaction();
+	trans.begin();
 
-		trans.commit();
-		trans.close();
-	}
+	LdapServerDAO dao = new LdapServerDAO(trans);
+	dao.criar(i);
 
-	/**
-	 * Altera existente
-	 * 
-	 * @param i
-	 */
-	public static void alterar(LdapServer i) {
-		Transaction trans = new Transaction();
-		trans.begin();
+	trans.commit();
+	trans.close();
+    }
 
-		LdapServerDAO dao = new LdapServerDAO(trans);
-		dao.alterar(i);
+    /**
+     * Altera existente
+     * 
+     * @param i
+     */
+    public void alterar(LdapServer i) {
+	Transaction trans = new Transaction();
+	trans.begin();
 
-		trans.commit();
-		trans.close();
-	}
+	LdapServerDAO dao = new LdapServerDAO(trans);
+	dao.alterar(i);
 
-	/**
-	 * Realiza a pesquisa no banco de dados conforme o texto
-	 * 
-	 * @param textoPesquisa
-	 * @return
-	 * @throws Exception
-	 */
-	public static List<LdapServer> pesquisar(Campus campus, String textoPesquisa) throws Exception {
-		List<LdapServer> lista = null;
+	trans.commit();
+	trans.close();
+    }
 
-		Transaction trans = new Transaction();
+    /**
+     * Realiza a pesquisa no banco de dados conforme o texto
+     * 
+     * @param textoPesquisa
+     * @return
+     * @throws Exception
+     */
+    public List<LdapServer> pesquisar(Campus campus, String textoPesquisa) throws Exception {
+	List<LdapServer> lista = null;
 
-		try {
-			trans.begin();
+	Transaction trans = new Transaction();
 
-			LdapServerDAO dao = new LdapServerDAO(trans);
-			if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-				lista = dao.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
-			} else {
-				lista = dao.pesquisa(campus, textoPesquisa, 0);
-			}
+	try {
+	    trans.begin();
 
-			if (lista != null) {
-				for (LdapServer l : lista) {
-					Hibernate.initialize(l.getIdCampus());
-					Hibernate.initialize(l.getIdCampus().getIdInstituicao());
-				}
-			}
+	    LdapServerDAO dao = new LdapServerDAO(trans);
+	    if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
+		lista = dao.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
+	    } else {
+		lista = dao.pesquisa(campus, textoPesquisa, 0);
+	    }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception(e);
-		} finally {
-			trans.close();
+	    if (lista != null) {
+		for (LdapServer l : lista) {
+		    Hibernate.initialize(l.getIdCampus());
+		    Hibernate.initialize(l.getIdCampus().getIdInstituicao());
 		}
+	    }
 
-		return lista;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new Exception(e);
+	} finally {
+	    trans.close();
 	}
 
-	/**
-	 * Encontra por ID
-	 * 
-	 * @param editarId
-	 * @return
-	 * @throws Exception
-	 */
-	public static LdapServer encontrePorId(Integer editarId) throws Exception {
-		Transaction trans = new Transaction();
+	return lista;
+    }
 
-		try {
-			trans.begin();
+    /**
+     * Encontra por ID
+     * 
+     * @param editarId
+     * @return
+     * @throws Exception
+     */
+    public LdapServer encontrePorId(Integer editarId) throws Exception {
+	Transaction trans = new Transaction();
 
-			LdapServerDAO dao = new LdapServerDAO(trans);
-			LdapServer obj = dao.encontrePorId(editarId);
-			if (obj != null) {
-				Hibernate.initialize(obj.getIdCampus());
-				Hibernate.initialize(obj.getIdCampus().getIdInstituicao());
-			}
-			return obj;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception(e);
-		} finally {
-			trans.close();
-		}
+	try {
+	    trans.begin();
+
+	    LdapServerDAO dao = new LdapServerDAO(trans);
+	    LdapServer obj = dao.encontrePorId(editarId);
+	    if (obj != null) {
+		Hibernate.initialize(obj.getIdCampus());
+		Hibernate.initialize(obj.getIdCampus().getIdInstituicao());
+	    }
+	    return obj;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new Exception(e);
+	} finally {
+	    trans.close();
 	}
+    }
 
-	/**
-	 * Remove
-	 * 
-	 * @param i
-	 * @throws MessagingException
-	 * @throws Exception
-	 */
-	public static void remover(LdapServer i) throws EntidadePossuiRelacionamentoException, Exception {
-		Transaction trans = new Transaction();
+    /**
+     * Remove
+     * 
+     * @param i
+     * @throws MessagingException
+     * @throws Exception
+     */
+    public void remover(LdapServer i) throws EntidadePossuiRelacionamentoException, Exception {
+	Transaction trans = new Transaction();
 
-		try {
-			trans.begin();
+	try {
+	    trans.begin();
 
-			LdapServerDAO dao = new LdapServerDAO(trans);
-			LdapServer ldapServerBd = dao.encontrePorId(i.getIdServer());
+	    LdapServerDAO dao = new LdapServerDAO(trans);
+	    LdapServer ldapServerBd = dao.encontrePorId(i.getIdServer());
 
-			dao.remover(ldapServerBd);
-			trans.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception(e);
-		} finally {
-			trans.close();
-		}
+	    dao.remover(ldapServerBd);
+	    trans.commit();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new Exception(e);
+	} finally {
+	    trans.close();
 	}
+    }
 
-	public static LdapServer encontrePorEmail(String email) throws Exception {
-		Transaction trans = new Transaction();
-		LdapServer ldap = null;
+    public LdapServer encontrePorEmail(String email) throws Exception {
+	Transaction trans = new Transaction();
+	LdapServer ldap = null;
 
-		try {
-			trans.begin();
+	try {
+	    trans.begin();
 
-			LdapServerDAO dao = new LdapServerDAO(trans);
-			ldap = dao.encontrePorEmail(email);
-			return ldap;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception(e);
-		} finally {
-			trans.close();
-		}
+	    LdapServerDAO dao = new LdapServerDAO(trans);
+	    ldap = dao.encontrePorEmail(email);
+	    return ldap;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new Exception(e);
+	} finally {
+	    trans.close();
 	}
+    }
 }

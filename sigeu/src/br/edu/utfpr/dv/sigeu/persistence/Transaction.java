@@ -25,7 +25,7 @@ public class Transaction {
 		if (session == null) {
 			session = HibernateUtil.currentInstance().openSession();
 		}
-		session.beginTransaction();
+//		session.beginTransaction();
 		inTransaction = true;
 	}
 
@@ -34,9 +34,9 @@ public class Transaction {
 	 */
 	public void close() {
 		if (inTransaction) {
-			session.flush();
-			session.clear();
-			session.close();
+//			session.flush();
+//			session.clear();
+//			session.close();
 		}
 	}
 
@@ -44,14 +44,14 @@ public class Transaction {
 	 * Cancela uma UOW completamente.
 	 */
 	public void rollback() {
-		session.getTransaction().rollback();
+//		session.getTransaction().rollback();
 	}
 
 	/**
 	 * Persiste as informações no banco de dados permanentemente.
 	 */
 	public void commit() {
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 		this.flush();
 	}
 
@@ -59,7 +59,7 @@ public class Transaction {
 	 * Realiza um flush do Hibernate e limpa a sessão
 	 */
 	public void flush() {
-		session.flush();
+//		session.flush();
 		// session.clear();
 	}
 

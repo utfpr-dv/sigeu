@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -20,170 +21,169 @@ import br.edu.utfpr.dv.sigeu.service.ItemReservaService;
 @Named
 @ViewScoped
 public class ItemReservaBean extends JavaBean {
-	@Inject
-	private LoginBean loginBean;
 
-	private static final long serialVersionUID = -7332998125885395663L;
+    @EJB
+    private ItemReservaService itemReservaService;
 
-	private Integer editarId = null;
-	private String pesquisaCategoria;
-	private List<CategoriaItemReserva> listaCategoria = null;
-	//
-	private ItemReserva itemReserva = new ItemReserva();
+    @EJB
+    private CategoriaItemReservaService categoriaItemReservaService;
 
-	@PostConstruct
-	public void init() {
-		itemReserva = new ItemReserva();
-		itemReserva.setNumeroHorasAntecedencia(0);
-		itemReserva.setAtivo(true);
+    @Inject
+    private LoginBean loginBean;
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest();
+    private static final long serialVersionUID = -7332998125885395663L;
 
-		try {
-			this.editarId = Integer.valueOf(req.getParameter("editarId"));
-		} catch (Exception e) {
-			//
-		}
+    private Integer editarId = null;
+    private String pesquisaCategoria;
+    private List<CategoriaItemReserva> listaCategoria = null;
+    //
+    private ItemReserva itemReserva = new ItemReserva();
 
-		if (this.editarId != null) {
-			try {
-				itemReserva = ItemReservaService.encontrePorId(this.editarId);
+    @PostConstruct
+    public void init() {
+	itemReserva = new ItemReserva();
+	itemReserva.setNumeroHorasAntecedencia(0);
+	itemReserva.setAtivo(true);
 
-				if (itemReserva == null) {
-					itemReserva = new ItemReserva();
-					this.addInfoMessage("Carregar", " " + this.editarId
-							+ " inexistente.");
-				} else {
-					this.pesquisaCategoria = itemReserva.getIdCategoria()
-							.getNome();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				addErrorMessage("Carregar", "Erro ao carregar dados");
-			}
-		}
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
+		.getRequest();
+
+	try {
+	    this.editarId = Integer.valueOf(req.getParameter("editarId"));
+	} catch (Exception e) {
+	    //
 	}
 
-	/**
-	 * Cria uma nova se o ID for nulo ou 0 ou altera uma já gravada no banco de
-	 * dados se ela já existir
-	 */
-	public void gravar() {
-		itemReserva.setIdCampus(loginBean.getCampus());
+	if (this.editarId != null) {
+	    try {
+		itemReserva = itemReservaService.encontrePorId(this.editarId);
 
-		try {
-			ItemReservaService.persistir(itemReserva);
-			String msg = "Item " + itemReserva.getIdItemReserva() + "-"
-					+ itemReserva.getNome() + " gravado com sucesso!";
-			itemReserva = new ItemReserva();
-			itemReserva.setAtivo(true);
-
-			this.pesquisaCategoria = "";
-			this.listaCategoria = null;
-
-			addInfoMessage("Gravar", msg);
-
-			pesquisaCategoria = "";
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			addErrorMessage("Gravar", "Erro na gravação!");
-		}
-	}
-
-	/**
-	 * Exclui uma do banco de dados
-	 * 
-	 * @param cat
-	 */
-	public void excluir() {
-		if (itemReserva.getIdItemReserva() == null) {
-			addInfoMessage("Excluir",
-					" ainda não foi incluída no banco de dados.");
+		if (itemReserva == null) {
+		    itemReserva = new ItemReserva();
+		    this.addInfoMessage("Carregar", " " + this.editarId + " inexistente.");
 		} else {
-			try {
-				String old = itemReserva.getNome();
-				ItemReservaService.remover(itemReserva);
-				itemReserva = new ItemReserva();
-				this.addInfoMessage("Excluir", "Item " + old
-						+ " excluío com sucesso!");
-			} catch (EntidadePossuiRelacionamentoException e) {
-				this.addWarnMessage("Excluir",
-						"Item já possui relacionamentos. Solicite exclusão ao admin.");
-			} catch (Exception e) {
-				this.addErrorMessage("Excluir", "Erro ao tentar excluir .");
-			}
+		    this.pesquisaCategoria = itemReserva.getIdCategoria().getNome();
 		}
+	    } catch (Exception e) {
+		e.printStackTrace();
+		addErrorMessage("Carregar", "Erro ao carregar dados");
+	    }
+	}
+    }
+
+    /**
+     * Cria uma nova se o ID for nulo ou 0 ou altera uma já gravada no banco de
+     * dados se ela já existir
+     */
+    public void gravar() {
+	itemReserva.setIdCampus(loginBean.getCampus());
+
+	try {
+	    itemReservaService.persistir(itemReserva);
+	    String msg = "Item " + itemReserva.getIdItemReserva() + "-" + itemReserva.getNome()
+		    + " gravado com sucesso!";
+	    itemReserva = new ItemReserva();
+	    itemReserva.setAtivo(true);
+
+	    this.pesquisaCategoria = "";
+	    this.listaCategoria = null;
+
+	    addInfoMessage("Gravar", msg);
+
+	    pesquisaCategoria = "";
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    addErrorMessage("Gravar", "Erro na gravação!");
+	}
+    }
+
+    /**
+     * Exclui uma do banco de dados
+     * 
+     * @param cat
+     */
+    public void excluir() {
+	if (itemReserva.getIdItemReserva() == null) {
+	    addInfoMessage("Excluir", " ainda não foi incluída no banco de dados.");
+	} else {
+	    try {
+		String old = itemReserva.getNome();
+		itemReservaService.remover(itemReserva);
+		itemReserva = new ItemReserva();
+		this.addInfoMessage("Excluir", "Item " + old + " excluío com sucesso!");
+	    } catch (EntidadePossuiRelacionamentoException e) {
+		this.addWarnMessage("Excluir", "Item já possui relacionamentos. Solicite exclusão ao admin.");
+	    } catch (Exception e) {
+		this.addErrorMessage("Excluir", "Erro ao tentar excluir .");
+	    }
+	}
+    }
+
+    /**
+     * Retorna lista para autocompletar pesquisa de instituição
+     * 
+     * @param query
+     * @return
+     */
+    public List<String> selecionaCategoria(String query) {
+	List<String> list = new ArrayList<String>();
+	listaCategoria = null;
+
+	try {
+	    listaCategoria = categoriaItemReservaService.pesquisar(loginBean.getCampus(), query, true);
+
+	    for (CategoriaItemReserva i : listaCategoria) {
+		list.add(i.getNome());
+	    }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    this.addErrorMessage("Selecionar", "Erro na pesquisa de siglas de categorias");
+	    return list;
 	}
 
-	/**
-	 * Retorna lista para autocompletar pesquisa de instituição
-	 * 
-	 * @param query
-	 * @return
-	 */
-	public List<String> selecionaCategoria(String query) {
-		List<String> list = new ArrayList<String>();
-		listaCategoria = null;
+	return list;
+    }
 
-		try {
-			listaCategoria = CategoriaItemReservaService.pesquisar(
-					loginBean.getCampus(), query, true);
-
-			for (CategoriaItemReserva i : listaCategoria) {
-				list.add(i.getNome());
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.addErrorMessage("Selecionar",
-					"Erro na pesquisa de siglas de categorias");
-			return list;
-		}
-
-		return list;
+    /**
+     * Atribui uma categoria ao item de reserva
+     */
+    public void defineCategoria() {
+	for (CategoriaItemReserva i : listaCategoria) {
+	    if (pesquisaCategoria.equals(i.getNome())) {
+		itemReserva.setIdCategoria(i);
+		addInfoMessage("Selecionar", "Instituição selecionada: " + i.getNome());
+		this.pesquisaCategoria = i.getNome();
+		break;
+	    }
 	}
+    }
 
-	/**
-	 * Atribui uma categoria ao item de reserva
-	 */
-	public void defineCategoria() {
-		for (CategoriaItemReserva i : listaCategoria) {
-			if (pesquisaCategoria.equals(i.getNome())) {
-				itemReserva.setIdCategoria(i);
-				addInfoMessage("Selecionar",
-						"Instituição selecionada: " + i.getNome());
-				this.pesquisaCategoria = i.getNome();
-				break;
-			}
-		}
-	}
+    // ///////////////////////////////
 
-	// ///////////////////////////////
+    public Integer getEditarId() {
+	return editarId;
+    }
 
-	public Integer getEditarId() {
-		return editarId;
-	}
+    public void setEditarId(Integer editarId) {
+	this.editarId = editarId;
+    }
 
-	public void setEditarId(Integer editarId) {
-		this.editarId = editarId;
-	}
+    public ItemReserva getItemReserva() {
+	return itemReserva;
+    }
 
-	public ItemReserva getItemReserva() {
-		return itemReserva;
-	}
+    public void setItemReserva(ItemReserva itemReserva) {
+	this.itemReserva = itemReserva;
+    }
 
-	public void setItemReserva(ItemReserva itemReserva) {
-		this.itemReserva = itemReserva;
-	}
+    public String getPesquisaCategoria() {
+	return pesquisaCategoria;
+    }
 
-	public String getPesquisaCategoria() {
-		return pesquisaCategoria;
-	}
-
-	public void setPesquisaCategoria(String pesquisaCategoria) {
-		this.pesquisaCategoria = pesquisaCategoria;
-	}
+    public void setPesquisaCategoria(String pesquisaCategoria) {
+	this.pesquisaCategoria = pesquisaCategoria;
+    }
 
 }

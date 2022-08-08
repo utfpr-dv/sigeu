@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -20,185 +21,179 @@ import br.edu.utfpr.dv.sigeu.service.InstituicaoService;
 @ViewScoped
 public class CampusBean extends JavaBean {
 
-	private static final long serialVersionUID = -4044653509348641476L;
-	private Integer editarId = null;
-	private String pesquisaInstituicao;
-	private List<Instituicao> listaInstituicao;
+    @EJB
+    private InstituicaoService instituicaoService;
 
-	//
-	private Campus campus = new Campus();
+    @EJB
+    private CampusService campusService;
 
-	@PostConstruct
-	public void init() {
-		campus = new Campus();
-		campus.setAtivo(true);
-		campus.setIdInstituicao(new Instituicao());
+    private static final long serialVersionUID = -4044653509348641476L;
+    private Integer editarId = null;
+    private String pesquisaInstituicao;
+    private List<Instituicao> listaInstituicao;
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest();
+    //
+    private Campus campus = new Campus();
 
-		try {
-			this.editarId = Integer.valueOf(req.getParameter("editarId"));
-		} catch (Exception e) {
-			//
-		}
+    @PostConstruct
+    public void init() {
+	campus = new Campus();
+	campus.setAtivo(true);
+	campus.setIdInstituicao(new Instituicao());
 
-		if (this.editarId != null) {
-			try {
-				this.campus = CampusService.encontrePorId(this.editarId);
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
+		.getRequest();
 
-				if (this.campus == null) {
-					this.campus = new Campus();
-					this.addInfoMessage("Carregar", "Campus " + this.editarId
-							+ " inexistente.");
-				} else {
-					this.pesquisaInstituicao = campus.getIdInstituicao()
-							.getSigla();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				addErrorMessage("Carregar", "Erro ao carregar dados");
-			}
-		}
+	try {
+	    this.editarId = Integer.valueOf(req.getParameter("editarId"));
+	} catch (Exception e) {
+	    //
 	}
 
-	/**
-	 * Cria uma nova campus se o ID for nulo ou 0 ou altera uma campus já
-	 * gravada no banco de dados se ela já existir
-	 */
-	public void gravar() {
-		boolean novo = (campus.getIdCampus() == null || this.campus
-				.getIdCampus() == 0);
+	if (this.editarId != null) {
+	    try {
+		this.campus = campusService.encontrePorId(this.editarId);
 
-		if (this.getCampus().getIdInstituicao() == null
-				|| this.getCampus().getIdInstituicao().getIdInstituicao() == null) {
-			addWarnMessage("Gravar", "Instituição não selecionada.");
+		if (this.campus == null) {
+		    this.campus = new Campus();
+		    this.addInfoMessage("Carregar", "Campus " + this.editarId + " inexistente.");
 		} else {
-
-			try {
-				if (!novo) {
-					CampusService.alterar(campus);
-				} else {
-					CampusService.criar(campus);
-				}
-
-				String label = campus.getIdCampus() + "-" + campus.getSigla();
-
-				this.campus = new Campus();
-				this.campus.setAtivo(true);
-				this.campus.setIdInstituicao(new Instituicao());
-
-				addInfoMessage("Gravar", "Campus " + label + " "
-						+ (novo ? "criado" : "alterado") + " com sucesso!");
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				addErrorMessage("Gravar", "Erro na gravação!");
-			} finally {
-				if (novo) {
-					this.campus.setIdCampus(null);
-				}
-			}
+		    this.pesquisaInstituicao = campus.getIdInstituicao().getSigla();
 		}
+	    } catch (Exception e) {
+		e.printStackTrace();
+		addErrorMessage("Carregar", "Erro ao carregar dados");
+	    }
 	}
+    }
 
-	/**
-	 * Exclui uma campus do banco de dados
-	 * 
-	 * @param ent
-	 */
-	public void excluir() {
-		if (this.campus.getIdCampus() == null) {
-			addInfoMessage("Excluir",
-					"Campus ainda não foi incluído no banco de dados.");
+    /**
+     * Cria uma nova campus se o ID for nulo ou 0 ou altera uma campus já gravada no
+     * banco de dados se ela já existir
+     */
+    public void gravar() {
+	boolean novo = (campus.getIdCampus() == null || this.campus.getIdCampus() == 0);
+
+	if (this.getCampus().getIdInstituicao() == null
+		|| this.getCampus().getIdInstituicao().getIdInstituicao() == null) {
+	    addWarnMessage("Gravar", "Instituição não selecionada.");
+	} else {
+
+	    try {
+		if (!novo) {
+		    campusService.alterar(campus);
 		} else {
-			try {
-				String old = this.campus.getSigla();
-				CampusService.remover(campus);
-				this.campus = new Campus();
-				this.addInfoMessage("Excluir", "Campus " + old
-						+ " excluído com sucesso!");
-			} catch (EntidadePossuiRelacionamentoException e) {
-				this.addWarnMessage("Excluir",
-						"Campus já possui relacionamentos. Solicite exclusão ao admin.");
-			} catch (Exception e) {
-				this.addErrorMessage("Excluir",
-						"Erro ao tentar excluir campus.");
-			}
-		}
-	}
-
-	/**
-	 * Retorna lista para autocompletar pesquisa de instituição
-	 * 
-	 * @param query
-	 * @return
-	 */
-	public List<String> selecionaInstituicao(String query) {
-		List<String> list = new ArrayList<String>();
-		listaInstituicao = null;
-
-		try {
-			listaInstituicao = InstituicaoService.pesquisar(query);
-
-			for (Instituicao i : listaInstituicao) {
-				list.add(i.getSigla() + " - " + i.getNome());
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.addErrorMessage("Selecionar",
-					"Erro na pesquisa de siglas de instituições");
-			return list;
+		    campusService.criar(campus);
 		}
 
-		return list;
-	}
+		String label = campus.getIdCampus() + "-" + campus.getSigla();
 
-	public void defineInstituicao() {
-		for (Instituicao i : listaInstituicao) {
-			if (pesquisaInstituicao.equals(i.getSigla() + " - " + i.getNome())) {
-				campus.setIdInstituicao(i);
-				addInfoMessage(
-						"Selecionar",
-						"Instituição selecionada: " + i.getSigla() + " - "
-								+ i.getNome());
-				break;
-			}
+		this.campus = new Campus();
+		this.campus.setAtivo(true);
+		this.campus.setIdInstituicao(new Instituicao());
+
+		addInfoMessage("Gravar", "Campus " + label + " " + (novo ? "criado" : "alterado") + " com sucesso!");
+
+	    } catch (Exception e) {
+		e.printStackTrace();
+		addErrorMessage("Gravar", "Erro na gravação!");
+	    } finally {
+		if (novo) {
+		    this.campus.setIdCampus(null);
 		}
+	    }
+	}
+    }
 
-		pesquisaInstituicao = campus.getIdInstituicao().getSigla();
-		listaInstituicao = null;
+    /**
+     * Exclui uma campus do banco de dados
+     * 
+     * @param ent
+     */
+    public void excluir() {
+	if (this.campus.getIdCampus() == null) {
+	    addInfoMessage("Excluir", "Campus ainda não foi incluído no banco de dados.");
+	} else {
+	    try {
+		String old = this.campus.getSigla();
+		campusService.remover(campus);
+		this.campus = new Campus();
+		this.addInfoMessage("Excluir", "Campus " + old + " excluído com sucesso!");
+	    } catch (EntidadePossuiRelacionamentoException e) {
+		this.addWarnMessage("Excluir", "Campus já possui relacionamentos. Solicite exclusão ao admin.");
+	    } catch (Exception e) {
+		this.addErrorMessage("Excluir", "Erro ao tentar excluir campus.");
+	    }
+	}
+    }
+
+    /**
+     * Retorna lista para autocompletar pesquisa de instituição
+     * 
+     * @param query
+     * @return
+     */
+    public List<String> selecionaInstituicao(String query) {
+	List<String> list = new ArrayList<String>();
+	listaInstituicao = null;
+
+	try {
+	    listaInstituicao = instituicaoService.pesquisar(query);
+
+	    for (Instituicao i : listaInstituicao) {
+		list.add(i.getSigla() + " - " + i.getNome());
+	    }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    this.addErrorMessage("Selecionar", "Erro na pesquisa de siglas de instituições");
+	    return list;
 	}
 
-	// ///////////////////////////////
+	return list;
+    }
 
-	public Campus getCampus() {
-		return campus;
+    public void defineInstituicao() {
+	for (Instituicao i : listaInstituicao) {
+	    if (pesquisaInstituicao.equals(i.getSigla() + " - " + i.getNome())) {
+		campus.setIdInstituicao(i);
+		addInfoMessage("Selecionar", "Instituição selecionada: " + i.getSigla() + " - " + i.getNome());
+		break;
+	    }
 	}
 
-	public void setCampus(Campus campus) {
-		this.campus = campus;
-	}
+	pesquisaInstituicao = campus.getIdInstituicao().getSigla();
+	listaInstituicao = null;
+    }
 
-	public Integer getEditarId() {
-		return editarId;
-	}
+    // ///////////////////////////////
 
-	public void setEditarId(Integer editarId) {
-		this.editarId = editarId;
-	}
+    public Campus getCampus() {
+	return campus;
+    }
 
-	public String getPesquisaInstituicao() {
-		return pesquisaInstituicao;
-	}
+    public void setCampus(Campus campus) {
+	this.campus = campus;
+    }
 
-	public void setPesquisaInstituicao(String pesquisaInstituicao) {
-		this.pesquisaInstituicao = pesquisaInstituicao;
-	}
+    public Integer getEditarId() {
+	return editarId;
+    }
 
-	public List<Instituicao> getListaInstituicao() {
-		return listaInstituicao;
-	}
+    public void setEditarId(Integer editarId) {
+	this.editarId = editarId;
+    }
+
+    public String getPesquisaInstituicao() {
+	return pesquisaInstituicao;
+    }
+
+    public void setPesquisaInstituicao(String pesquisaInstituicao) {
+	this.pesquisaInstituicao = pesquisaInstituicao;
+    }
+
+    public List<Instituicao> getListaInstituicao() {
+	return listaInstituicao;
+    }
 
 }

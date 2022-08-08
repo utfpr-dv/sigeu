@@ -1,6 +1,7 @@
 package br.edu.utfpr.dv.sigeu.jsfbeans;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -16,129 +17,123 @@ import br.edu.utfpr.dv.sigeu.service.InstituicaoService;
 @ViewScoped
 public class InstituicaoBean extends JavaBean {
 
-	private static final long serialVersionUID = 60168807985304986L;
-	private Integer editarId = null;
-	//
-	private Instituicao instituicao = new Instituicao();
+    private static final long serialVersionUID = 60168807985304986L;
+    private Integer editarId = null;
+    //
+    private Instituicao instituicao = new Instituicao();
 
-	@Inject
-	private LoginBean loginBean;
+    @EJB
+    private InstituicaoService instituicaoService;
 
-	@PostConstruct
-	public void init() {
-		instituicao = new Instituicao();
-		instituicao.setAtivo(true);
+    @Inject
+    private LoginBean loginBean;
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest();
+    @PostConstruct
+    public void init() {
+	instituicao = new Instituicao();
+	instituicao.setAtivo(true);
 
-		try {
-			this.editarId = Integer.valueOf(req.getParameter("editarId"));
-		} catch (Exception e) {
-			//
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
+		.getRequest();
+
+	try {
+	    this.editarId = Integer.valueOf(req.getParameter("editarId"));
+	} catch (Exception e) {
+	    //
+	}
+
+	if (this.editarId != null) {
+	    try {
+		this.instituicao = instituicaoService.encontrePorId(this.editarId);
+
+		if (this.instituicao == null) {
+		    this.instituicao = new Instituicao();
+		    this.addInfoMessage("Carregar", "Instituicao " + this.editarId + " inexistente.");
 		}
-
-		if (this.editarId != null) {
-			try {
-				this.instituicao = InstituicaoService
-						.encontrePorId(this.editarId);
-
-				if (this.instituicao == null) {
-					this.instituicao = new Instituicao();
-					this.addInfoMessage("Carregar", "Instituicao "
-							+ this.editarId + " inexistente.");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				addErrorMessage("Carregar", "Erro ao carregar dados");
-			}
-		}
+	    } catch (Exception e) {
+		e.printStackTrace();
+		addErrorMessage("Carregar", "Erro ao carregar dados");
+	    }
 	}
+    }
 
-	/**
-	 * Cria uma nova instituicao se o ID for nulo ou 0 ou altera uma instituicao
-	 * já gravada no banco de dados se ela já existir
-	 */
-	public void gravar() {
-		boolean novo = (instituicao.getIdInstituicao() == null || this.instituicao
-				.getIdInstituicao() == 0);
+    /**
+     * Cria uma nova instituicao se o ID for nulo ou 0 ou altera uma instituicao já
+     * gravada no banco de dados se ela já existir
+     */
+    public void gravar() {
+	boolean novo = (instituicao.getIdInstituicao() == null || this.instituicao.getIdInstituicao() == 0);
 
-		try {
-			if (!novo) {
-				InstituicaoService.alterar(instituicao);
-			} else {
-				InstituicaoService.criar(instituicao);
-			}
+	try {
+	    if (!novo) {
+		instituicaoService.alterar(instituicao);
+	    } else {
+		instituicaoService.criar(instituicao);
+	    }
 
-			String label = instituicao.getIdInstituicao() + "-"
-					+ instituicao.getSigla();
+	    String label = instituicao.getIdInstituicao() + "-" + instituicao.getSigla();
 
-			this.instituicao = new Instituicao();
-			instituicao.setAtivo(true);
+	    this.instituicao = new Instituicao();
+	    instituicao.setAtivo(true);
 
-			addInfoMessage("Gravar", "Instituição " + label
-					+ " gravada com sucesso!");
+	    addInfoMessage("Gravar", "Instituição " + label + " gravada com sucesso!");
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			addErrorMessage("Gravar", "Erro na gravação!");
-		} finally {
-			if (novo) {
-				this.instituicao.setIdInstituicao(null);
-			}
-		}
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    addErrorMessage("Gravar", "Erro na gravação!");
+	} finally {
+	    if (novo) {
+		this.instituicao.setIdInstituicao(null);
+	    }
 	}
+    }
 
-	/**
-	 * Exclui uma instituicao do banco de dados
-	 * 
-	 * @param ent
-	 */
-	public void excluir() {
-		if (this.instituicao.getIdInstituicao() == null) {
-			addInfoMessage("Excluir",
-					"Instituição ainda não foi incluída no banco de dados.");
-		} else {
-			try {
-				String old = this.instituicao.getSigla();
-				InstituicaoService.remover(instituicao);
-				this.instituicao = new Instituicao();
-				this.addInfoMessage("Excluir", "Instituicao " + old
-						+ " excluída com sucesso!");
-			} catch (EntidadePossuiRelacionamentoException e) {
-				this.addWarnMessage("Excluir",
-						"Instituicao já possui relacionamentos. Solicite exclusão ao admin.");
-			} catch (Exception e) {
-				this.addErrorMessage("Excluir",
-						"Erro ao tentar excluir instituicao.");
-			}
-		}
+    /**
+     * Exclui uma instituicao do banco de dados
+     * 
+     * @param ent
+     */
+    public void excluir() {
+	if (this.instituicao.getIdInstituicao() == null) {
+	    addInfoMessage("Excluir", "Instituição ainda não foi incluída no banco de dados.");
+	} else {
+	    try {
+		String old = this.instituicao.getSigla();
+		instituicaoService.remover(instituicao);
+		this.instituicao = new Instituicao();
+		this.addInfoMessage("Excluir", "Instituicao " + old + " excluída com sucesso!");
+	    } catch (EntidadePossuiRelacionamentoException e) {
+		this.addWarnMessage("Excluir", "Instituicao já possui relacionamentos. Solicite exclusão ao admin.");
+	    } catch (Exception e) {
+		this.addErrorMessage("Excluir", "Erro ao tentar excluir instituicao.");
+	    }
 	}
+    }
 
-	// ///////////////////////////////
+    // ///////////////////////////////
 
-	public Instituicao getInstituicao() {
-		return instituicao;
-	}
+    public Instituicao getInstituicao() {
+	return instituicao;
+    }
 
-	public void setInstituicao(Instituicao instituicao) {
-		this.instituicao = instituicao;
-	}
+    public void setInstituicao(Instituicao instituicao) {
+	this.instituicao = instituicao;
+    }
 
-	public Integer getEditarId() {
-		return editarId;
-	}
+    public Integer getEditarId() {
+	return editarId;
+    }
 
-	public void setEditarId(Integer editarId) {
-		this.editarId = editarId;
-	}
+    public void setEditarId(Integer editarId) {
+	this.editarId = editarId;
+    }
 
-	public LoginBean getLoginBean() {
-		return loginBean;
-	}
+    public LoginBean getLoginBean() {
+	return loginBean;
+    }
 
-	public void setLoginBean(LoginBean loginBean) {
-		this.loginBean = loginBean;
-	}
+    public void setLoginBean(LoginBean loginBean) {
+	this.loginBean = loginBean;
+    }
 
 }

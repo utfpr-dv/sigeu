@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -17,215 +18,214 @@ import br.edu.utfpr.dv.sigeu.service.PessoaService;
 @Named
 @ViewScoped
 public class PesquisaItemReservaBean extends JavaBean {
-	
-	@Inject
-	private LoginBean loginBean;
-	
-	private static final long serialVersionUID = -7332998125885395663L;
 
-	//
-	private String textoPesquisa;
-	private List<ItemReserva> lista;
+    @EJB
+    private PessoaService pessoaService;
 
-	private int status = 1;
-	private ItemReserva itemReserva;
+    @EJB
+    private ItemReservaService itemReservaService;
 
-	private List<Pessoa> listaPessoa;
-	private String campoPessoa;
-	private Pessoa pessoa;
+    @Inject
+    private LoginBean loginBean;
 
-	//
+    private static final long serialVersionUID = -7332998125885395663L;
 
-	@PostConstruct
-	public void init() {
-		try {
-			lista = ItemReservaService.pesquisar(loginBean.getCampus(), null, null);
-			// this.addInfoMessage("Pesquisar", "Exibindo  " +
-			// HibernateDAO.PESQUISA_LIMITE +
-			// " itens. Pesquise utilizando parâmetros para obter mais registros.");
-		} catch (Exception e) {
-			// this.addErrorMessage("Pesquisar",
-			// "Erro ao realizar pesquisa inicial. Entre em contato com o Admin.");
-		}
+    //
+    private String textoPesquisa;
+    private List<ItemReserva> lista;
+
+    private int status = 1;
+    private ItemReserva itemReserva;
+
+    private List<Pessoa> listaPessoa;
+    private String campoPessoa;
+    private Pessoa pessoa;
+
+    //
+
+    @PostConstruct
+    public void init() {
+	try {
+	    lista = itemReservaService.pesquisar(loginBean.getCampus(), null, null);
+	    // this.addInfoMessage("Pesquisar", "Exibindo " +
+	    // HibernateDAO.PESQUISA_LIMITE +
+	    // " itens. Pesquise utilizando parâmetros para obter mais registros.");
+	} catch (Exception e) {
+	    // this.addErrorMessage("Pesquisar",
+	    // "Erro ao realizar pesquisa inicial. Entre em contato com o Admin.");
+	}
+    }
+
+    /**
+     * Realiza a pesquisa de itens
+     */
+    public void pesquisa() {
+	try {
+	    this.lista = itemReservaService.pesquisar(loginBean.getCampus(), textoPesquisa, null);
+
+	    // RequestContext.getCurrentInstance().update("frmPesquisa");
+	    // RequestContext.getCurrentInstance().openDialog("PesquisaItemReservaModal");
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    addErrorMessage("Pesquisar", "Erro na pesquisa");
+	}
+    }
+
+    public void editaAutorizadores(ItemReserva i) {
+	// System.out.println("---> " + i.getIdItemReserva());
+	this.status = 2;
+	try {
+	    this.itemReserva = itemReservaService.encontrePorId(i.getIdItemReserva());
+	} catch (Exception e) {
+	    addErrorMessage("Erro", e.getMessage());
+	}
+    }
+
+    public void excluiAutorizador(Pessoa p) {
+	List<Pessoa> pessoaList = itemReserva.getPessoaList();
+
+	List<Pessoa> novaList = new ArrayList<Pessoa>();
+
+	for (Pessoa pl : pessoaList) {
+	    if (pl.getIdPessoa() != p.getIdPessoa()) {
+		novaList.add(pl);
+	    }
 	}
 
-	/**
-	 * Realiza a pesquisa de itens
-	 */
-	public void pesquisa() {
-		try {
-			this.lista = ItemReservaService.pesquisar(loginBean.getCampus(), textoPesquisa, null);
+	itemReserva.setPessoaList(novaList);
 
-			// RequestContext.getCurrentInstance().update("frmPesquisa");
-			// RequestContext.getCurrentInstance().openDialog("PesquisaItemReservaModal");
-		} catch (Exception e) {
-			e.printStackTrace();
-			addErrorMessage("Pesquisar", "Erro na pesquisa");
-		}
+	try {
+	    itemReservaService.alterar(itemReserva);
+	    this.itemReserva = itemReservaService.encontrePorId(itemReserva.getIdItemReserva());
+	} catch (Exception e) {
+	    addErrorMessage("Erro", e.getMessage());
 	}
+    }
 
-	public void editaAutorizadores(ItemReserva i) {
-		// System.out.println("---> " + i.getIdItemReserva());
-		this.status = 2;
-		try {
-			this.itemReserva = ItemReservaService.encontrePorId(i
-					.getIdItemReserva());
-		} catch (Exception e) {
-			addErrorMessage("Erro", e.getMessage());
-		}
-	}
+    public List<String> selecionaPessoa(String query) {
+	List<String> list = new ArrayList<String>();
+	listaPessoa = null;
+	pessoa = null;
 
-	public void excluiAutorizador(Pessoa p) {
-		List<Pessoa> pessoaList = itemReserva.getPessoaList();
+	if (query != null && query.trim().length() > 0) {
+	    try {
+		listaPessoa = pessoaService.pesquisar(loginBean.getCampus(), query, true, 14);
 
-		List<Pessoa> novaList = new ArrayList<Pessoa>();
-
-		for (Pessoa pl : pessoaList) {
-			if (pl.getIdPessoa() != p.getIdPessoa()) {
-				novaList.add(pl);
-			}
-		}
-
-		itemReserva.setPessoaList(novaList);
-
-		try {
-			ItemReservaService.alterar(itemReserva);
-			this.itemReserva = ItemReservaService.encontrePorId(itemReserva
-					.getIdItemReserva());
-		} catch (Exception e) {
-			addErrorMessage("Erro", e.getMessage());
-		}
-	}
-
-	public List<String> selecionaPessoa(String query) {
-		List<String> list = new ArrayList<String>();
-		listaPessoa = null;
-		pessoa = null;
-
-		if (query != null && query.trim().length() > 0) {
-			try {
-				listaPessoa = PessoaService.pesquisar(loginBean.getCampus(), query, true, 14);
-
-				if (listaPessoa != null && listaPessoa.size() > 0) {
-					for (Pessoa p : listaPessoa) {
-						list.add(p.getNomeCompleto() + " (Mat:"
-								+ p.getMatricula() + ")");
-					}
-				} else {
-					this.addInfoMessage("Selecionar",
-							"Nenhum usuário encontrado.");
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				this.addErrorMessage("Selecionar",
-						"Erro na pesquisa de usuários.");
-				return list;
-			}
-		}
-		return list;
-	}
-
-	public void definePessoa() {
-		pessoa = null;
-
-		for (Pessoa p : listaPessoa) {
-			String match = p.getNomeCompleto() + " (Mat:" + p.getMatricula()
-					+ ")";
-
-			if (campoPessoa.equals(match)) {
-				pessoa = p;
-				break;
-			}
-		}
-
-		campoPessoa = pessoa.getNomeCompleto();
-	}
-
-	public void adicionarAutorizador() {
-		if (pessoa != null) {
-			List<Pessoa> pessoaList = itemReserva.getPessoaList();
-
-			List<Pessoa> novaList = new ArrayList<Pessoa>();
-
-			for (Pessoa pl : pessoaList) {
-				if (pl.getIdPessoa() != pessoa.getIdPessoa()) {
-					novaList.add(pl);
-				}
-			}
-
-			novaList.add(pessoa);
-			itemReserva.setPessoaList(novaList);
-
-			try {
-				ItemReservaService.alterar(itemReserva);
-				this.itemReserva = ItemReservaService.encontrePorId(itemReserva
-						.getIdItemReserva());
-			} catch (Exception e) {
-				addErrorMessage("Erro", e.getMessage());
-			}
+		if (listaPessoa != null && listaPessoa.size() > 0) {
+		    for (Pessoa p : listaPessoa) {
+			list.add(p.getNomeCompleto() + " (Mat:" + p.getMatricula() + ")");
+		    }
 		} else {
-			addErrorMessage("Pessoa", "Autorizador não selecionado");
+		    this.addInfoMessage("Selecionar", "Nenhum usuário encontrado.");
 		}
 
+	    } catch (Exception e) {
+		e.printStackTrace();
+		this.addErrorMessage("Selecionar", "Erro na pesquisa de usuários.");
+		return list;
+	    }
+	}
+	return list;
+    }
+
+    public void definePessoa() {
+	pessoa = null;
+
+	for (Pessoa p : listaPessoa) {
+	    String match = p.getNomeCompleto() + " (Mat:" + p.getMatricula() + ")";
+
+	    if (campoPessoa.equals(match)) {
+		pessoa = p;
+		break;
+	    }
 	}
 
-	public void cancelaAdicionarAutorizador() {
-		this.status = 1;
-		this.pessoa = null;
-		this.itemReserva = null;
+	campoPessoa = pessoa.getNomeCompleto();
+    }
+
+    public void adicionarAutorizador() {
+	if (pessoa != null) {
+	    List<Pessoa> pessoaList = itemReserva.getPessoaList();
+
+	    List<Pessoa> novaList = new ArrayList<Pessoa>();
+
+	    for (Pessoa pl : pessoaList) {
+		if (pl.getIdPessoa() != pessoa.getIdPessoa()) {
+		    novaList.add(pl);
+		}
+	    }
+
+	    novaList.add(pessoa);
+	    itemReserva.setPessoaList(novaList);
+
+	    try {
+		itemReservaService.alterar(itemReserva);
+		this.itemReserva = itemReservaService.encontrePorId(itemReserva.getIdItemReserva());
+	    } catch (Exception e) {
+		addErrorMessage("Erro", e.getMessage());
+	    }
+	} else {
+	    addErrorMessage("Pessoa", "Autorizador não selecionado");
 	}
 
-	public List<ItemReserva> getLista() {
-		return lista;
-	}
+    }
 
-	public String getTextoPesquisa() {
-		return textoPesquisa;
-	}
+    public void cancelaAdicionarAutorizador() {
+	this.status = 1;
+	this.pessoa = null;
+	this.itemReserva = null;
+    }
 
-	public void setTextoPesquisa(String textoPesquisa) {
-		this.textoPesquisa = textoPesquisa;
-	}
+    public List<ItemReserva> getLista() {
+	return lista;
+    }
 
-	public int getStatus() {
-		return status;
-	}
+    public String getTextoPesquisa() {
+	return textoPesquisa;
+    }
 
-	public void setStatus(int status) {
-		this.status = status;
-	}
+    public void setTextoPesquisa(String textoPesquisa) {
+	this.textoPesquisa = textoPesquisa;
+    }
 
-	public ItemReserva getItemReserva() {
-		return itemReserva;
-	}
+    public int getStatus() {
+	return status;
+    }
 
-	public void setItemReserva(ItemReserva itemReserva) {
-		this.itemReserva = itemReserva;
-	}
+    public void setStatus(int status) {
+	this.status = status;
+    }
 
-	public List<Pessoa> getListaPessoa() {
-		return listaPessoa;
-	}
+    public ItemReserva getItemReserva() {
+	return itemReserva;
+    }
 
-	public void setListaPessoa(List<Pessoa> listaPessoa) {
-		this.listaPessoa = listaPessoa;
-	}
+    public void setItemReserva(ItemReserva itemReserva) {
+	this.itemReserva = itemReserva;
+    }
 
-	public String getCampoPessoa() {
-		return campoPessoa;
-	}
+    public List<Pessoa> getListaPessoa() {
+	return listaPessoa;
+    }
 
-	public void setCampoPessoa(String campoPessoa) {
-		this.campoPessoa = campoPessoa;
-	}
+    public void setListaPessoa(List<Pessoa> listaPessoa) {
+	this.listaPessoa = listaPessoa;
+    }
 
-	public Pessoa getPessoa() {
-		return pessoa;
-	}
+    public String getCampoPessoa() {
+	return campoPessoa;
+    }
 
-	public void setPessoa(Pessoa pessoa) {
-		this.pessoa = pessoa;
-	}
+    public void setCampoPessoa(String campoPessoa) {
+	this.campoPessoa = campoPessoa;
+    }
+
+    public Pessoa getPessoa() {
+	return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+	this.pessoa = pessoa;
+    }
 
 }

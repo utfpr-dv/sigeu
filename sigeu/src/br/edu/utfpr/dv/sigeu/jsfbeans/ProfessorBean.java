@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,163 +20,166 @@ import br.edu.utfpr.dv.sigeu.service.ProfessorService;
 @Named
 @ViewScoped
 public class ProfessorBean extends JavaBean {
-	@Inject
-	private LoginBean loginBean;
 
-	private static final long serialVersionUID = -4044653509641476L;
-	private Integer editarId = null;
-	private String pesquisaPessoa;
-	private Pessoa pessoa;
-	private Professor professor = new Professor();
-	private List<Pessoa> listaPessoa;
+    @EJB
+    private ProfessorService professorService;
 
-	@PostConstruct
-	public void init() {
-		pesquisaPessoa = "";
-		professor = new Professor();
+    @EJB
+    private PessoaService pessoaService;
 
-		HttpServletRequest req = (HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest();
+    @Inject
+    private LoginBean loginBean;
 
-		try {
-			editarId = Integer.valueOf(req.getParameter("editarId"));
-		} catch (Exception e) {
-			//
-		}
+    private static final long serialVersionUID = -4044653509641476L;
+    private Integer editarId = null;
+    private String pesquisaPessoa;
+    private Pessoa pessoa;
+    private Professor professor = new Professor();
+    private List<Pessoa> listaPessoa;
 
-		if (editarId != null) {
-			try {
-				professor = ProfessorService.encontrePorId(editarId);
+    @PostConstruct
+    public void init() {
+	pesquisaPessoa = "";
+	professor = new Professor();
 
-				if (professor == null) {
-					professor = new Professor();
-					addWarnMessage("Carregar", "Professor " + editarId
-							+ " inexistente.");
-				} else {
-					if (professor.getProfessorPessoa() != null) {
-						pessoa = professor.getProfessorPessoa().getIdPessoa();
-						if (pessoa != null) {
-							pesquisaPessoa = pessoa.getNomeCompleto();
-						}
-					}
-				}
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
+		.getRequest();
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				addErrorMessage("Carregar", "Erro ao carregar dados");
-			}
-		}
+	try {
+	    editarId = Integer.valueOf(req.getParameter("editarId"));
+	} catch (Exception e) {
+	    //
 	}
 
-	/**
-	 * Cria uma nova professor se o ID for nulo ou 0 ou altera uma professor já
-	 * gravada no banco de dados se ela já existir
-	 */
-	public String gravar() {
-		// addInfoMessage("", "PESSOA: " + pessoa.getNomeCompleto());
-		if (pessoa == null) {
-			addErrorMessage("Pessoa",
-					"Nenhuma pessoa selecionada para relacionamento");
+	if (editarId != null) {
+	    try {
+		professor = professorService.encontrePorId(editarId);
+
+		if (professor == null) {
+		    professor = new Professor();
+		    addWarnMessage("Carregar", "Professor " + editarId + " inexistente.");
 		} else {
-			try {
-				ProfessorService.atualizaProfessorPessoa(pessoa, professor);
-				addInfoMessage("Professor Pessoa",
-						"Cadastro atualizado com sucesso!");
-			} catch (Exception e) {
-				handleException(e);
-				return null;
+		    if (professor.getProfessorPessoa() != null) {
+			pessoa = professor.getProfessorPessoa().getIdPessoa();
+			if (pessoa != null) {
+			    pesquisaPessoa = pessoa.getNomeCompleto();
 			}
+		    }
 		}
 
-		return "PesquisaProfessor";
+	    } catch (Exception e) {
+		e.printStackTrace();
+		addErrorMessage("Carregar", "Erro ao carregar dados");
+	    }
+	}
+    }
+
+    /**
+     * Cria uma nova professor se o ID for nulo ou 0 ou altera uma professor já
+     * gravada no banco de dados se ela já existir
+     */
+    public String gravar() {
+	// addInfoMessage("", "PESSOA: " + pessoa.getNomeCompleto());
+	if (pessoa == null) {
+	    addErrorMessage("Pessoa", "Nenhuma pessoa selecionada para relacionamento");
+	} else {
+	    try {
+		professorService.atualizaProfessorPessoa(pessoa, professor);
+		addInfoMessage("Professor Pessoa", "Cadastro atualizado com sucesso!");
+	    } catch (Exception e) {
+		handleException(e);
+		return null;
+	    }
 	}
 
-	/**
-	 * Retorna lista para autocompletar pesquisa de instituição
-	 * 
-	 * @param query
-	 * @return
-	 */
-	public List<String> selecionaPessoa(String query) {
-		pessoa = null;
-		List<String> list = new ArrayList<String>();
-		listaPessoa = null;
+	return "PesquisaProfessor";
+    }
 
-		try {
-			// listaPessoa = PessoaService
-			// .pesquisar(query, true, "PROFESSORES", 0);
+    /**
+     * Retorna lista para autocompletar pesquisa de instituição
+     * 
+     * @param query
+     * @return
+     */
+    public List<String> selecionaPessoa(String query) {
+	pessoa = null;
+	List<String> list = new ArrayList<String>();
+	listaPessoa = null;
 
-			listaPessoa = PessoaService.pesquisar(loginBean.getCampus(), query, true, 0);
+	try {
+	    // listaPessoa = PessoaService
+	    // .pesquisar(query, true, "PROFESSORES", 0);
 
-			if (listaPessoa != null && listaPessoa.size() > 0) {
-				for (Pessoa i : listaPessoa) {
-					list.add(i.getNomeCompleto() + " | " + i.getEmail());
-				}
-			}
+	    listaPessoa = pessoaService.pesquisar(loginBean.getCampus(), query, true, 0);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			addErrorMessage("Selecionar", "Erro na pesquisa de Pessoas");
-			return list;
-		}
-
-		return list;
-	}
-
-	public void definePessoa() {
-		pessoa = null;
-
+	    if (listaPessoa != null && listaPessoa.size() > 0) {
 		for (Pessoa i : listaPessoa) {
-			if (pesquisaPessoa.equals(i.getNomeCompleto() + " | " + i.getEmail())) {
-				pessoa = i;
-				addInfoMessage("Selecionar",
-						"Pessoa selecionada: " + i.getNomeCompleto());
-				break;
-			}
+		    list.add(i.getNomeCompleto() + " | " + i.getEmail());
 		}
+	    }
 
-		pesquisaPessoa = pessoa.getNomeCompleto();
-		listaPessoa = null;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    addErrorMessage("Selecionar", "Erro na pesquisa de Pessoas");
+	    return list;
 	}
 
-	public Integer getEditarId() {
-		return editarId;
+	return list;
+    }
+
+    public void definePessoa() {
+	pessoa = null;
+
+	for (Pessoa i : listaPessoa) {
+	    if (pesquisaPessoa.equals(i.getNomeCompleto() + " | " + i.getEmail())) {
+		pessoa = i;
+		addInfoMessage("Selecionar", "Pessoa selecionada: " + i.getNomeCompleto());
+		break;
+	    }
 	}
 
-	public void setEditarId(Integer editarId) {
-		this.editarId = editarId;
-	}
+	pesquisaPessoa = pessoa.getNomeCompleto();
+	listaPessoa = null;
+    }
 
-	public String getPesquisaPessoa() {
-		return pesquisaPessoa;
-	}
+    public Integer getEditarId() {
+	return editarId;
+    }
 
-	public void setPesquisaPessoa(String pesquisaPessoa) {
-		this.pesquisaPessoa = pesquisaPessoa;
-	}
+    public void setEditarId(Integer editarId) {
+	this.editarId = editarId;
+    }
 
-	public Pessoa getPessoa() {
-		return pessoa;
-	}
+    public String getPesquisaPessoa() {
+	return pesquisaPessoa;
+    }
 
-	public void setPessoa(Pessoa pessoa) {
-		this.pessoa = pessoa;
-	}
+    public void setPesquisaPessoa(String pesquisaPessoa) {
+	this.pesquisaPessoa = pesquisaPessoa;
+    }
 
-	public Professor getProfessor() {
-		return professor;
-	}
+    public Pessoa getPessoa() {
+	return pessoa;
+    }
 
-	public void setProfessor(Professor professor) {
-		this.professor = professor;
-	}
+    public void setPessoa(Pessoa pessoa) {
+	this.pessoa = pessoa;
+    }
 
-	public List<Pessoa> getListaPessoa() {
-		return listaPessoa;
-	}
+    public Professor getProfessor() {
+	return professor;
+    }
 
-	public void setListaPessoa(List<Pessoa> listaPessoa) {
-		this.listaPessoa = listaPessoa;
-	}
+    public void setProfessor(Professor professor) {
+	this.professor = professor;
+    }
+
+    public List<Pessoa> getListaPessoa() {
+	return listaPessoa;
+    }
+
+    public void setListaPessoa(List<Pessoa> listaPessoa) {
+	this.listaPessoa = listaPessoa;
+    }
 
 }
