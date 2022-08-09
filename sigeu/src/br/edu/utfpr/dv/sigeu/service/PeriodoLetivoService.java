@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.service;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.hibernate.Hibernate;
@@ -11,10 +12,12 @@ import br.edu.utfpr.dv.sigeu.dao.PeriodoLetivoDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 @Stateless
 public class PeriodoLetivoService {
+
+    @EJB
+    private PeriodoLetivoDAO dao;
 
     /**
      * Cria nova
@@ -22,19 +25,7 @@ public class PeriodoLetivoService {
      * @param pl
      */
     public void criar(PeriodoLetivo pl) throws Exception {
-	Transaction trans = new Transaction();
-	try {
-	    trans.begin();
-
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-	    dao.criar(pl);
-
-	    trans.commit();
-	} catch (Exception e) {
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+	dao.criar(pl);
     }
 
     /**
@@ -43,20 +34,7 @@ public class PeriodoLetivoService {
      * @param cat
      */
     public void alterar(PeriodoLetivo cat) throws Exception {
-	Transaction trans = new Transaction();
-	try {
-	    trans.begin();
-
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-	    dao.alterar(cat);
-
-	    trans.commit();
-	} catch (Exception e) {
-	    throw e;
-	} finally {
-	    trans.close();
-	}
-	trans.close();
+	dao.alterar(cat);
     }
 
     /**
@@ -66,24 +44,10 @@ public class PeriodoLetivoService {
      * @throws Exception
      */
     public void persistir(PeriodoLetivo item) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-
-	    if (item.getIdPeriodoLetivo() != null) {
-		dao.alterar(item);
-	    } else {
-		dao.criar(item);
-	    }
-
-	    trans.commit();
-	} catch (Exception e) {
-	    throw e;
-	} finally {
-	    trans.close();
+	if (item.getIdPeriodoLetivo() != null) {
+	    dao.alterar(item);
+	} else {
+	    dao.criar(item);
 	}
     }
 
@@ -97,31 +61,17 @@ public class PeriodoLetivoService {
     public List<PeriodoLetivo> pesquisar(Campus campus, String textoPesquisa) throws Exception {
 	List<PeriodoLetivo> lista = null;
 
-	Transaction trans = new Transaction();
+	if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
+	    lista = dao.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
+	} else {
+	    lista = dao.pesquisa(campus, textoPesquisa, 0);
+	}
 
-	try {
-	    trans.begin();
-
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-
-	    if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-		lista = dao.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
-	    } else {
-		lista = dao.pesquisa(campus, textoPesquisa, 0);
+	if (lista != null) {
+	    for (PeriodoLetivo c : lista) {
+		Hibernate.initialize(c.getIdCampus());
+		Hibernate.initialize(c.getIdCampus().getIdInstituicao());
 	    }
-
-	    if (lista != null) {
-		for (PeriodoLetivo c : lista) {
-		    Hibernate.initialize(c.getIdCampus());
-		    Hibernate.initialize(c.getIdCampus().getIdInstituicao());
-		}
-	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
 	}
 
 	return lista;
@@ -134,23 +84,12 @@ public class PeriodoLetivoService {
      * @throws Exception
      */
     public PeriodoLetivo encontrePorId(Integer editarId) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-	    PeriodoLetivo obj = dao.encontrePorId(editarId);
-	    if (obj != null) {
-		Hibernate.initialize(obj.getIdCampus());
-		Hibernate.initialize(obj.getIdCampus().getIdInstituicao());
-	    }
-	    return obj;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	PeriodoLetivo obj = dao.encontrePorId(editarId);
+	if (obj != null) {
+	    Hibernate.initialize(obj.getIdCampus());
+	    Hibernate.initialize(obj.getIdCampus().getIdInstituicao());
 	}
+	return obj;
     }
 
     /**
@@ -160,22 +99,9 @@ public class PeriodoLetivoService {
      * @throws Exception
      */
     public void remover(PeriodoLetivo item) throws Exception {
-	Transaction trans = new Transaction();
+	PeriodoLetivo existente = dao.encontrePorId(item.getIdPeriodoLetivo());
 
-	try {
-	    trans.begin();
-
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-	    PeriodoLetivo existente = dao.encontrePorId(item.getIdPeriodoLetivo());
-
-	    dao.remover(existente);
-	    trans.commit();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
-	}
+	dao.remover(existente);
     }
 
     /**
@@ -186,55 +112,14 @@ public class PeriodoLetivoService {
      * @throws Exception
      */
     public List<PeriodoLetivo> pesquisar(Campus campus) throws Exception {
-	List<PeriodoLetivo> lista = null;
-
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-
-	    lista = dao.pesquisa(campus);
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
-	}
-
-	return lista;
+	return dao.pesquisa(campus);
     }
 
     public PeriodoLetivo encontrePorNome(Campus campus, String value) throws Exception {
-
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-	    return dao.encontrePorNome(campus, value);
-	} catch (Exception e) {
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+	return dao.encontrePorNome(campus, value);
     }
 
     public PeriodoLetivo encontreAtual(Campus campus, Date data) throws Exception {
-
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    PeriodoLetivoDAO dao = new PeriodoLetivoDAO(trans);
-	    return dao.encontreAtual(campus, data);
-	} catch (Exception e) {
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+	return dao.encontreAtual(campus, data);
     }
-
 }

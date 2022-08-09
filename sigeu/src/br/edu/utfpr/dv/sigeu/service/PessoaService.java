@@ -11,13 +11,12 @@ import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.GrupoPessoa;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 @Stateless
 public class PessoaService {
 
     @EJB
-    private PessoaService pessoaService;
+    private PessoaDAO pessoaDAO;
 
     /**
      * Cria nova entrada para uma pessoa
@@ -25,14 +24,7 @@ public class PessoaService {
      * @param p
      */
     public void criar(Pessoa p) throws Exception {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	PessoaDAO dao = new PessoaDAO(trans);
-	dao.criar(p);
-
-	trans.commit();
-	trans.close();
+	pessoaDAO.criar(p);
     }
 
     /**
@@ -41,14 +33,7 @@ public class PessoaService {
      * @param p
      */
     public void alterar(Pessoa p) throws Exception {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	PessoaDAO dao = new PessoaDAO(trans);
-	dao.alterar(p);
-
-	trans.commit();
-	trans.close();
+	pessoaDAO.alterar(p);
     }
 
     /**
@@ -59,7 +44,7 @@ public class PessoaService {
      * @throws Exception
      */
     public Pessoa encontrePorId(Integer id) throws Exception {
-	return pessoaService.encontrePorId(id, false);
+	return encontrePorId(id, false);
     }
 
     /**
@@ -68,27 +53,7 @@ public class PessoaService {
      * @return
      */
     public Pessoa encontrePorId(Integer id, boolean carregaGrupos) throws Exception {
-	Transaction trans = new Transaction();
-	Pessoa p = null;
-	try {
-	    trans.begin();
-
-	    PessoaDAO dao = new PessoaDAO(trans);
-	    p = dao.encontrePorId(id);
-
-	    // if (carregaGrupos) {
-	    // for (GrupoPessoa gp : p.getGrupoPessoaList()) {
-	    // // Faz nada
-	    // }
-	    // }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
-
-	return p;
+	return pessoaDAO.encontrePorId(id);
     }
 
     /**
@@ -100,39 +65,11 @@ public class PessoaService {
      * @throws Exception
      */
     public Pessoa encontrePorEmail(String email, Campus campus) throws Exception {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	PessoaDAO dao = new PessoaDAO(trans);
-	Pessoa p;
-	try {
-	    p = dao.encontrePorEmail(email, campus);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
-
-	return p;
+	return pessoaDAO.encontrePorEmail(email, campus);
     }
 
     public Pessoa encontrePorCnpjCpf(Campus campus, String cnpjCpf) throws Exception {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	PessoaDAO dao = new PessoaDAO(trans);
-	Pessoa p;
-	try {
-	    p = dao.encontrePorCnpjCpf(campus, cnpjCpf);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
-
-	return p;
+	return pessoaDAO.encontrePorCnpjCpf(campus, cnpjCpf);
     }
 
     /**
@@ -145,23 +82,10 @@ public class PessoaService {
     public List<Pessoa> pesquisar(Campus campus, String textoPesquisa) throws Exception {
 	List<Pessoa> lista = null;
 
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    PessoaDAO dao = new PessoaDAO(trans);
-	    if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-		lista = dao.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
-	    } else {
-		lista = dao.pesquisa(campus, textoPesquisa, 0);
-	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
+	    lista = pessoaDAO.pesquisa(campus, HibernateDAO.PESQUISA_LIMITE);
+	} else {
+	    lista = pessoaDAO.pesquisa(campus, textoPesquisa, 0);
 	}
 
 	return lista;
@@ -178,27 +102,13 @@ public class PessoaService {
     public List<Pessoa> pesquisar(Campus campus, String query, boolean ativo, int limit) throws Exception {
 	List<Pessoa> lista = null;
 
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    PessoaDAO dao = new PessoaDAO(trans);
-
-	    if (query == null || query.trim().length() <= 0) {
-		if (limit == 0) {
-		    limit = HibernateDAO.PESQUISA_LIMITE;
-		}
-		lista = dao.pesquisa(campus, ativo, limit);
-	    } else {
-		lista = dao.pesquisa(campus, query, ativo, limit);
+	if (query == null || query.trim().length() <= 0) {
+	    if (limit == 0) {
+		limit = HibernateDAO.PESQUISA_LIMITE;
 	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	    lista = pessoaDAO.pesquisa(campus, ativo, limit);
+	} else {
+	    lista = pessoaDAO.pesquisa(campus, query, ativo, limit);
 	}
 
 	return lista;
@@ -214,50 +124,35 @@ public class PessoaService {
      * @return
      * @throws Exception
      */
-    public List<Pessoa> pesquisar(Campus campus, String query, boolean ativo, String grupo, int limit)
-	    throws Exception {
+    public List<Pessoa> pesquisar(Campus campus, String query, boolean ativo, String grupo, int limit) throws Exception {
 	List<Pessoa> lista = null;
 	List<Pessoa> listaRetorno = null;
 
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    PessoaDAO dao = new PessoaDAO(trans);
-
-	    if (query == null || query.trim().length() <= 0) {
-		if (limit == 0) {
-		    limit = HibernateDAO.PESQUISA_LIMITE;
-		}
-		lista = dao.pesquisa(campus, ativo, limit);
-	    } else {
-		lista = dao.pesquisa(campus, query, ativo, limit);
+	if (query == null || query.trim().length() <= 0) {
+	    if (limit == 0) {
+		limit = HibernateDAO.PESQUISA_LIMITE;
 	    }
+	    lista = pessoaDAO.pesquisa(campus, ativo, limit);
+	} else {
+	    lista = pessoaDAO.pesquisa(campus, query, ativo, limit);
+	}
 
-	    listaRetorno = lista;
+	listaRetorno = lista;
 
-	    if (grupo != null && grupo.trim().length() > 0 && lista != null && lista.size() > 0) {
-		listaRetorno = new ArrayList<Pessoa>();
+	if (grupo != null && grupo.trim().length() > 0 && lista != null && lista.size() > 0) {
+	    listaRetorno = new ArrayList<Pessoa>();
 
-		grupo = grupo.trim().toUpperCase();
+	    grupo = grupo.trim().toUpperCase();
 
-		for (Pessoa p : lista) {
+	    for (Pessoa p : lista) {
 
-		    for (GrupoPessoa gp : p.getGrupoPessoaList()) {
-			if (gp.getNome().trim().toUpperCase().equals(grupo)) {
-			    listaRetorno.add(p);
-			    break;
-			}
+		for (GrupoPessoa gp : p.getGrupoPessoaList()) {
+		    if (gp.getNome().trim().toUpperCase().equals(grupo)) {
+			listaRetorno.add(p);
+			break;
 		    }
 		}
 	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
 	}
 
 	return listaRetorno;

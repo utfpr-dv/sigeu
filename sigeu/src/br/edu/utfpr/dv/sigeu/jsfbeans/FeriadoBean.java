@@ -30,7 +30,6 @@ public class FeriadoBean extends JavaBean {
 
     private Integer editarId = null;
     private String pesquisaCategoria;
-    //
     private Feriado feriado = new Feriado();
     private Date dataFinal = null;
 
@@ -38,13 +37,11 @@ public class FeriadoBean extends JavaBean {
     public void init() {
 	feriado = new Feriado();
 
-	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
-		.getRequest();
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 	try {
 	    this.editarId = Integer.valueOf(req.getParameter("editarId"));
 	} catch (Exception e) {
-	    //
 	}
 
 	if (this.editarId != null) {
@@ -102,12 +99,14 @@ public class FeriadoBean extends JavaBean {
 	    feriado = new Feriado();
 
 	    addInfoMessage("Gravar", msg);
+
+	    return "PesquisaFeriado";
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    addErrorMessage("Gravar", "Erro na gravação!");
 	}
 
-	return "PesquisaFeriado";
+	return "";
     }
 
     /**
@@ -115,7 +114,7 @@ public class FeriadoBean extends JavaBean {
      * 
      * @param cat
      */
-    public String excluir() {
+    public void excluir() {
 	if (feriado.getIdFeriado() == null) {
 	    addInfoMessage("Excluir", " ainda não foi incluída no banco de dados.");
 	} else {
@@ -130,11 +129,7 @@ public class FeriadoBean extends JavaBean {
 		this.addErrorMessage("Excluir", "Erro ao tentar excluir .");
 	    }
 	}
-
-	return "PesquisaFeriado";
     }
-
-    // ///////////////////////////////
 
     public Integer getEditarId() {
 	return editarId;

@@ -32,7 +32,6 @@ public class CampusBean extends JavaBean {
     private String pesquisaInstituicao;
     private List<Instituicao> listaInstituicao;
 
-    //
     private Campus campus = new Campus();
 
     @PostConstruct
@@ -41,8 +40,7 @@ public class CampusBean extends JavaBean {
 	campus.setAtivo(true);
 	campus.setIdInstituicao(new Instituicao());
 
-	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
-		.getRequest();
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 	try {
 	    this.editarId = Integer.valueOf(req.getParameter("editarId"));
@@ -71,11 +69,10 @@ public class CampusBean extends JavaBean {
      * Cria uma nova campus se o ID for nulo ou 0 ou altera uma campus já gravada no
      * banco de dados se ela já existir
      */
-    public void gravar() {
+    public String gravar() {
 	boolean novo = (campus.getIdCampus() == null || this.campus.getIdCampus() == 0);
 
-	if (this.getCampus().getIdInstituicao() == null
-		|| this.getCampus().getIdInstituicao().getIdInstituicao() == null) {
+	if (this.getCampus().getIdInstituicao() == null || this.getCampus().getIdInstituicao().getIdInstituicao() == null) {
 	    addWarnMessage("Gravar", "Instituição não selecionada.");
 	} else {
 
@@ -94,6 +91,7 @@ public class CampusBean extends JavaBean {
 
 		addInfoMessage("Gravar", "Campus " + label + " " + (novo ? "criado" : "alterado") + " com sucesso!");
 
+		return "PesquisaCampus";
 	    } catch (Exception e) {
 		e.printStackTrace();
 		addErrorMessage("Gravar", "Erro na gravação!");
@@ -103,6 +101,8 @@ public class CampusBean extends JavaBean {
 		}
 	    }
 	}
+
+	return "";
     }
 
     /**
@@ -166,8 +166,6 @@ public class CampusBean extends JavaBean {
 	listaInstituicao = null;
     }
 
-    // ///////////////////////////////
-
     public Campus getCampus() {
 	return campus;
     }
@@ -195,5 +193,4 @@ public class CampusBean extends JavaBean {
     public List<Instituicao> getListaInstituicao() {
 	return listaInstituicao;
     }
-
 }

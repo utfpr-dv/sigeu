@@ -3,6 +3,7 @@ package br.edu.utfpr.dv.sigeu.service;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.hibernate.Hibernate;
@@ -10,24 +11,20 @@ import org.hibernate.Hibernate;
 import br.edu.utfpr.dv.sigeu.dao.FeriadoDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Feriado;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 @Stateless
 public class FeriadoService {
+
+    @EJB
+    private FeriadoDAO dao;
+
     /**
      * Cria nova
      * 
      * @param cat
      */
     public void criar(Feriado cat) {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	FeriadoDAO dao = new FeriadoDAO(trans);
 	dao.criar(cat);
-
-	trans.commit();
-	trans.close();
     }
 
     /**
@@ -36,14 +33,7 @@ public class FeriadoService {
      * @param cat
      */
     public void alterar(Feriado cat) {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	FeriadoDAO dao = new FeriadoDAO(trans);
 	dao.alterar(cat);
-
-	trans.commit();
-	trans.close();
     }
 
     /**
@@ -53,25 +43,10 @@ public class FeriadoService {
      * @throws Exception
      */
     public void persistir(Feriado item) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    FeriadoDAO dao = new FeriadoDAO(trans);
-
-	    if (item.getIdFeriado() != null) {
-		dao.alterar(item);
-	    } else {
-		dao.criar(item);
-	    }
-
-	    trans.commit();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	if (item.getIdFeriado() != null) {
+	    dao.alterar(item);
+	} else {
+	    dao.criar(item);
 	}
     }
 
@@ -85,31 +60,17 @@ public class FeriadoService {
     public List<Feriado> pesquisar(Campus campus, String textoPesquisa) throws Exception {
 	List<Feriado> lista = null;
 
-	Transaction trans = new Transaction();
+	if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
+	    lista = dao.pesquisa(campus, 0);
+	} else {
+	    lista = dao.pesquisa(campus, textoPesquisa, 0);
+	}
 
-	try {
-	    trans.begin();
-
-	    FeriadoDAO dao = new FeriadoDAO(trans);
-
-	    if (textoPesquisa == null || textoPesquisa.trim().length() <= 0) {
-		lista = dao.pesquisa(campus, 0);
-	    } else {
-		lista = dao.pesquisa(campus, textoPesquisa, 0);
+	if (lista != null) {
+	    for (Feriado c : lista) {
+		Hibernate.initialize(c.getIdCampus());
+		Hibernate.initialize(c.getIdCampus().getIdInstituicao());
 	    }
-
-	    if (lista != null) {
-		for (Feriado c : lista) {
-		    Hibernate.initialize(c.getIdCampus());
-		    Hibernate.initialize(c.getIdCampus().getIdInstituicao());
-		}
-	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
 	}
 
 	return lista;
@@ -122,23 +83,13 @@ public class FeriadoService {
      * @throws Exception
      */
     public Feriado encontrePorId(Integer editarId) throws Exception {
-	Transaction trans = new Transaction();
+	Feriado obj = dao.encontrePorId(editarId);
 
-	try {
-	    trans.begin();
-	    FeriadoDAO dao = new FeriadoDAO(trans);
-	    Feriado obj = dao.encontrePorId(editarId);
-	    if (obj != null) {
-		Hibernate.initialize(obj.getIdCampus());
-		Hibernate.initialize(obj.getIdCampus().getIdInstituicao());
-	    }
-	    return obj;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	if (obj != null) {
+	    Hibernate.initialize(obj.getIdCampus());
+	    Hibernate.initialize(obj.getIdCampus().getIdInstituicao());
 	}
+	return obj;
     }
 
     /**
@@ -148,48 +99,21 @@ public class FeriadoService {
      * @throws Exception
      */
     public void remover(Feriado item) throws Exception {
-	Transaction trans = new Transaction();
+	Feriado existente = dao.encontrePorId(item.getIdFeriado());
 
-	try {
-	    trans.begin();
-
-	    FeriadoDAO dao = new FeriadoDAO(trans);
-	    Feriado existente = dao.encontrePorId(item.getIdFeriado());
-
-	    dao.remover(existente);
-	    trans.commit();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
-	}
+	dao.remover(existente);
     }
 
     public List<Feriado> pesquisarPorData(Campus campus, Date dataInicial, Date dataFinal) throws Exception {
 	List<Feriado> lista = null;
 
-	Transaction trans = new Transaction();
+	lista = dao.pesquisa(campus, dataInicial, dataFinal);
 
-	try {
-	    trans.begin();
-
-	    FeriadoDAO dao = new FeriadoDAO(trans);
-
-	    lista = dao.pesquisa(campus, dataInicial, dataFinal);
-
-	    if (lista != null) {
-		for (Feriado c : lista) {
-		    Hibernate.initialize(c.getIdCampus());
-		    Hibernate.initialize(c.getIdCampus().getIdInstituicao());
-		}
+	if (lista != null) {
+	    for (Feriado c : lista) {
+		Hibernate.initialize(c.getIdCampus());
+		Hibernate.initialize(c.getIdCampus().getIdInstituicao());
 	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
 	}
 
 	return lista;
@@ -204,23 +128,9 @@ public class FeriadoService {
     public boolean verificaFeriado(Campus campus, Date data) {
 	List<Feriado> lista = null;
 
-	Transaction trans = new Transaction();
+	lista = dao.pesquisa(campus, data);
 
-	try {
-	    trans.begin();
+	return (lista != null && lista.size() > 0);
 
-	    FeriadoDAO dao = new FeriadoDAO(trans);
-
-	    lista = dao.pesquisa(campus, data);
-
-	    return (lista != null && lista.size() > 0);
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
     }
-
 }

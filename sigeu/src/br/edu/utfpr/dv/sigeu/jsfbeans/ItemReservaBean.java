@@ -36,7 +36,6 @@ public class ItemReservaBean extends JavaBean {
     private Integer editarId = null;
     private String pesquisaCategoria;
     private List<CategoriaItemReserva> listaCategoria = null;
-    //
     private ItemReserva itemReserva = new ItemReserva();
 
     @PostConstruct
@@ -45,13 +44,11 @@ public class ItemReservaBean extends JavaBean {
 	itemReserva.setNumeroHorasAntecedencia(0);
 	itemReserva.setAtivo(true);
 
-	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
-		.getRequest();
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 	try {
 	    this.editarId = Integer.valueOf(req.getParameter("editarId"));
 	} catch (Exception e) {
-	    //
 	}
 
 	if (this.editarId != null) {
@@ -75,13 +72,12 @@ public class ItemReservaBean extends JavaBean {
      * Cria uma nova se o ID for nulo ou 0 ou altera uma já gravada no banco de
      * dados se ela já existir
      */
-    public void gravar() {
+    public String gravar() {
 	itemReserva.setIdCampus(loginBean.getCampus());
 
 	try {
 	    itemReservaService.persistir(itemReserva);
-	    String msg = "Item " + itemReserva.getIdItemReserva() + "-" + itemReserva.getNome()
-		    + " gravado com sucesso!";
+	    String msg = "Item " + itemReserva.getIdItemReserva() + "-" + itemReserva.getNome() + " gravado com sucesso!";
 	    itemReserva = new ItemReserva();
 	    itemReserva.setAtivo(true);
 
@@ -92,10 +88,13 @@ public class ItemReservaBean extends JavaBean {
 
 	    pesquisaCategoria = "";
 
+	    return "PesquisaItemReserva";
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    addErrorMessage("Gravar", "Erro na gravação!");
 	}
+
+	return "";
     }
 
     /**
@@ -160,8 +159,6 @@ public class ItemReservaBean extends JavaBean {
 	}
     }
 
-    // ///////////////////////////////
-
     public Integer getEditarId() {
 	return editarId;
     }
@@ -185,5 +182,4 @@ public class ItemReservaBean extends JavaBean {
     public void setPesquisaCategoria(String pesquisaCategoria) {
 	this.pesquisaCategoria = pesquisaCategoria;
     }
-
 }

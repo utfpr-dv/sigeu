@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.hibernate.Hibernate;
@@ -14,10 +15,15 @@ import br.edu.utfpr.dv.sigeu.dao.PessoaDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.GrupoPessoa;
 import br.edu.utfpr.dv.sigeu.entities.Pessoa;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 @Stateless
 public class GrupoPessoaService {
+
+    @EJB
+    private PessoaDAO pessoaDAO;
+
+    @EJB
+    private GrupoPessoaDAO dao;
 
     /**
      * Cria um novo grupo
@@ -25,45 +31,24 @@ public class GrupoPessoaService {
      * @param gp
      */
     public void criar(GrupoPessoa gp) {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	GrupoPessoaDAO dao = new GrupoPessoaDAO(trans);
 	dao.criar(gp);
-
-	trans.commit();
-	trans.close();
     }
 
     public void alterar(GrupoPessoa gp) {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	GrupoPessoaDAO dao = new GrupoPessoaDAO(trans);
 	dao.alterar(gp);
-
-	trans.commit();
-	trans.close();
     }
 
     /**
      * Exclui os grupos que não estão mais relacionados e inclui os grupos que
      * faltam relacionamento
      * 
-     * @param trans  Transação de controle. Este método foi projetado para ser
-     *               utilizado em um loop com várias atualizações de grupos, e não
-     *               somente uma. Portanto o controle transacional não deve ficar
-     *               interno a este método.
      * @param pessoa Objeto pessoa do banco de dados
      * @param grupos Lista de grupos do LDAP
      */
-    public void atualizaGrupos(Transaction trans, Pessoa pessoa, List<GrupoPessoa> grupos) throws Exception {
+    public void atualizaGrupos(Pessoa pessoa, List<GrupoPessoa> grupos) throws Exception {
 	// try {
 	// trans = new Transaction();
 	// trans.begin();
-
-	PessoaDAO pessoaDAO = new PessoaDAO(trans);
-	GrupoPessoaDAO grupoPessoaDAO = new GrupoPessoaDAO(trans);
 
 	// Busca novamente do banco de dados
 	// pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
@@ -117,7 +102,7 @@ public class GrupoPessoaService {
 		for (int i = pessoa.getGrupoPessoaList().size() - 1; i >= 0; i--) {
 		    GrupoPessoa grupo = pessoa.getGrupoPessoaList().get(i);
 		    grupo.getPessoaList().remove(pessoa);
-		    grupoPessoaDAO.alterar(grupo);
+		    dao.alterar(grupo);
 		    // i--;
 		}
 	    }
@@ -134,7 +119,7 @@ public class GrupoPessoaService {
 
 	    for (int i = 0; i < grupos.size(); i++) {
 		Integer id = grupos.get(i).getIdGrupoPessoa();
-		GrupoPessoa grupo = grupoPessoaDAO.encontrePorId(id);
+		GrupoPessoa grupo = dao.encontrePorId(id);
 		List<Pessoa> pessoaList = grupo.getPessoaList();
 
 		if (pessoaList == null) {
@@ -144,7 +129,7 @@ public class GrupoPessoaService {
 
 		grupo.setPessoaList(pessoaList);
 
-		grupoPessoaDAO.alterar(grupo);
+		dao.alterar(grupo);
 		gruposCadastrados.add(grupo);
 	    }
 
@@ -178,36 +163,26 @@ public class GrupoPessoaService {
      */
     public GrupoPessoa encontrePorDescricao(Campus campus, String descricao)
 	    throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
-	Transaction trans = new Transaction();
-	trans.begin();
 
-	GrupoPessoaDAO dao = new GrupoPessoaDAO(trans);
 	GrupoPessoa gp = dao.encontrePorDescricao(campus, descricao);
 
 	if (gp != null) {
 	    Hibernate.initialize(gp.getIdCampus());
 	    Hibernate.initialize(gp.getIdCampus().getIdInstituicao());
 	}
-	// trans.commit();
-	trans.close();
 
 	return gp;
     }
 
     public GrupoPessoa encontrePorDescricaoCerto(Campus campus, String descricao)
 	    throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
-	Transaction trans = new Transaction();
-	trans.begin();
 
-	GrupoPessoaDAO dao = new GrupoPessoaDAO(trans);
 	GrupoPessoa gp = dao.encontrePorDescricao(campus, descricao);
 
 	if (gp != null) {
 	    Hibernate.initialize(gp.getIdCampus());
 	    Hibernate.initialize(gp.getIdCampus().getIdInstituicao());
 	}
-	// trans.commit();
-	trans.close();
 
 	return gp;
     }
@@ -218,16 +193,9 @@ public class GrupoPessoaService {
      * @return
      */
     public GrupoPessoa encontrePorId(Integer id) {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	GrupoPessoaDAO dao = new GrupoPessoaDAO(trans);
 	GrupoPessoa gp = dao.encontrePorId(id);
 	Hibernate.initialize(gp.getIdCampus());
 	Hibernate.initialize(gp.getIdCampus().getIdInstituicao());
-
-	// trans.commit();
-	trans.close();
 
 	return gp;
     }

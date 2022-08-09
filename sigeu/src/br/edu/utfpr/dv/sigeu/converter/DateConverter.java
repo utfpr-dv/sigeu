@@ -12,23 +12,20 @@ import javax.faces.convert.FacesConverter;
 @FacesConverter(value = "dateConverter", forClass = Date.class)
 public class DateConverter implements Converter {
 
-	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-	@Override
-	public Date getAsObject(FacesContext context, UIComponent component, String value) {
-		Date date;
-		try {
-			date = new Date(sdf.parse(value).getTime());
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return date;
+    @Override
+    public Date getAsObject(FacesContext context, UIComponent component, String value) {
+	try {
+	    return new Date(sdf.parse(value).getTime());
+	} catch (ParseException e) {
+	    e.printStackTrace();
+	    return null;
 	}
+    }
 
-	@Override
-	public String getAsString(FacesContext context, UIComponent component, Object value) {
-		return sdf.format((Date) value);
-	}
-
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
+	return sdf.format((Date) value);
+    }
 }

@@ -3,7 +3,6 @@ package br.edu.utfpr.dv.sigeu.jsfbeans;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.CommunicationException;
 import javax.naming.NamingException;
@@ -16,7 +15,6 @@ import com.adamiworks.utils.hibernate.DatabaseParameter;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.GenericJDBCException;
 
-import br.edu.utfpr.dv.sigeu.SessionSingleton;
 import br.edu.utfpr.dv.sigeu.config.Config;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.Direito;
@@ -55,17 +53,7 @@ public class LoginBean extends JavaBean {
     // pessoa
     private Campus campus;
 
-//    @PersistenceContext(unitName = "sigeuPU")
-//    private Session session;
-
-    @Inject
-    private SessionSingleton sessionSingleton;
-
     public String login() {
-
-	System.out.println("1111111111");
-	System.out.println(sessionSingleton.getSession().get(Campus.class, 100));
-	System.out.println("1111111111");
 
 	boolean ok = true;
 
@@ -103,8 +91,7 @@ public class LoginBean extends JavaBean {
 
 			campus = pessoaLogin.getIdCampus();
 
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-				.getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 			request.getSession().setAttribute(LoginFilter.SESSION_EMAIL_LOGIN, email);
 
@@ -173,8 +160,7 @@ public class LoginBean extends JavaBean {
     }
 
     public String logoff() {
-	HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
-		.getRequest();
+	HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 	request.getSession().removeAttribute(LoginFilter.SESSION_EMAIL_LOGIN);
 
@@ -249,5 +235,4 @@ public class LoginBean extends JavaBean {
     public void setPermiteReservaRecorrente(boolean permiteReservaRecorrente) {
 	this.permiteReservaRecorrente = permiteReservaRecorrente;
     }
-
 }

@@ -20,13 +20,15 @@ import br.edu.utfpr.dv.sigeu.entities.Pessoa;
 import br.edu.utfpr.dv.sigeu.exception.CampusNaoLocalizadoException;
 import br.edu.utfpr.dv.sigeu.exception.ServidorLdapNaoCadastradoException;
 import br.edu.utfpr.dv.sigeu.exception.UsuarioDesativadoException;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 @Stateless
 public class LoginService {
 
     @EJB
     private PessoaService pessoaService;
+
+    @EJB
+    private PessoaDAO pessoaDAO;
 
     @EJB
     private GrupoPessoaService grupoPessoaService;
@@ -107,8 +109,7 @@ public class LoginService {
 
 	    String uid = email.substring(0, email.indexOf("@"));
 
-	    LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(), ldap.getSsl(), true, ldap.getBasedn(),
-		    ldap.getVarLdapUid());
+	    LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(), ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
 
 	    boolean ldapAuth = true;
 
@@ -212,27 +213,15 @@ public class LoginService {
 
     }
 
+    // Atualiza os grupos da pessoa
     private Pessoa atualizaGruposPessoa(Pessoa pessoa, List<GrupoPessoa> grupos) throws Exception {
-	// Atualiza os grupos da pessoa
-	Transaction trans = null;
-	try {
-	    trans = new Transaction();
-	    trans.begin();
-	    PessoaDAO pessoaDAO = new PessoaDAO(trans);
 
-	    /**
-	     * Busca novamente a pessoa do banco de dados para conferir os grupos
-	     */
-	    pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
-	    grupoPessoaService.atualizaGrupos(trans, pessoa, grupos);
-	    trans.commit();
-	} catch (Exception e) {
-	    throw e;
-	} finally {
-	    if (trans != null) {
-		trans.close();
-	    }
-	}
+	/**
+	 * Busca novamente a pessoa do banco de dados para conferir os grupos
+	 */
+	pessoa = pessoaDAO.encontrePorId(pessoa.getIdPessoa());
+	grupoPessoaService.atualizaGrupos(pessoa, grupos);
+
 	return pessoa;
     }
 

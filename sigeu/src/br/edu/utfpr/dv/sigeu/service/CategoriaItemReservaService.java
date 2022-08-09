@@ -2,6 +2,7 @@ package br.edu.utfpr.dv.sigeu.service;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.hibernate.Hibernate;
@@ -10,24 +11,20 @@ import br.edu.utfpr.dv.sigeu.dao.CategoriaItemReservaDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.CategoriaItemReserva;
 import br.edu.utfpr.dv.sigeu.exception.EntidadePossuiRelacionamentoException;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 
 @Stateless
 public class CategoriaItemReservaService {
+
+    @EJB
+    private CategoriaItemReservaDAO dao;
+
     /**
      * Cria nova categoria
      * 
      * @param cat
      */
     public void criar(CategoriaItemReserva cat) {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	CategoriaItemReservaDAO dao = new CategoriaItemReservaDAO(trans);
 	dao.criar(cat);
-
-	trans.commit();
-	trans.close();
     }
 
     /**
@@ -36,14 +33,7 @@ public class CategoriaItemReservaService {
      * @param cat
      */
     public void alterar(CategoriaItemReserva cat) {
-	Transaction trans = new Transaction();
-	trans.begin();
-
-	CategoriaItemReservaDAO dao = new CategoriaItemReservaDAO(trans);
 	dao.alterar(cat);
-
-	trans.commit();
-	trans.close();
     }
 
     /**
@@ -53,24 +43,10 @@ public class CategoriaItemReservaService {
      * @throws Exception
      */
     public void persistir(CategoriaItemReserva cat) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    CategoriaItemReservaDAO dao = new CategoriaItemReservaDAO(trans);
-
-	    if (cat.getIdCategoria() != null) {
-		dao.alterar(cat);
-	    } else {
-		dao.criar(cat);
-	    }
-	    trans.commit();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	if (cat.getIdCategoria() != null) {
+	    dao.alterar(cat);
+	} else {
+	    dao.criar(cat);
 	}
     }
 
@@ -85,26 +61,14 @@ public class CategoriaItemReservaService {
      */
     public List<CategoriaItemReserva> pesquisar(Campus campus, String textoPesquisa, Boolean ativo) throws Exception {
 	List<CategoriaItemReserva> lista = null;
-	Transaction trans = new Transaction();
 
-	try {
-	    trans.begin();
-	    CategoriaItemReservaDAO dao = new CategoriaItemReservaDAO(trans);
+	lista = dao.pesquisa(campus, textoPesquisa, ativo, 0);
 
-	    lista = dao.pesquisa(campus, textoPesquisa, ativo, 0);
-
-	    if (lista != null) {
-		for (CategoriaItemReserva c : lista) {
-		    Hibernate.initialize(c.getIdCampus());
-		    Hibernate.initialize(c.getIdCampus().getIdInstituicao());
-		}
+	if (lista != null) {
+	    for (CategoriaItemReserva c : lista) {
+		Hibernate.initialize(c.getIdCampus());
+		Hibernate.initialize(c.getIdCampus().getIdInstituicao());
 	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
 	}
 
 	return lista;
@@ -117,23 +81,14 @@ public class CategoriaItemReservaService {
      * @throws Exception
      */
     public CategoriaItemReserva encontrePorId(Integer editarId) throws Exception {
-	Transaction trans = new Transaction();
 
-	try {
-	    trans.begin();
-	    CategoriaItemReservaDAO dao = new CategoriaItemReservaDAO(trans);
-	    CategoriaItemReserva obj = dao.encontrePorId(editarId);
-	    if (obj != null) {
-		Hibernate.initialize(obj.getIdCampus());
-		Hibernate.initialize(obj.getIdCampus().getIdInstituicao());
-	    }
-	    return obj;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	CategoriaItemReserva obj = dao.encontrePorId(editarId);
+
+	if (obj != null) {
+	    Hibernate.initialize(obj.getIdCampus());
+	    Hibernate.initialize(obj.getIdCampus().getIdInstituicao());
 	}
+	return obj;
     }
 
     /**
@@ -143,30 +98,17 @@ public class CategoriaItemReservaService {
      * @throws Exception
      */
     public void remover(CategoriaItemReserva categoria) throws Exception {
-	Transaction trans = new Transaction();
 
-	try {
-	    trans.begin();
+	CategoriaItemReserva cat = dao.encontrePorId(categoria.getIdCategoria());
 
-	    CategoriaItemReservaDAO dao = new CategoriaItemReservaDAO(trans);
-	    CategoriaItemReserva cat = dao.encontrePorId(categoria.getIdCategoria());
-
-	    if (cat != null) {
-		Hibernate.initialize(cat.getItemReservaList());
-	    }
-
-	    if (cat.getItemReservaList().size() > 0) {
-		throw new EntidadePossuiRelacionamentoException(cat.getNome());
-	    }
-
-	    dao.remover(cat);
-	    trans.commit();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	if (cat != null) {
+	    Hibernate.initialize(cat.getItemReservaList());
 	}
-    }
 
+	if (cat.getItemReservaList().size() > 0) {
+	    throw new EntidadePossuiRelacionamentoException(cat.getNome());
+	}
+
+	dao.remover(cat);
+    }
 }

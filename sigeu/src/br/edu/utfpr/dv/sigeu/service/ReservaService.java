@@ -26,7 +26,6 @@ import br.edu.utfpr.dv.sigeu.entities.Transacao;
 import br.edu.utfpr.dv.sigeu.enumeration.RepeticaoReservaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.exception.ExisteReservaConcorrenteException;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 import br.edu.utfpr.dv.sigeu.vo.ReservaVO;
 
 @Stateless
@@ -38,20 +37,17 @@ public class ReservaService {
     @EJB
     private EmailService emailService;
 
-    public Reserva encontrePorId(Integer idReserva) {
-	Transaction trans = new Transaction();
+    @EJB
+    private ReservaDAO reservaDAO;
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-	    Reserva r = dao.encontrePorId(idReserva);
-	    return r;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+    @EJB
+    private ItemReservaDAO itemDAO;
+
+    @EJB
+    private PeriodDAO periodDAO;
+
+    public Reserva encontrePorId(Integer idReserva) {
+	return reservaDAO.encontrePorId(idReserva);
     }
 
     public void criar(Campus campus, Pessoa pessoaLogin, Reserva reserva) throws Exception {
@@ -68,55 +64,40 @@ public class ReservaService {
 	// autorizador é quem gravou a reserva.
 	reserva.setIdAutorizador(reserva.getIdPessoa());
 
-	Transaction trans = new Transaction();
-	Transacao transacao = transacaoService.criar(campus, pessoaLogin,
-		"Reserva do item " + reserva.getIdItemReserva().getNome());
+	Transacao transacao = transacaoService.criar(campus, pessoaLogin, "Reserva do item " + reserva.getIdItemReserva().getNome());
 	reserva.setIdTransacao(transacao);
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-	    ItemReservaDAO itemDAO = new ItemReservaDAO(trans);
+	ItemReserva ir = itemDAO.encontrePorId(reserva.getIdItemReserva().getIdItemReserva());
 
-	    ItemReserva ir = itemDAO.encontrePorId(reserva.getIdItemReserva().getIdItemReserva());
+	reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
 
-	    reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
+	// A lista de pessoas refere-se à lista de autorizadores
+	if (ir.getPessoaList() != null && ir.getPessoaList().size() > 0) {
+	    // Ops! Tem pelo menos um autorizador. Se o usuário não for um
+	    // deles, grava como pendente
 
-	    // A lista de pessoas refere-se à lista de autorizadores
-	    if (ir.getPessoaList() != null && ir.getPessoaList().size() > 0) {
-		// Ops! Tem pelo menos um autorizador. Se o usuário não for um
-		// deles, grava como pendente
+	    Pessoa usuarioLogin = pessoaLogin;
 
-		Pessoa usuarioLogin = pessoaLogin;
-
-		for (Pessoa p : ir.getPessoaList()) {
-		    if (usuarioLogin.getIdPessoa() == p.getIdPessoa()) {
-			usuarioLoginAutorizador = true;
-			break;
-		    }
-		}
-
-		if (!usuarioLoginAutorizador) {
-		    reserva.setStatus(StatusReserva.PENDENTE.getStatus());
+	    for (Pessoa p : ir.getPessoaList()) {
+		if (usuarioLogin.getIdPessoa() == p.getIdPessoa()) {
+		    usuarioLoginAutorizador = true;
+		    break;
 		}
 	    }
-
-	    dao.criar(reserva);
-
-	    trans.commit();
 
 	    if (!usuarioLoginAutorizador) {
-		List<Pessoa> autorizadores = reserva.getIdItemReserva().getPessoaList();
-
-		for (Pessoa a : autorizadores) {
-		    emailService.enviaEmailAutorizador(campus, a, reserva.getIdItemReserva());
-		}
+		reserva.setStatus(StatusReserva.PENDENTE.getStatus());
 	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
+	}
+
+	reservaDAO.criar(reserva);
+
+	if (!usuarioLoginAutorizador) {
+	    List<Pessoa> autorizadores = reserva.getIdItemReserva().getPessoaList();
+
+	    for (Pessoa a : autorizadores) {
+		emailService.enviaEmailAutorizador(campus, a, reserva.getIdItemReserva());
+	    }
 	}
     }
 
@@ -127,41 +108,27 @@ public class ReservaService {
      * @param motivoTransacao
      * @throws Exception
      */
-    public void alterar(Campus campus, Pessoa pessoaLogin, List<Reserva> listaReserva, String motivoTransacao)
-	    throws Exception {
-	Transaction trans = new Transaction();
+    public void alterar(Campus campus, Pessoa pessoaLogin, List<Reserva> listaReserva, String motivoTransacao) throws Exception {
 	Transacao transacao = transacaoService.criar(campus, pessoaLogin, motivoTransacao);
 
-	try {
-	    trans.begin();
+	for (Reserva reserva : listaReserva) {
+	    StatusReserva statusReserva = StatusReserva.getFromStatus(reserva.getStatus());
 
-	    for (Reserva reserva : listaReserva) {
-		StatusReserva statusReserva = StatusReserva.getFromStatus(reserva.getStatus());
+	    switch (statusReserva) {
+		case EFETIVADA:
+		    if (existeConcorrente(reserva)) {
+			throw new ExisteReservaConcorrenteException(reserva);
+		    }
+		    break;
 
-		switch (statusReserva) {
-		    case EFETIVADA:
-			if (existeConcorrente(reserva)) {
-			    trans.rollback();
-			    throw new ExisteReservaConcorrenteException(reserva);
-			}
-			break;
-
-		    default:
-			break;
-		}
-
-		reserva.setIdTransacao(transacao);
-		ReservaDAO dao = new ReservaDAO(trans);
-		dao.alterar(reserva);
+		default:
+		    break;
 	    }
 
-	    trans.commit();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
+	    reserva.setIdTransacao(transacao);
+	    reservaDAO.alterar(reserva);
 	}
+
     }
 
     /**
@@ -204,8 +171,8 @@ public class ReservaService {
      * @param dataLimite
      * @throws Exception
      */
-    public List<Reserva> criarRecorrente(Campus campus, Pessoa pessoaLogin, Reserva reserva,
-	    RepeticaoReservaEnum tipoRecorrencia, Date dataLimite) throws Exception {
+    public List<Reserva> criarRecorrente(Campus campus, Pessoa pessoaLogin, Reserva reserva, RepeticaoReservaEnum tipoRecorrencia, Date dataLimite)
+	    throws Exception {
 
 	boolean usuarioLoginAutorizador = false;
 
@@ -221,107 +188,90 @@ public class ReservaService {
 	reserva.setIdAutorizador(reserva.getIdPessoa());
 
 	if (tipoRecorrencia.equals(RepeticaoReservaEnum.SEMANAL)) {
-	    Transaction trans = new Transaction();
-	    Transacao transacao = transacaoService.criar(campus, pessoaLogin,
-		    "Reserva do item " + reserva.getIdItemReserva().getNome() + " semanal");
+	    Transacao transacao = transacaoService.criar(campus, pessoaLogin, "Reserva do item " + reserva.getIdItemReserva().getNome() + " semanal");
 	    reserva.setIdTransacao(transacao);
 
-	    try {
-		trans.begin();
+	    ItemReserva ir = itemDAO.encontrePorId(reserva.getIdItemReserva().getIdItemReserva());
 
-		ReservaDAO dao = new ReservaDAO(trans);
-		ItemReservaDAO itemDAO = new ItemReservaDAO(trans);
+	    reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
 
-		ItemReserva ir = itemDAO.encontrePorId(reserva.getIdItemReserva().getIdItemReserva());
+	    // A lista de pessoas refere-se à lista de autorizadores
+	    if (ir.getPessoaList() != null && ir.getPessoaList().size() > 0) {
+		// Ops! Tem pelo menos um autorizador. Se o usuário não for
+		// um
+		// deles, grava como pendente
 
-		reserva.setStatus(StatusReserva.EFETIVADA.getStatus());
+		Pessoa usuarioLogin = pessoaLogin;
 
-		// A lista de pessoas refere-se à lista de autorizadores
-		if (ir.getPessoaList() != null && ir.getPessoaList().size() > 0) {
-		    // Ops! Tem pelo menos um autorizador. Se o usuário não for
-		    // um
-		    // deles, grava como pendente
-
-		    Pessoa usuarioLogin = pessoaLogin;
-
-		    for (Pessoa p : ir.getPessoaList()) {
-			if (usuarioLogin.getIdPessoa() == p.getIdPessoa()) {
-			    usuarioLoginAutorizador = true;
-			    break;
-			}
-		    }
-
-		    if (!usuarioLoginAutorizador) {
-			reserva.setStatus(StatusReserva.PENDENTE.getStatus());
-		    }
-		}
-
-		Calendar calLimite = Calendar.getInstance();
-		calLimite.setTime(dataLimite);
-
-		Calendar calData = Calendar.getInstance();
-		calData.setTime(reserva.getData());
-		int diaDaSemana = calData.get(Calendar.DAY_OF_WEEK);
-
-		// Incrementa 1 dia para começar o laço
-		calData.add(Calendar.DAY_OF_MONTH, 1);
-
-		boolean existeConcorrencia = false;
-
-		List<Reserva> listaGravacao = new ArrayList<Reserva>();
-
-		while (true) {
-		    if (calData.getTimeInMillis() > calLimite.getTimeInMillis()) {
+		for (Pessoa p : ir.getPessoaList()) {
+		    if (usuarioLogin.getIdPessoa() == p.getIdPessoa()) {
+			usuarioLoginAutorizador = true;
 			break;
 		    }
-
-		    int diaDaSemanaAtual = calData.get(Calendar.DAY_OF_WEEK);
-
-		    if (diaDaSemanaAtual == diaDaSemana) {
-			Reserva r = duplicar(reserva);
-			r.setData(calData.getTime());
-
-			existeConcorrencia = existeConcorrente(r);
-
-			if (!existeConcorrencia) {
-			    listaGravacao.add(r);
-			} else {
-			    break;
-			}
-		    }
-
-		    calData.add(Calendar.DAY_OF_MONTH, 1);
-		}
-
-		if (existeConcorrencia) {
-		    trans.rollback();
-		    throw new ExisteReservaConcorrenteException(reserva);
-		} else {
-		    // Grava a reserva inicial
-		    listaGravacao.add(reserva);
-
-		    for (Reserva r : listaGravacao) {
-			dao.criar(r);
-		    }
-
-		    trans.commit();
 		}
 
 		if (!usuarioLoginAutorizador) {
-		    List<Pessoa> autorizadores = reserva.getIdItemReserva().getPessoaList();
+		    reserva.setStatus(StatusReserva.PENDENTE.getStatus());
+		}
+	    }
 
-		    for (Pessoa a : autorizadores) {
-			emailService.enviaEmailAutorizador(campus, a, reserva.getIdItemReserva());
+	    Calendar calLimite = Calendar.getInstance();
+	    calLimite.setTime(dataLimite);
+
+	    Calendar calData = Calendar.getInstance();
+	    calData.setTime(reserva.getData());
+	    int diaDaSemana = calData.get(Calendar.DAY_OF_WEEK);
+
+	    // Incrementa 1 dia para começar o laço
+	    calData.add(Calendar.DAY_OF_MONTH, 1);
+
+	    boolean existeConcorrencia = false;
+
+	    List<Reserva> listaGravacao = new ArrayList<Reserva>();
+
+	    while (true) {
+		if (calData.getTimeInMillis() > calLimite.getTimeInMillis()) {
+		    break;
+		}
+
+		int diaDaSemanaAtual = calData.get(Calendar.DAY_OF_WEEK);
+
+		if (diaDaSemanaAtual == diaDaSemana) {
+		    Reserva r = duplicar(reserva);
+		    r.setData(calData.getTime());
+
+		    existeConcorrencia = existeConcorrente(r);
+
+		    if (!existeConcorrencia) {
+			listaGravacao.add(r);
+		    } else {
+			break;
 		    }
 		}
 
-		return listaGravacao;
-	    } catch (Exception e) {
-		e.printStackTrace();
-		throw e;
-	    } finally {
-		trans.close();
+		calData.add(Calendar.DAY_OF_MONTH, 1);
 	    }
+
+	    if (existeConcorrencia) {
+		throw new ExisteReservaConcorrenteException(reserva);
+	    } else {
+		// Grava a reserva inicial
+		listaGravacao.add(reserva);
+
+		for (Reserva r : listaGravacao) {
+		    reservaDAO.criar(r);
+		}
+	    }
+
+	    if (!usuarioLoginAutorizador) {
+		List<Pessoa> autorizadores = reserva.getIdItemReserva().getPessoaList();
+
+		for (Pessoa a : autorizadores) {
+		    emailService.enviaEmailAutorizador(campus, a, reserva.getIdItemReserva());
+		}
+	    }
+
+	    return listaGravacao;
 	}
 	return null;
     }
@@ -334,27 +284,14 @@ public class ReservaService {
      * @throws Exception
      */
     public boolean existeConcorrente(Reserva reserva) throws Exception {
-	Transaction trans = new Transaction();
+	List<ItemReserva> lista = itemDAO.pesquisaItemReservaDisponivel(reserva.getIdCampus(), reserva.getData(), reserva.getHoraInicio(), reserva.getHoraFim(),
+		reserva.getIdItemReserva().getIdCategoria(), reserva.getIdItemReserva());
 
-	try {
-	    trans.begin();
-	    ItemReservaDAO dao = new ItemReservaDAO(trans);
-
-	    List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(reserva.getIdCampus(), reserva.getData(),
-		    reserva.getHoraInicio(), reserva.getHoraFim(), reserva.getIdItemReserva().getIdCategoria(),
-		    reserva.getIdItemReserva());
-
-	    if (lista != null && lista.size() == 0) {
-		return true;
-	    }
-
-	    return false;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
+	if (lista != null && lista.size() == 0) {
+	    return true;
 	}
+
+	return false;
     }
 
     /**
@@ -369,70 +306,43 @@ public class ReservaService {
      * @return
      * @throws Exception
      */
-    public List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date horaI, Date horaF,
-	    TipoReserva tipoReserva, CategoriaItemReserva categoria, ItemReserva item, String usuario)
-	    throws Exception {
-	Transaction trans = new Transaction();
+    public List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date horaI, Date horaF, TipoReserva tipoReserva, CategoriaItemReserva categoria,
+	    ItemReserva item, String usuario) throws Exception {
+	List<Reserva> lista = reservaDAO.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, horaI, horaF, tipoReserva, categoria, item, usuario);
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-
-	    List<Reserva> lista = dao.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, horaI, horaF, tipoReserva,
-		    categoria, item, usuario);
-
-	    if (lista != null && lista.size() > 0) {
-		for (Reserva r : lista) {
-		    // Hibernate.initialize(r.getIdItemReserva());
-		    Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
-		    Hibernate.initialize(r.getIdTipoReserva());
-		    Hibernate.initialize(r.getIdUsuario());
-		    Hibernate.initialize(r.getIdPessoa());
-		    Hibernate.initialize(r.getIdTransacao());
-		}
+	if (lista != null && lista.size() > 0) {
+	    for (Reserva r : lista) {
+		// Hibernate.initialize(r.getIdItemReserva());
+		Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+		Hibernate.initialize(r.getIdTipoReserva());
+		Hibernate.initialize(r.getIdUsuario());
+		Hibernate.initialize(r.getIdPessoa());
+		Hibernate.initialize(r.getIdTransacao());
 	    }
-
-	    return lista;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
 	}
+
+	return lista;
     }
 
-    public List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date data2, Date horaI, Date horaF,
-	    TipoReserva tipoReserva, CategoriaItemReserva categoria, ItemReserva item, String usuario, String motivo,
-	    boolean incluiItemDesativado) throws Exception {
-	Transaction trans = new Transaction();
+    public List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date data2, Date horaI, Date horaF, TipoReserva tipoReserva,
+	    CategoriaItemReserva categoria, ItemReserva item, String usuario, String motivo, boolean incluiItemDesativado) throws Exception {
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
+	List<Reserva> lista = reservaDAO.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, data2, horaI, horaF, tipoReserva, categoria, item, usuario,
+		motivo, incluiItemDesativado);
 
-	    List<Reserva> lista = dao.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, data2, horaI, horaF,
-		    tipoReserva, categoria, item, usuario, motivo, incluiItemDesativado);
-
-	    if (lista != null && lista.size() > 0) {
-		for (Reserva r : lista) {
-		    // Hibernate.initialize(r.getIdItemReserva());
-		    Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
-		    Hibernate.initialize(r.getIdTipoReserva());
-		    Hibernate.initialize(r.getIdUsuario());
-		    Hibernate.initialize(r.getIdPessoa());
-		    Hibernate.initialize(r.getIdTransacao());
-		}
+	if (lista != null && lista.size() > 0) {
+	    for (Reserva r : lista) {
+		// Hibernate.initialize(r.getIdItemReserva());
+		Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+		Hibernate.initialize(r.getIdTipoReserva());
+		Hibernate.initialize(r.getIdUsuario());
+		Hibernate.initialize(r.getIdPessoa());
+		Hibernate.initialize(r.getIdTransacao());
 	    }
-
-	    return lista;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
 	}
+
+	return lista;
+
     }
 
     /**
@@ -447,32 +357,19 @@ public class ReservaService {
      * @return
      * @throws Exception
      */
-    public List<ItemReserva> pesquisaItemReservaDisponivel(Campus campus, Date data, Date horaInicial, Date horaFinal,
-	    CategoriaItemReserva categoria, ItemReserva item) throws Exception {
-	Transaction trans = new Transaction();
+    public List<ItemReserva> pesquisaItemReservaDisponivel(Campus campus, Date data, Date horaInicial, Date horaFinal, CategoriaItemReserva categoria,
+	    ItemReserva item) throws Exception {
 
-	try {
-	    trans.begin();
-	    ItemReservaDAO dao = new ItemReservaDAO(trans);
+	List<ItemReserva> lista = itemDAO.pesquisaItemReservaDisponivel(campus, data, horaInicial, horaFinal, categoria, item);
 
-	    List<ItemReserva> lista = dao.pesquisaItemReservaDisponivel(campus, data, horaInicial, horaFinal, categoria,
-		    item);
-
-	    if (lista != null && lista.size() > 0) {
-		for (ItemReserva i : lista) {
-		    Hibernate.initialize(i.getIdCategoria());
-		    Hibernate.initialize(i.getPessoaList());
-		}
+	if (lista != null && lista.size() > 0) {
+	    for (ItemReserva i : lista) {
+		Hibernate.initialize(i.getIdCategoria());
+		Hibernate.initialize(i.getPessoaList());
 	    }
-
-	    return lista;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
 	}
+
+	return lista;
     }
 
     /**
@@ -486,70 +383,29 @@ public class ReservaService {
      * @return
      * @throws Exception
      */
-    public List<Reserva> pesquisaReservasEfetivadasDoUsuario(Campus campus, Pessoa pessoa, Date dataInicial,
-	    Date dataFinal, CategoriaItemReserva categoria, ItemReserva item, boolean importadas) throws Exception {
-	Transaction trans = new Transaction();
+    public List<Reserva> pesquisaReservasEfetivadasDoUsuario(Campus campus, Pessoa pessoa, Date dataInicial, Date dataFinal, CategoriaItemReserva categoria,
+	    ItemReserva item, boolean importadas) throws Exception {
+	List<Reserva> lista = reservaDAO.pesquisaReservaDoUsuario(campus, StatusReserva.EFETIVADA, pessoa, dataInicial, dataFinal, categoria, item, importadas);
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-
-	    List<Reserva> lista = dao.pesquisaReservaDoUsuario(campus, StatusReserva.EFETIVADA, pessoa, dataInicial,
-		    dataFinal, categoria, item, importadas);
-
-	    if (lista != null && lista.size() > 0) {
-		for (Reserva r : lista) {
-		    // Hibernate.initialize(r.getIdItemReserva());
-		    Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
-		    Hibernate.initialize(r.getIdTipoReserva());
-		    Hibernate.initialize(r.getIdTransacao());
-		    Hibernate.initialize(r.getIdAutorizador());
-		}
+	if (lista != null && lista.size() > 0) {
+	    for (Reserva r : lista) {
+		// Hibernate.initialize(r.getIdItemReserva());
+		Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+		Hibernate.initialize(r.getIdTipoReserva());
+		Hibernate.initialize(r.getIdTransacao());
+		Hibernate.initialize(r.getIdAutorizador());
 	    }
-
-	    return lista;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
 	}
+
+	return lista;
     }
 
     public Reserva pesquisaReservaPorId(Integer id) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-	    Reserva r = dao.encontrePorId(id);
-	    return r;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
-	}
+	return reservaDAO.encontrePorId(id);
     }
 
     public void excluir(Reserva r) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-
-	    dao.remover(r);
-
-	    trans.commit();
-	} catch (Exception e) {
-	    trans.rollback();
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
-	}
+	reservaDAO.remover(r);
     }
 
     /**
@@ -560,23 +416,8 @@ public class ReservaService {
      * @throws Exception
      */
     public void modificaStatus(Reserva r, StatusReserva status) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-
-	    r.setStatus(status.getStatus());
-	    dao.alterar(r);
-
-	    trans.commit();
-	} catch (Exception e) {
-	    trans.rollback();
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
-	}
+	r.setStatus(status.getStatus());
+	reservaDAO.alterar(r);
     }
 
     /**
@@ -602,79 +443,37 @@ public class ReservaService {
      * @return
      * @throws Exception
      */
-    public List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date horaInicial, Date horaFinal,
-	    CategoriaItemReserva categoria, ItemReserva item) throws Exception {
-	Transaction trans = new Transaction();
+    public List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, Date horaInicial, Date horaFinal, CategoriaItemReserva categoria,
+	    ItemReserva item) throws Exception {
+	List<Reserva> lista = reservaDAO.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, horaInicial, horaFinal, categoria, item);
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-
-	    List<Reserva> lista = dao.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, horaInicial, horaFinal,
-		    categoria, item);
-
-	    if (lista != null && lista.size() > 0) {
-		for (Reserva r : lista) {
-		    // Hibernate.initialize(r.getIdItemReserva());
-		    Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
-		    Hibernate.initialize(r.getIdTransacao());
-		}
+	if (lista != null && lista.size() > 0) {
+	    for (Reserva r : lista) {
+		// Hibernate.initialize(r.getIdItemReserva());
+		Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+		Hibernate.initialize(r.getIdTransacao());
 	    }
-
-	    return lista;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
 	}
+
+	return lista;
     }
 
     public List<Period> getAllPeriods(Campus campus) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    PeriodDAO dao = new PeriodDAO(trans);
-
-	    List<Period> lista = dao.getAll(campus);
-	    return lista;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+	return periodDAO.getAll(campus);
     }
 
-    public List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, TipoReserva tipoReserva)
-	    throws Exception {
-	Transaction trans = new Transaction();
+    public List<Reserva> pesquisaReservasEfetivadas(Campus campus, Date data, TipoReserva tipoReserva) throws Exception {
+	List<Reserva> lista = reservaDAO.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, tipoReserva);
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-
-	    List<Reserva> lista = dao.pesquisaReserva(campus, StatusReserva.EFETIVADA, data, tipoReserva);
-
-	    if (lista != null && lista.size() > 0) {
-		for (Reserva r : lista) {
-		    // Hibernate.initialize(r.getIdItemReserva());
-		    Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
-		    Hibernate.initialize(r.getIdTransacao());
-		}
+	if (lista != null && lista.size() > 0) {
+	    for (Reserva r : lista) {
+		// Hibernate.initialize(r.getIdItemReserva());
+		Hibernate.initialize(r.getIdItemReserva().getIdCategoria());
+		Hibernate.initialize(r.getIdTransacao());
 	    }
-
-	    return lista;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
 	}
+
+	return lista;
     }
 
     /**
@@ -690,9 +489,8 @@ public class ReservaService {
      * @return
      * @throws Exception
      */
-    public List<ItemReserva> removeItensNaoDisponiveisParaReservaRecorrente(Campus campus, Pessoa pessoaLogin,
-	    Date data, Date horaInicio, Date horaFim, RepeticaoReservaEnum tipoRecorrencia, Date dataLimite,
-	    List<ItemReserva> listaItemReserva) throws Exception {
+    public List<ItemReserva> removeItensNaoDisponiveisParaReservaRecorrente(Campus campus, Pessoa pessoaLogin, Date data, Date horaInicio, Date horaFim,
+	    RepeticaoReservaEnum tipoRecorrencia, Date dataLimite, List<ItemReserva> listaItemReserva) throws Exception {
 
 	if (!tipoRecorrencia.equals(RepeticaoReservaEnum.SEM_REPETICAO)) {
 	    // Somente se o tipo de recorrência for diferente de SEM_REPETICAO
@@ -793,28 +591,13 @@ public class ReservaService {
      * @return
      */
     public Date verificaReservaRecorrente(Campus campus, Reserva r) {
-	Transaction trans = new Transaction();
+	List<Reserva> lista = reservaDAO.listaReservaPorTransacao(campus, StatusReserva.EFETIVADA, r.getIdTransacao().getIdTransacao());
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-
-	    List<Reserva> lista = dao.listaReservaPorTransacao(campus, StatusReserva.EFETIVADA,
-		    r.getIdTransacao().getIdTransacao());
-
-	    if (lista != null && lista.size() > 0) {
-		return lista.get(lista.size() - 1).getData();
-	    }
-
-	    return null;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
+	if (lista != null && lista.size() > 0) {
+	    return lista.get(lista.size() - 1).getData();
 	}
 
+	return null;
     }
 
     /**
@@ -823,19 +606,7 @@ public class ReservaService {
      * @param idTransacao
      */
     public void removerReservasPorTransacao(Campus campus, Integer idTransacao) {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-	    dao.removeByTransacao(campus, idTransacao);
-	    trans.commit();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+	reservaDAO.removeByTransacao(campus, idTransacao);
     }
 
     public List<ReservaVO> listToVO(List<Reserva> list) {
@@ -847,8 +618,7 @@ public class ReservaService {
 	    vo.setExcluir(false);
 	    vo.setCampus(reserva.getIdCampus());
 	    vo.setDataReserva(DateTimeUtils.format(reserva.getData(), "dd/MM/yyyy"));
-	    vo.setHoraReserva(DateTimeUtils.format(reserva.getHoraInicio(), "HH:mm") + "-"
-		    + DateTimeUtils.format(reserva.getHoraFim(), "HH:mm"));
+	    vo.setHoraReserva(DateTimeUtils.format(reserva.getHoraInicio(), "HH:mm") + "-" + DateTimeUtils.format(reserva.getHoraFim(), "HH:mm"));
 	    vo.setIdReserva(reserva.getIdReserva());
 	    vo.setMotivoReserva(reserva.getMotivo());
 	    vo.setNomeItemReserva(reserva.getIdItemReserva().getNome());
@@ -870,20 +640,9 @@ public class ReservaService {
      * @return
      */
     public List<ReservaVO> listaReservaPorTransacao(Campus campus, Integer idTransacao) {
-	Transaction trans = new Transaction();
+	List<Reserva> list = reservaDAO.listaReservaPorTransacao(campus, StatusReserva.EFETIVADA, idTransacao);
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-	    List<Reserva> list = dao.listaReservaPorTransacao(campus, StatusReserva.EFETIVADA, idTransacao);
-
-	    return listToVO(list);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+	return listToVO(list);
     }
 
     /**
@@ -893,38 +652,12 @@ public class ReservaService {
      * @return
      */
     public List<ReservaVO> listaReservasPendentes(Campus campus, Pessoa autorizador) {
-	Transaction trans = new Transaction();
+	List<Reserva> list = reservaDAO.listaReservasPendentes(campus, autorizador);
 
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-	    List<Reserva> list = dao.listaReservasPendentes(campus, autorizador);
-
-	    return listToVO(list);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+	return listToVO(list);
     }
 
     public List<Reserva> pesquisaPorTransacao(Campus campus, Integer idTransacao) {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-	    ReservaDAO dao = new ReservaDAO(trans);
-
-	    List<Reserva> lista = dao.pesquisaReserva(campus, idTransacao);
-	    return lista;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw e;
-	} finally {
-	    trans.close();
-	}
+	return reservaDAO.pesquisaReserva(campus, idTransacao);
     }
-
 }

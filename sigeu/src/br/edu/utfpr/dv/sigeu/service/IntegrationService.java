@@ -14,8 +14,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -76,15 +85,72 @@ import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
 import br.edu.utfpr.dv.sigeu.jsfbeans.ReservaAdminBean;
 import br.edu.utfpr.dv.sigeu.maplist.LessonIdMapList;
 import br.edu.utfpr.dv.sigeu.maplist.PeriodNameMapList;
-import br.edu.utfpr.dv.sigeu.persistence.HibernateUtil;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
+import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
 import br.edu.utfpr.dv.sigeu.sort.ClassroomComparator;
 
 @Stateless
+@TransactionManagement(TransactionManagementType.BEAN)
 public class IntegrationService {
 
     public static final String PROFESSOR_NAO_CADASTRADO_NOME = "PROFESSOR NÃO CADASTRADO";
     private static final String PROFESSOR_NAO_CADASTRADO_ID = "0000000000000000";
+
+    @Resource
+    private UserTransaction trans;
+
+    @EJB
+    private GrupoPessoaDAO grupoPessoaDAO;
+
+    @EJB
+    private PeriodoLetivoDAO periodoLetivoDAO;
+
+    @EJB
+    private ProfessorPessoaDAO professorPessoaDAO;
+
+    @EJB
+    private TeacherDAO teacherDAO;
+
+    @EJB
+    private ClassroomDAO classroomDAO;
+
+    @EJB
+    private ClasseDAO classeDAO;
+
+    @EJB
+    private CardDAO cardDAO;
+
+    @EJB
+    private LessonDAO lessonDAO;
+
+    @EJB
+    private PeriodDAO periodDAO;
+
+    @EJB
+    private CategoriaItemReservaDAO categoriaItemReservaDAO;
+
+    @EJB
+    private TipoReservaDAO tipoReservaDAO;
+
+    @EJB
+    private DisciplinaDAO disciplinaDAO;
+
+    @EJB
+    private SubjectDAO subjectDAO;
+
+    @EJB
+    private ClazzDAO clazzDAO;
+
+    @EJB
+    private PessoaDAO pessoaDAO;
+
+    @EJB
+    private ProfessorDAO professorDAO;
+
+    @EJB
+    private ReservaDAO reservaDAO;
+
+    @EJB
+    private TimetableDAO timetableDAO;
 
     @EJB
     private TransacaoService transacaoService;
@@ -94,26 +160,27 @@ public class IntegrationService {
 
     @EJB
     private FeriadoService feriadoService;
+
+    @EJB
+    private ItemReservaDAO itemReservaDAO;
+
+    private void beginTransaction() throws NotSupportedException, SystemException {
+	trans.begin();
+    }
+
+    private void commitTransaction()
+	    throws SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException, SystemException {
+	trans.commit();
+    }
+
     // private static SimpleDateFormat dateFormat = new SimpleDateFormat(
     // "dd/MM/yyyy");
 
     // private static SimpleDateFormat hourFormat = new
     // SimpleDateFormat("HH:mm");
 
-    public void deleteAllPreviousTimetables(Campus campus) throws Exception {
-	Transaction transaction = null;
-
-	try {
-	    transaction = new Transaction();
-	    transaction.begin();
-	    TimetableDAO ttDAO = new TimetableDAO(transaction);
-	    ttDAO.deleteAllPreviousTimetables(campus);
-	    transaction.commit();
-	} catch (Exception e) {
-	    throw e;
-	} finally {
-	    transaction.close();
-	}
+    private void deleteAllPreviousTimetables(Campus campus) throws Exception {
+	timetableDAO.deleteAllPreviousTimetables(campus);
     }
 
     /**
@@ -409,11 +476,9 @@ public class IntegrationService {
 		// System.out.println(id);
 		// }
 
-		teacherids = (teacherids == null || teacherids.trim().length() == 0 ? PROFESSOR_NAO_CADASTRADO_ID
-			: teacherids);
+		teacherids = (teacherids == null || teacherids.trim().length() == 0 ? PROFESSOR_NAO_CADASTRADO_ID : teacherids);
 
-		if (id.length() == 0 || classids.length() == 0 || subjectids.length() == 0 || classroomids.length() == 0
-			|| teacherids.length() == 0) {
+		if (id.length() == 0 || classids.length() == 0 || subjectids.length() == 0 || classroomids.length() == 0 || teacherids.length() == 0) {
 		    continue;
 		}
 
@@ -445,8 +510,7 @@ public class IntegrationService {
 		String period = e.getAttribute("period").trim();
 		String days = e.getAttribute("days").trim();
 
-		if (lessonid.length() == 0 || classroomids.length() == 0 || period.length() == 0
-			|| days.length() == 0) {
+		if (lessonid.length() == 0 || classroomids.length() == 0 || period.length() == 0 || days.length() == 0) {
 		    continue;
 		}
 
@@ -461,22 +525,8 @@ public class IntegrationService {
 	    }
 	}
 
-	// Inicia gravação de objetos
-	Transaction trans = new Transaction();
-
 	try {
-	    trans.begin();
-
-	    // Declaração de DAOs
-	    TimetableDAO timetableDAO = new TimetableDAO(trans);
-	    ClazzDAO clazzDAO = new ClazzDAO(trans);
-	    SubjectDAO subjectDAO = new SubjectDAO(trans);
-	    TeacherDAO teacherDAO = new TeacherDAO(trans);
-	    ClassroomDAO classroomDAO = new ClassroomDAO(trans);
-	    PeriodDAO periodDAO = new PeriodDAO(trans);
-	    LessonDAO lessonDAO = new LessonDAO(trans);
-	    CardDAO cardDAO = new CardDAO(trans);
-	    ProfessorDAO professorDAO = new ProfessorDAO(trans);
+	    beginTransaction();
 
 	    // Gravação
 	    timetableDAO.criar(timetable);
@@ -528,11 +578,9 @@ public class IntegrationService {
 		cardDAO.criar(card);
 	    }
 
-	    trans.commit();
+	    commitTransaction();
 	} catch (Exception e) {
 	    throw e;
-	} finally {
-	    trans.close();
 	}
 
 	// Importação final
@@ -544,7 +592,6 @@ public class IntegrationService {
 	System.out.println("Relaciona Professor Pessoa... OK");
 
 	return timetable.getIdTimetable();
-
     }
 
     /**
@@ -556,22 +603,15 @@ public class IntegrationService {
      *                        XML
      * @throws Exception
      */
-    public void geraReservasDoXml(Campus campus, Pessoa pessoaLogin, ReservaAdminBean bean, Integer idTimeTable,
-	    Integer idPeriodoLetivo) throws Exception {
+    public void geraReservasDoXml(Campus campus, Pessoa pessoaLogin, ReservaAdminBean bean, Integer idTimeTable, Integer idPeriodoLetivo) throws Exception {
 
 	// Atualiza professores
 	// IntegrationService.relacionaProfessorPessoa();
 
-	Transaction trans = null;
-
 	try {
 	    System.out.println("Iniciando transação...");
-	    trans = new Transaction();
-	    trans.begin();
+	    beginTransaction();
 	    System.out.println("Iniciando transação...OK");
-
-	    ReservaDAO reservaDAO = new ReservaDAO(trans);
-	    PeriodoLetivoDAO periodoLetivoDAO = new PeriodoLetivoDAO(trans);
 
 	    PeriodoLetivo periodoLetivo = periodoLetivoDAO.encontrePorId(idPeriodoLetivo);
 
@@ -584,22 +624,12 @@ public class IntegrationService {
 		reservaDAO.removeByTransacao(campus, transacao);
 	    }
 
-	    trans.commit();
+	    commitTransaction();
 	    System.out.println("Eliminando registros antigos...OK");
 
 	    System.out.println("Reiniciando transação...");
-	    trans.begin();
+	    beginTransaction();
 	    // //////////////////////////////////////////////////////////////
-
-	    TimetableDAO timetableDAO = new TimetableDAO(trans);
-	    ProfessorDAO professorDAO = new ProfessorDAO(trans);
-	    DisciplinaDAO disciplinaDAO = new DisciplinaDAO(trans);
-	    ClasseDAO classeDAO = new ClasseDAO(trans);
-	    LessonDAO lessonDAO = new LessonDAO(trans);
-	    PeriodDAO periodDAO = new PeriodDAO(trans);
-	    ItemReservaDAO itemReservaDAO = new ItemReservaDAO(trans);
-	    CategoriaItemReservaDAO categoriaItemReservaDAO = new CategoriaItemReservaDAO(trans);
-	    TipoReservaDAO tipoReservaDAO = new TipoReservaDAO(trans);
 
 	    System.out.println("Eliminando registros antigos...OK");
 
@@ -611,16 +641,15 @@ public class IntegrationService {
 	    periodoLetivo.setIdTransacaoReserva(transacao);
 	    periodoLetivoDAO.alterar(periodoLetivo);
 
-	    trans.commit();
+	    commitTransaction();
 	    System.out.println("Criando novo transacao do SIGEU...OK");
 
-	    trans.begin();
+	    beginTransaction();
 
 	    System.out.println("Recuperando registros padrão...");
 
 	    // Recupera categoria de sala de aula
-	    CategoriaItemReserva salaDeAula = categoriaItemReservaDAO.encontrePorDescricao(campus,
-		    "SALA / MINI-AUDITÓRIO");
+	    CategoriaItemReserva salaDeAula = categoriaItemReservaDAO.encontrePorDescricao(campus, "SALA / MINI-AUDITÓRIO");
 
 	    // Recupera categoria de laboratório
 	    CategoriaItemReserva laboratorio = categoriaItemReservaDAO.encontrePorDescricao(campus, "LABORATÓRIO");
@@ -808,13 +837,17 @@ public class IntegrationService {
 
 	    System.out.println("Clazz looping...OK");
 
+	    Hibernate.initialize(timetable.getCardList());
+	    List<Card> listCard = timetable.getCardList();
+
 	    System.out.println("COMMIT...");
 
-	    trans.commit();
+	    commitTransaction();
 
 	    System.out.println("COMMIT...OK");
-
 	    System.out.println("Carrega Lessons...");
+
+	    beginTransaction();
 
 	    LessonIdMapList liml = new LessonIdMapList(lessonDAO.encontrePorTimeTable(idTimeTable));
 	    Map<Object, Lesson> mapListLesson = liml.getMap();
@@ -829,12 +862,7 @@ public class IntegrationService {
 
 	    System.out.println("Carrega Period...OK");
 
-	    trans.begin();
-	    reservaDAO = new ReservaDAO(trans);
 	    int count = 0;
-
-	    Hibernate.initialize(timetable.getCardList());
-	    List<Card> listCard = timetable.getCardList();
 
 	    Calendar dia = Calendar.getInstance();
 	    dia.setTime(periodoLetivo.getDataInicio());
@@ -844,8 +872,7 @@ public class IntegrationService {
 	    System.out.println("PeriodoLetivo Looping...");
 
 	    // Total de dias entre o intervalo
-	    int totalDias = DateTimeUtils.dateDiff(periodoLetivo.getDataInicio(), periodoLetivo.getDataFim()).intValue()
-		    + 1;
+	    int totalDias = DateTimeUtils.dateDiff(periodoLetivo.getDataInicio(), periodoLetivo.getDataFim()).intValue() + 1;
 
 	    /**
 	     * LOOPING FINAL ONDE AS RESERVAS SÃO CRIADAS E GRAVADAS DENTRO DO PERÍODO ENTRE
@@ -882,8 +909,8 @@ public class IntegrationService {
 			    Lesson lesson = mapListLesson.get(card.getLessonid());
 
 			    if (lesson == null || lesson.getClassids() == null) {
-				System.out.println("ID_CARD=" + card.getIdCard() + " LESSONID=" + card.getLessonid()
-					+ " CLASSROOMIDS=" + card.getClassroomids());
+				System.out
+					.println("ID_CARD=" + card.getIdCard() + " LESSONID=" + card.getLessonid() + " CLASSROOMIDS=" + card.getClassroomids());
 			    }
 
 			    // Recupera as classes do Lesson
@@ -928,8 +955,7 @@ public class IntegrationService {
 					ItemReserva sala = mapListSala.get(classroomid);
 
 					if (sala == null) {
-					    throw new Exception("Sala não encontrada [Lesson:" + lesson.getId()
-						    + "][Classroomid:" + classroomid + "]");
+					    throw new Exception("Sala não encontrada [Lesson:" + lesson.getId() + "][Classroomid:" + classroomid + "]");
 					}
 
 					// Periodo
@@ -942,15 +968,13 @@ public class IntegrationService {
 					Disciplina disciplina = mapListDisciplina.get(lesson.getSubjectids());
 
 					if (disciplina == null) {
-					    throw new Exception(
-						    "Disciplina não encontrada [Lesson:" + lesson.getId() + "]");
+					    throw new Exception("Disciplina não encontrada [Lesson:" + lesson.getId() + "]");
 					}
 
 					StringBuilder motivo = new StringBuilder();
 
-					motivo.append("[DISCIPLINA ").append(disciplina.getRotulo()).append(" - ")
-						.append(disciplina.getNome()).append("] / [TURMA ")
-						.append(classe.getNome()).append("]");
+					motivo.append("[DISCIPLINA ").append(disciplina.getRotulo()).append(" - ").append(disciplina.getNome())
+						.append("] / [TURMA ").append(classe.getNome()).append("]");
 
 					Reserva reserva = new Reserva();
 					reserva.setImportado(true);
@@ -979,9 +1003,9 @@ public class IntegrationService {
 
 					count++;
 
-					if (count >= HibernateUtil.HIBERNATE_BATCH_SIZE) {
-					    trans.commit();
-					    trans.begin();
+					if (count >= HibernateDAO.HIBERNATE_BATCH_SIZE) {
+					    commitTransaction();
+					    beginTransaction();
 					    count = 0;
 
 					}
@@ -1000,7 +1024,7 @@ public class IntegrationService {
 	    }
 
 	    if (count > 0) {
-		trans.commit();
+		commitTransaction();
 		System.out.println(total + " reservas gravadas.");
 	    }
 
@@ -1008,22 +1032,13 @@ public class IntegrationService {
 
 	} catch (Exception e) {
 	    throw e;
-	} finally {
-	    trans.close();
 	}
-
     }
 
-    public void relacionaProfessorPessoa(Campus campus) throws Exception {
+    private void relacionaProfessorPessoa(Campus campus) throws Exception {
 	// Relaciona professores a Pessoa
-	Transaction trans = null;
 	try {
-	    trans = new Transaction();
-	    trans.begin();
-
-	    ProfessorDAO professorDAO = new ProfessorDAO(trans);
-	    PessoaDAO pessoaDAO = new PessoaDAO(trans);
-	    ProfessorPessoaDAO professorPessoaDAO = new ProfessorPessoaDAO(trans);
+	    beginTransaction();
 
 	    List<Pessoa> listPessoa = pessoaDAO.pesquisa(campus, null, 0);
 	    // List<Pessoa> listPessoa = pessoaDAO.pesquisaPorGrupo(Config
@@ -1058,8 +1073,7 @@ public class IntegrationService {
 		    listSimilarity.sort(new PessoaSimilarityComparator());
 
 		    for (PessoaSimilarity ps : listSimilarity) {
-			System.out.println(
-				prof.getName() + " ~ " + ps.getPessoa().getNomeCompleto() + " = " + ps.getDistance());
+			System.out.println(prof.getName() + " ~ " + ps.getPessoa().getNomeCompleto() + " = " + ps.getDistance());
 		    }
 
 		    System.out.println("===");
@@ -1098,11 +1112,9 @@ public class IntegrationService {
 		}
 	    }
 
-	    trans.commit();
+	    commitTransaction();
 	} catch (Exception e) {
 	    throw e;
-	} finally {
-	    trans.close();
 	}
     }
 
@@ -1164,22 +1176,15 @@ public class IntegrationService {
 
 	int commitCount = 0;
 
-	Transaction trans = null;
-
 	try {
-	    trans = new Transaction();
 	    // Campus campus = Config.getInstance().getCampus();
 
-	    trans.begin();
-
-	    PessoaDAO pessoaDAO = new PessoaDAO(trans);
-	    GrupoPessoaDAO grupoPessoaDAO = new GrupoPessoaDAO(trans);
+	    beginTransaction();
 
 	    // LdapServer ldap = LdapServerService.encontrePorEmail(emailLogin);
 	    LdapServer ldap = campus.getLdapServerList().get(0);
 
-	    LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(), ldap.getSsl(), true, ldap.getBasedn(),
-		    ldap.getVarLdapUid());
+	    LdapUtils ldapUtils = new LdapUtils(ldap.getHost(), ldap.getPort(), ldap.getSsl(), true, ldap.getBasedn(), ldap.getVarLdapUid());
 
 	    // ///////////////////////////////////
 	    List<String> mapa = ldapUtils.getAllLdapInfo(ldap.getVarLdapUid());
@@ -1270,8 +1275,7 @@ public class IntegrationService {
 		/**
 		 * Se for cadastro de aluno ignora
 		 */
-		if (email == null || email.trim().length() == 0
-			|| !email.toLowerCase().contains(ldap.getSufixoEmail())) {
+		if (email == null || email.trim().length() == 0 || !email.toLowerCase().contains(ldap.getSufixoEmail())) {
 		    ignorados++;
 		    continue;
 		} else {
@@ -1385,11 +1389,11 @@ public class IntegrationService {
 			grupoPessoaDAO.criar(gp);
 
 			// Grava grupo
-			trans.commit();
+			commitTransaction();
 			// commitCount = 0;
 
 			// Abre outra transação
-			trans.begin();
+			beginTransaction();
 
 			// Recupera id do grupo
 			gp = grupoPessoaDAO.encontrePorId(gp.getIdGrupoPessoa());
@@ -1399,29 +1403,24 @@ public class IntegrationService {
 		}
 
 		// Atualiza os grupos da pessoa
-		grupoPessoaService.atualizaGrupos(trans, pessoa, grupos);
+		grupoPessoaService.atualizaGrupos(pessoa, grupos);
 
-		if (commitCount >= HibernateUtil.HIBERNATE_BATCH_SIZE) {
+		if (commitCount >= HibernateDAO.HIBERNATE_BATCH_SIZE) {
 
 		    System.out.println(commitCount + " registros processados.");
-		    System.out.println(
-			    "---> Criadas: " + criadas + " | Alteradas: " + alteradas + " | Ignorados: " + ignorados);
+		    System.out.println("---> Criadas: " + criadas + " | Alteradas: " + alteradas + " | Ignorados: " + ignorados);
 
 		    commitCount = 0;
-		    trans.commit();
-		    trans.begin();
+		    commitTransaction();
+		    beginTransaction();
 		}
 	    }
 
 	    if (commitCount > 0) {
-		trans.commit();
+		commitTransaction();
 	    }
 	} catch (Exception e) {
 	    throw e;
-	} finally {
-	    if (trans != null) {
-		trans.close();
-	    }
 	}
 
 	fim = Calendar.getInstance().getTime();
@@ -1431,6 +1430,5 @@ public class IntegrationService {
 	System.out.println("============================================");
 	System.out.println("Início: " + sdf.format(inicio));
 	System.out.println("Fim...: " + sdf.format(fim));
-
     }
 }

@@ -1,6 +1,7 @@
 package br.edu.utfpr.dv.sigeu.service;
 
 import javax.ejb.Asynchronous;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import com.adamiworks.utils.crypto.CryptoMode;
@@ -11,7 +12,6 @@ import com.adamiworks.utils.mailsender.MailSenderMessage;
 import br.edu.utfpr.dv.sigeu.dao.MailServerDAO;
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.MailServer;
-import br.edu.utfpr.dv.sigeu.persistence.Transaction;
 import br.edu.utfpr.dv.sigeu.util.MensagemEmail;
 
 @Stateless
@@ -19,26 +19,16 @@ public class MailServerService {
 
     private static final byte[] MAIL_KEY_PASSWORD = { -112, 78, -12, 45, -13, 51, -84, 8 };
 
+    @EJB
+    private MailServerDAO dao;
+
     /**
      * Cria nova
      * 
      * @param cat
      */
     public void criar(MailServer cat) {
-	Transaction trans = null;
-	try {
-	    trans = new Transaction();
-	    trans.begin();
-
-	    MailServerDAO dao = new MailServerDAO(trans);
-	    dao.criar(cat);
-
-	    trans.commit();
-	} catch (Exception e) {
-
-	} finally {
-	    trans.close();
-	}
+	dao.criar(cat);
     }
 
     /**
@@ -47,56 +37,15 @@ public class MailServerService {
      * @param cat
      */
     public void alterar(MailServer cat) {
-	Transaction trans = null;
-	try {
-	    trans = new Transaction();
-	    trans.begin();
-
-	    MailServerDAO dao = new MailServerDAO(trans);
-	    dao.alterar(cat);
-
-	    trans.commit();
-	} catch (Exception e) {
-
-	} finally {
-	    trans.close();
-	}
+	dao.alterar(cat);
     }
 
     public void remover(MailServer item) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    MailServerDAO dao = new MailServerDAO(trans);
-	    dao.remover(item);
-
-	    trans.commit();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
-	}
+	dao.remover(item);
     }
 
     public MailServer encontrePorCampus(Campus campus) throws Exception {
-	Transaction trans = new Transaction();
-
-	try {
-	    trans.begin();
-
-	    MailServerDAO dao = new MailServerDAO(trans);
-	    MailServer ms = dao.encontrePorCampus(campus);
-
-	    return ms;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(e);
-	} finally {
-	    trans.close();
-	}
+	return dao.encontrePorCampus(campus);
     }
 
     @Asynchronous
@@ -109,9 +58,8 @@ public class MailServerService {
 	    MailServer server = encontrePorCampus(mensagem.getCampus());
 	    String password = cu.decrypt(server.getPassword());
 
-	    MailSender sender = new MailSender(server.getAuthenticationRequired(), server.getHost(), server.getPort(),
-		    server.getSsl(), server.getStarttls(), server.getPlainTextOverTls(), server.getFromEmail(),
-		    server.getUserName(), password);
+	    MailSender sender = new MailSender(server.getAuthenticationRequired(), server.getHost(), server.getPort(), server.getSsl(), server.getStarttls(),
+		    server.getPlainTextOverTls(), server.getFromEmail(), server.getUserName(), password);
 
 	    for (MailSenderMessage message : mensagem.getMensagens()) {
 		sender.addMessage(message);

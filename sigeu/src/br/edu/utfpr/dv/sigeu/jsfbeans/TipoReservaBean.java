@@ -26,7 +26,6 @@ public class TipoReservaBean extends JavaBean {
     private static final long serialVersionUID = -7332998125885395663L;
 
     private Integer editarId = null;
-    //
     private TipoReserva tipoReserva = new TipoReserva();
 
     @PostConstruct
@@ -34,13 +33,11 @@ public class TipoReservaBean extends JavaBean {
 	tipoReserva = new TipoReserva();
 	tipoReserva.setAtivo(true);
 
-	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
-		.getRequest();
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 	try {
 	    this.editarId = Integer.valueOf(req.getParameter("editarId"));
 	} catch (Exception e) {
-	    //
 	}
 
 	if (this.editarId != null) {
@@ -62,21 +59,24 @@ public class TipoReservaBean extends JavaBean {
      * Cria uma nova tipoReserva se o ID for nulo ou 0 ou altera uma tipoReserva já
      * gravada no banco de dados se ela já existir
      */
-    public void gravar() {
+    public String gravar() {
 	tipoReserva.setIdCampus(loginBean.getCampus());
 
 	try {
 	    tipoReservaService.persistir(this.tipoReserva);
-	    String msg = "TipoReserva " + tipoReserva.getIdTipoReserva() + "-" + tipoReserva.getDescricao()
-		    + " gravada com sucesso!";
+	    String msg = "TipoReserva " + tipoReserva.getIdTipoReserva() + "-" + tipoReserva.getDescricao() + " gravada com sucesso!";
 	    this.tipoReserva = new TipoReserva();
 	    this.tipoReserva.setAtivo(true);
 
 	    addInfoMessage("Gravar", msg);
+
+	    return "PesquisaTipoReserva";
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    addErrorMessage("Gravar", "Erro na gravação!");
 	}
+
+	return "";
     }
 
     /**

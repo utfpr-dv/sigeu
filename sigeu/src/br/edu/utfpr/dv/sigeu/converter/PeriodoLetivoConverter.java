@@ -3,11 +3,12 @@ package br.edu.utfpr.dv.sigeu.converter;
 import java.util.Date;
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import br.edu.utfpr.dv.sigeu.entities.Campus;
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
@@ -17,15 +18,20 @@ import br.edu.utfpr.dv.sigeu.util.LoginFilter;
 @FacesConverter(value = "periodoLetivoConverter", forClass = Date.class)
 public class PeriodoLetivoConverter implements Converter {
 
-    @EJB
-    private PeriodoLetivoService periodoLetivoService;
+    private PeriodoLetivoService getService() {
+	try {
+	    return (PeriodoLetivoService) new InitialContext().lookup("java:module/PeriodoLetivoService");
+	} catch (NamingException e) {
+	    throw new RuntimeException(e);
+	}
+    }
 
     @Override
     public PeriodoLetivo getAsObject(FacesContext context, UIComponent component, String value) {
 	try {
 	    Map<String, Object> sessionMap = context.getExternalContext().getSessionMap();
 	    Campus campus = (Campus) sessionMap.get(LoginFilter.SESSION_CAMPUS);
-	    PeriodoLetivo pl = periodoLetivoService.encontrePorNome(campus, value);
+	    PeriodoLetivo pl = getService().encontrePorNome(campus, value);
 
 	    return pl;
 	} catch (Exception e) {
@@ -45,5 +51,4 @@ public class PeriodoLetivoConverter implements Converter {
 
 	return periodoLetivo;
     }
-
 }
