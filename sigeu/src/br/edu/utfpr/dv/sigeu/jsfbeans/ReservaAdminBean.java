@@ -50,22 +50,22 @@ public class ReservaAdminBean extends JavaBean {
     }
 
     public void atualizarCadastrosDoLdapPreMessage() {
-
 	addWarnMessage("Atualização cadastral", "Atualização em andamento. NÃO FECHE OU MUDE DE PÁGINA ATÉ O PROCESSO SER CONCLUÍDO.");
     }
 
     public void atualizarCadastrosDoLdap() {
-	this.progress = 0;
-
 	try {
-	    integrationService.atualizaPessoasLdap(this, loginBean.getCampus());
+	    setProgress(0);
 
+	    integrationService.atualizaPessoasLdap(loginBean.getCampus(), progress -> setProgress(progress));
+
+	    setProgress(100);
 	} catch (Exception e) {
-	    this.addErrorMessage("Atualização cadastral", "Houve um erro durante a atualização de cadastros. Informe ao Admin.");
+	    setProgress(0);
+	    RequestContext.getCurrentInstance().execute("endAtualizaLdap()");
+	    addErrorMessage("Atualização cadastral", "Houve um erro durante a atualização de cadastros. Informe ao Admin.");
 	    e.printStackTrace();
 	}
-
-	this.progress = 0;
     }
 
     public void atualizarCadastrosDoLdapPostMessage() {
@@ -90,7 +90,7 @@ public class ReservaAdminBean extends JavaBean {
 		byte[] data = IOUtils.toByteArray(xmlFile.getInputstream());
 
 		if (data == null) {
-		    this.addErrorMessage(fileName, "Arquivo importado não contem dados!");
+		    addErrorMessage(fileName, "Arquivo importado não contem dados!");
 		} else {
 		    integrationService.writeUploadFile(fileName, data);
 		    this.xmlFileName = fileName;
@@ -109,23 +109,28 @@ public class ReservaAdminBean extends JavaBean {
 
     public void processaXmlAscTables() {
 	try {
-	    this.clearMessages();
+	    clearMessages();
+	    setProgress(0);
 
 	    Integer timetableId = integrationService.importXml(loginBean.getCampus(), xmlFileName);
 
 	    try {
-		integrationService.geraReservasDoXml(loginBean.getCampus(), loginBean.getPessoaLogin(), this, timetableId, periodoLetivo.getIdPeriodoLetivo());
+		integrationService.geraReservasDoXml(loginBean.getCampus(), loginBean.getPessoaLogin(), timetableId, periodoLetivo.getIdPeriodoLetivo(),
+			progress -> setProgress(progress));
 
+		setProgress(100);
 		System.out.println("--> IMPORTAÇÃO DO XML FINALIZADA.");
 
 		addInfoMessage("Importação XML", "Importação realizada com sucesso!");
 	    } catch (Exception e) {
+		setProgress(0);
 		RequestContext.getCurrentInstance().execute("endAtualizaXML()");
 		addErrorMessage("Processamento XML", "O processamento do XML falhou");
 		addErrorMessage("Processamento XML", getRootCauseMessage(e));
 		e.printStackTrace();
 	    }
 	} catch (Exception e) {
+	    setProgress(0);
 	    RequestContext.getCurrentInstance().execute("endAtualizaXML()");
 	    addErrorMessage("Importação XML", "A importação do XML falhou");
 	    addErrorMessage("Importação XML", getRootCauseMessage(e));
@@ -134,7 +139,7 @@ public class ReservaAdminBean extends JavaBean {
     }
 
     public void processaXmlAscTablesPostMessage() {
-	addWarnMessage("Importação do XML", "Importação do XML concluída.");
+	addInfoMessage("Importação do XML", "Importação do XML concluída.");
     }
 
     public List<PeriodoLetivo> getListaPeriodoLetivo() {

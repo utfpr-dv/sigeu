@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -82,7 +83,6 @@ import br.edu.utfpr.dv.sigeu.entities.TipoReserva;
 import br.edu.utfpr.dv.sigeu.entities.Transacao;
 import br.edu.utfpr.dv.sigeu.enumeration.DiaEnum;
 import br.edu.utfpr.dv.sigeu.enumeration.StatusReserva;
-import br.edu.utfpr.dv.sigeu.jsfbeans.ReservaAdminBean;
 import br.edu.utfpr.dv.sigeu.maplist.LessonIdMapList;
 import br.edu.utfpr.dv.sigeu.maplist.PeriodNameMapList;
 import br.edu.utfpr.dv.sigeu.persistence.HibernateDAO;
@@ -608,7 +608,8 @@ public class IntegrationService {
      *                        XML
      * @throws Exception
      */
-    public void geraReservasDoXml(Campus campus, Pessoa pessoaLogin, ReservaAdminBean bean, Integer idTimeTable, Integer idPeriodoLetivo) throws Exception {
+    public void geraReservasDoXml(Campus campus, Pessoa pessoaLogin, Integer idTimeTable, Integer idPeriodoLetivo, Consumer<Integer> progessConsumer)
+	    throws Exception {
 
 	// Atualiza professores
 	// IntegrationService.relacionaProfessorPessoa();
@@ -894,7 +895,8 @@ public class IntegrationService {
 
 		progress = row.divide(total, 2, RoundingMode.HALF_DOWN).multiply(new BigDecimal("100")).intValue();
 
-		bean.setProgress(progress);
+		progessConsumer.accept(progress);
+//		bean.setProgress(progress);
 
 		System.out.println("Data: " + sdf.format(dia.getTime()) + "  progresso: " + progress + "%");
 
@@ -1173,7 +1175,7 @@ public class IntegrationService {
      * @param campus Campus a ser atualizado
      * @throws Exception
      */
-    public void atualizaPessoasLdap(ReservaAdminBean bean, Campus campus) throws Exception {
+    public void atualizaPessoasLdap(Campus campus, Consumer<Integer> progressConsumer) throws Exception {
 	Date inicio = Calendar.getInstance().getTime();
 	Date fim = null;
 
@@ -1230,9 +1232,11 @@ public class IntegrationService {
 		// Adds a line
 		row = row.add(new BigDecimal("1"));
 
-		progress = row.divide(total, 2, RoundingMode.HALF_DOWN).multiply(new BigDecimal("100")).intValue();
+		if (progressConsumer != null) {
+		    progress = row.divide(total, 2, RoundingMode.HALF_DOWN).multiply(new BigDecimal("100")).intValue();
 
-		bean.setProgress(progress);
+		    progressConsumer.accept(progress);
+		}
 
 		attrs = s.split(LdapUtils.ENTRY_SEPARATOR);
 

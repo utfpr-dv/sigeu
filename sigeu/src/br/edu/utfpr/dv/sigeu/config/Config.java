@@ -159,5 +159,4 @@ public class Config {
     public boolean isSendMail() {
 	return sendMail;
     }
-
 }

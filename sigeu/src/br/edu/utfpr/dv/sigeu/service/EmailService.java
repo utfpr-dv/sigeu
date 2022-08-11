@@ -51,8 +51,7 @@ public class EmailService {
 
 	String assunto = "SIGEU: Confirmação de Reserva(s)";
 
-	StringBuilder sb = new StringBuilder(
-		"<h1>CONFIRMAÇÃO DE RESERVA(S) REALIZADA(S) ATRAVÉS DO SIGEU:</h1><br/><table cellspacing=\"2\">");
+	StringBuilder sb = new StringBuilder("<h1>CONFIRMAÇÃO DE RESERVA(S) REALIZADA(S) ATRAVÉS DO SIGEU:</h1><br/><table cellspacing=\"2\">");
 
 	sb.append("<tr>");
 	sb.append("<td><b>Recurso</b></td>");
@@ -132,8 +131,7 @@ public class EmailService {
 	}
     }
 
-    public void enviaEmailCancelamento(Campus campus, Reserva reserva, String[] emails, Pessoa login,
-	    String motivoCancelamento) throws Exception {
+    public void enviaEmailCancelamento(Campus campus, Reserva reserva, String[] emails, Pessoa login, String motivoCancelamento) throws Exception {
 	List<Reserva> reservas = new ArrayList<Reserva>();
 	reservas.add(reserva);
 	enviaEmailCancelamento(campus, reservas, emails, login, motivoCancelamento);
@@ -145,8 +143,7 @@ public class EmailService {
      * @param reserva
      * @throws Exception
      */
-    public void enviaEmailCancelamento(Campus campus, List<Reserva> listaReserva, String[] emails, Pessoa login,
-	    String motivoCancelamento) throws Exception {
+    public void enviaEmailCancelamento(Campus campus, List<Reserva> listaReserva, String[] emails, Pessoa login, String motivoCancelamento) throws Exception {
 
 	MensagemEmail email = new MensagemEmail(campus);
 	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -160,8 +157,7 @@ public class EmailService {
 
 	String assunto = "SIGEU: Cancelamento de Reserva(s)";
 
-	StringBuilder sb = new StringBuilder(
-		"<h1>CANCELAMENTO DE RESERVA(S) REALIZADA(S) ATRAVÉS DO SIGEU:</h1><br/><table cellspacing=\"2\">");
+	StringBuilder sb = new StringBuilder("<h1>CANCELAMENTO DE RESERVA(S) REALIZADA(S) ATRAVÉS DO SIGEU:</h1><br/><table cellspacing=\"2\">");
 
 	sb.append("<tr>");
 	sb.append("<td><b>Recurso</b></td>");
@@ -264,10 +260,8 @@ public class EmailService {
 	    sb.append(itemReserva.getNome());
 	    sb.append("\" que requisitam sua atenção.\n\n");
 	    sb.append("Por gentileza, acesse o sistema pelo endereço ").append(Config.getInstance().getUrl());
-	    sb.append(
-		    " e acesse o menu \"Reservas\", \"Autorizar Reservas Pendentes\" para obter a lista das reservas pendentes.\n\n\n\n\n");
-	    sb.append(
-		    "Você recebeu este e-mail porque está cadastrado como responsável pelas reservas do item supracitado.\n\n");
+	    sb.append(" e acesse o menu \"Reservas\", \"Autorizar Reservas Pendentes\" para obter a lista das reservas pendentes.\n\n\n\n\n");
+	    sb.append("Você recebeu este e-mail porque está cadastrado como responsável pelas reservas do item supracitado.\n\n");
 	    sb.append("Caso haja algum engano, por gentileza entre em contato com o administrador do sistema.");
 
 	    MensagemEmail email = new MensagemEmail(campus);

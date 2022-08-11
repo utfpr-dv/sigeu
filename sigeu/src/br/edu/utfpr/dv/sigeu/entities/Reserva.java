@@ -122,9 +122,8 @@ public class Reserva implements Serializable {
 	this.idReserva = idReserva;
     }
 
-    public Reserva(Integer idReserva, Date dataGravacao, Date horaGravacao, Date data, Date horaInicio, Date horaFim,
-	    String nomeUsuario, String emailNotificacao, String motivo, String rotulo, String cor, Character status,
-	    boolean importado) {
+    public Reserva(Integer idReserva, Date dataGravacao, Date horaGravacao, Date data, Date horaInicio, Date horaFim, String nomeUsuario,
+	    String emailNotificacao, String motivo, String rotulo, String cor, Character status, boolean importado) {
 	this.idReserva = idReserva;
 	this.dataGravacao = dataGravacao;
 	this.horaGravacao = horaGravacao;
@@ -321,8 +320,7 @@ public class Reserva implements Serializable {
 	    return false;
 	}
 	Reserva other = (Reserva) object;
-	if ((this.idReserva == null && other.idReserva != null)
-		|| (this.idReserva != null && !this.idReserva.equals(other.idReserva))) {
+	if ((this.idReserva == null && other.idReserva != null) || (this.idReserva != null && !this.idReserva.equals(other.idReserva))) {
 	    return false;
 	}
 	return true;
@@ -332,5 +330,4 @@ public class Reserva implements Serializable {
     public String toString() {
 	return "br.edu.utfpr.dv.sigeu.entities.Reserva[ idReserva=" + idReserva + " ]";
     }
-
 }
