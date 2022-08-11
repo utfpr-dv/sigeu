@@ -1177,6 +1177,10 @@ public class IntegrationService {
 	Date inicio = Calendar.getInstance().getTime();
 	Date fim = null;
 
+	int criadas = 0;
+	int alteradas = 0;
+	int ignorados = 0;
+
 	int commitCount = 0;
 
 	try {
@@ -1196,10 +1200,6 @@ public class IntegrationService {
 	     * chamada ao LDAP só.
 	     */
 	    Map<String, String> userTree = ldapUtils.getAllUsers(ldap.getVarLdapUid());
-
-	    int criadas = 0;
-	    int alteradas = 0;
-	    int ignorados = 0;
 
 	    /* Declaração de variáveis do loop */
 	    String attrs[] = null;
@@ -1348,11 +1348,9 @@ public class IntegrationService {
 		pessoa.setLdapCampus(lCampus);
 
 		if (update) {
-		    // PessoaService.alterar(pessoa);
 		    pessoaDAO.alterar(pessoa);
 		    alteradas++;
 		} else {
-		    // PessoaService.criar(pessoa);
 		    pessoaDAO.criar(pessoa);
 		    criadas++;
 		}
@@ -1360,8 +1358,7 @@ public class IntegrationService {
 		commitCount++;
 
 		/**
-		 * ====================================================== ENCONTRA GRUPO DA
-		 * PESSOA ======================================================
+		 * ============== ENCONTRA GRUPO DA PESSOA ===============
 		 */
 		// Confere os grupos da Pessoa
 		// baseDn = ldapUtils.getDnByUid(uid);
@@ -1376,7 +1373,7 @@ public class IntegrationService {
 		grupos = new ArrayList<GrupoPessoa>();
 		nomeGrupos = ldapUtils.getLdapOuByUid(uid, baseDn);
 		/**
-		 * ======================================================
+		 * =======================================================
 		 */
 
 		for (String grupo : nomeGrupos) {
@@ -1419,9 +1416,7 @@ public class IntegrationService {
 		}
 	    }
 
-	    if (commitCount > 0) {
-		commitTransaction();
-	    }
+	    commitTransaction();
 	} catch (Exception e) {
 	    rollbackTransaction();
 	    throw e;
@@ -1429,10 +1424,14 @@ public class IntegrationService {
 
 	fim = Calendar.getInstance().getTime();
 
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 
-	System.out.println("============================================");
-	System.out.println("Início: " + sdf.format(inicio));
-	System.out.println("Fim...: " + sdf.format(fim));
+	System.out.println("======= Sincronização LDAP =======");
+	System.out.println("Início...: " + sdf.format(inicio));
+	System.out.println("Fim......: " + sdf.format(fim));
+	System.out.println("Criados..: " + criadas);
+	System.out.println("Alterados: " + alteradas);
+	System.out.println("Ignorados: " + ignorados);
+	System.out.println("==================================");
     }
 }
