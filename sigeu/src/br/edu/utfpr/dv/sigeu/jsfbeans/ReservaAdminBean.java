@@ -9,6 +9,7 @@ import javax.inject.Named;
 
 import org.apache.commons.io.IOUtils;
 import org.omnifaces.cdi.ViewScoped;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -50,8 +51,7 @@ public class ReservaAdminBean extends JavaBean {
 
     public void atualizarCadastrosDoLdapPreMessage() {
 
-	addWarnMessage("Atualização cadastral",
-		"Atualização em andamento. NÃO FECHE OU MUDE DE PÁGINA ATÉ O PROCESSO SER CONCLUÍDO.");
+	addWarnMessage("Atualização cadastral", "Atualização em andamento. NÃO FECHE OU MUDE DE PÁGINA ATÉ O PROCESSO SER CONCLUÍDO.");
     }
 
     public void atualizarCadastrosDoLdap() {
@@ -61,8 +61,7 @@ public class ReservaAdminBean extends JavaBean {
 	    integrationService.atualizaPessoasLdap(this, loginBean.getCampus());
 
 	} catch (Exception e) {
-	    this.addErrorMessage("Atualização cadastral",
-		    "Houve um erro durante a atualização de cadastros. Informe ao Admin.");
+	    this.addErrorMessage("Atualização cadastral", "Houve um erro durante a atualização de cadastros. Informe ao Admin.");
 	    e.printStackTrace();
 	}
 
@@ -95,8 +94,7 @@ public class ReservaAdminBean extends JavaBean {
 		} else {
 		    integrationService.writeUploadFile(fileName, data);
 		    this.xmlFileName = fileName;
-		    this.addInfoMessage("XML",
-			    "Arquivo importado com sucesso! Pronto para criar calendário de aulas. Clique no botão Processar para continuar.");
+		    addInfoMessage("XML", "Arquivo importado com sucesso! Pronto para criar calendário de aulas. Clique no botão Processar para continuar.");
 		}
 	    }
 	} catch (Exception e) {
@@ -106,39 +104,33 @@ public class ReservaAdminBean extends JavaBean {
     }
 
     public void processaXmlAscTablesPreMessage() {
-	addWarnMessage("Importação do XML",
-		"Importação do XML em andamento. NÃO FECHE OU MUDE DE PÁGINA ATÉ O PROCESSO SER CONCLUÍDO.");
+	addWarnMessage("Importação do XML", "Importação do XML em andamento. NÃO FECHE OU MUDE DE PÁGINA ATÉ O PROCESSO SER CONCLUÍDO.");
     }
 
-    /**
-     * Processa o arquivo de XML recém importado
-     * 
-     */
     public void processaXmlAscTables() {
-	this.clearMessages();
-	Integer timetable_id = 0;
 	try {
-	    timetable_id = integrationService.importXml(loginBean.getCampus(), xmlFileName);
+	    this.clearMessages();
+
+	    Integer timetableId = integrationService.importXml(loginBean.getCampus(), xmlFileName);
 
 	    try {
-		integrationService.geraReservasDoXml(loginBean.getCampus(), loginBean.getPessoaLogin(), this,
-			timetable_id, periodoLetivo.getIdPeriodoLetivo());
+		integrationService.geraReservasDoXml(loginBean.getCampus(), loginBean.getPessoaLogin(), this, timetableId, periodoLetivo.getIdPeriodoLetivo());
 
 		System.out.println("--> IMPORTAÇÃO DO XML FINALIZADA.");
 
+		addInfoMessage("Importação XML", "Importação realizada com sucesso!");
 	    } catch (Exception e) {
+		RequestContext.getCurrentInstance().execute("endAtualizaXML()");
 		addErrorMessage("Processamento XML", "O processamento do XML falhou");
-		addErrorMessage("Processamento XML", e.getMessage());
+		addErrorMessage("Processamento XML", getRootCauseMessage(e));
 		e.printStackTrace();
 	    }
 	} catch (Exception e) {
+	    RequestContext.getCurrentInstance().execute("endAtualizaXML()");
 	    addErrorMessage("Importação XML", "A importação do XML falhou");
-	    addErrorMessage("Importação XML", e.getMessage());
+	    addErrorMessage("Importação XML", getRootCauseMessage(e));
 	    e.printStackTrace();
 	}
-
-	addInfoMessage("Importação XML", "Importação realizada com sucesso!");
-
     }
 
     public void processaXmlAscTablesPostMessage() {
@@ -176,5 +168,4 @@ public class ReservaAdminBean extends JavaBean {
     public void setProgress(Integer progress) {
 	this.progress = progress;
     }
-
 }

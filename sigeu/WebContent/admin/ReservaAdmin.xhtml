@@ -260,7 +260,7 @@
 
 			function endAtualizaLdap() {
 				PF('cbAtualizaLdap').enable();
-				PF('pbAjaxLdap').stop();
+				PF('pbAjaxLdap').cancel();
 			}
 
 			function startAtualizaXML() {
@@ -270,7 +270,7 @@
 
 			function endAtualizaXML() {
 				PF('cbProcessaXML').enable();
-				PF('pbAjaxXML').stop();
+				PF('pbAjaxXML').cancel();
 			}
 		</script>
 	</ui:define>

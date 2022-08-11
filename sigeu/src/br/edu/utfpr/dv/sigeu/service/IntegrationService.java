@@ -173,6 +173,10 @@ public class IntegrationService {
 	trans.commit();
     }
 
+    private void rollbackTransaction() throws IllegalStateException, SecurityException, SystemException {
+	trans.rollback();
+    }
+
     // private static SimpleDateFormat dateFormat = new SimpleDateFormat(
     // "dd/MM/yyyy");
 
@@ -580,6 +584,7 @@ public class IntegrationService {
 
 	    commitTransaction();
 	} catch (Exception e) {
+	    rollbackTransaction();
 	    throw e;
 	}
 
@@ -629,7 +634,6 @@ public class IntegrationService {
 
 	    System.out.println("Reiniciando transação...");
 	    beginTransaction();
-	    // //////////////////////////////////////////////////////////////
 
 	    System.out.println("Eliminando registros antigos...OK");
 
@@ -1031,6 +1035,7 @@ public class IntegrationService {
 	    System.out.println("PeriodoLetivo Looping...OK");
 
 	} catch (Exception e) {
+	    rollbackTransaction();
 	    throw e;
 	}
     }
@@ -1108,12 +1113,12 @@ public class IntegrationService {
 
 		} else {
 		    System.out.println(prof.getName() + " NÃO POSSUI REGISTROS SEMELHANTES.");
-		    // }
 		}
 	    }
 
 	    commitTransaction();
 	} catch (Exception e) {
+	    rollbackTransaction();
 	    throw e;
 	}
     }
@@ -1144,7 +1149,6 @@ public class IntegrationService {
 	void setDistance(double distance) {
 	    this.distance = distance;
 	}
-
     }
 
     /**
@@ -1160,7 +1164,6 @@ public class IntegrationService {
 	    // Descending arg1 - arg0
 	    return new Double((arg1.getDistance() * 1000) - (arg0.getDistance() * 1000)).intValue();
 	}
-
     }
 
     /**
@@ -1420,6 +1423,7 @@ public class IntegrationService {
 		commitTransaction();
 	    }
 	} catch (Exception e) {
+	    rollbackTransaction();
 	    throw e;
 	}
 
