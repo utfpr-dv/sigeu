@@ -127,14 +127,4 @@ public abstract class JavaBean implements Serializable {
 	// Se este print ocorrer, a mensagem de erro não será exibida na tela
 	// t.printStackTrace();
     }
-
-    protected String getRootCauseMessage(Exception e) {
-	Throwable rootCause = e;
-
-	while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
-	    rootCause = rootCause.getCause();
-	}
-
-	return rootCause.getMessage();
-    }
 }

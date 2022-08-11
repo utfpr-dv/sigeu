@@ -46,7 +46,7 @@ public class EmailService {
 	Collections.sort(listaReserva, new ReservaDataComparator());
 
 	if (Config.getInstance().isDebugMode()) {
-	    emails = new String[] { "tiagoadami@utfpr.edu.br" };
+	    emails = new String[] { "diegocamilotto@utfpr.edu.br" };
 	}
 
 	String assunto = "SIGEU: Confirmação de Reserva(s)";
@@ -152,7 +152,7 @@ public class EmailService {
 	Collections.sort(listaReserva, new ReservaDataComparator());
 
 	if (Config.getInstance().isDebugMode()) {
-	    emails = new String[] { "tiagoadami@utfpr.edu.br" };
+	    emails = new String[] { "diegocamilotto@utfpr.edu.br" };
 	}
 
 	String assunto = "SIGEU: Cancelamento de Reserva(s)";
@@ -248,7 +248,7 @@ public class EmailService {
 	    String emailAutorizador = autorizador.getEmail();
 
 	    if (Config.getInstance().isDebugMode()) {
-		emailAutorizador = "tiagoadami@utfpr.edu.br";
+		emailAutorizador = "diegocamilotto@utfpr.edu.br";
 	    }
 
 	    String assunto = "SIGEU: Autorizações pendentes";
@@ -270,6 +270,23 @@ public class EmailService {
 	    email.criaMensagemTextoSimples(emailAutorizador, null, assunto, sb.toString());
 
 	    // Envia as mensagens por Thread
+	    mailServerService.enviaMensagens(email);
+	} catch (DestinatarioInexistenteException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    public void enviarEmailErro(Campus campus, String errorMessage) {
+	try {
+	    String assunto = "SIGEU: Alguma coisa deu errado!";
+
+	    StringBuilder sb = new StringBuilder("Mensagem de erro:\n\n");
+	    sb.append(errorMessage);
+
+	    MensagemEmail email = new MensagemEmail(campus);
+
+	    email.criaMensagemTextoSimples("diegocamilotto@utfpr.edu.br", null, assunto, sb.toString());
+
 	    mailServerService.enviaMensagens(email);
 	} catch (DestinatarioInexistenteException e) {
 	    e.printStackTrace();

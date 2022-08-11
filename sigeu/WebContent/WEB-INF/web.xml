@@ -22,11 +22,6 @@
 		<servlet-name>LogoffServlet</servlet-name>
 		<servlet-class>br.edu.utfpr.dv.sigeu.servlet.LogoffServlet</servlet-class>
 	</servlet>
-	<servlet>
-		<servlet-name>StartupServlet</servlet-name>
-		<servlet-class>br.edu.utfpr.dv.sigeu.servlet.StartupServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.xhtml</url-pattern>

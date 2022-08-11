@@ -16,6 +16,7 @@ import org.primefaces.model.UploadedFile;
 import br.edu.utfpr.dv.sigeu.entities.PeriodoLetivo;
 import br.edu.utfpr.dv.sigeu.service.IntegrationService;
 import br.edu.utfpr.dv.sigeu.service.PeriodoLetivoService;
+import br.edu.utfpr.dv.sigeu.util.ValidationUtils;
 
 @Named
 @ViewScoped
@@ -126,14 +127,14 @@ public class ReservaAdminBean extends JavaBean {
 		setProgress(0);
 		RequestContext.getCurrentInstance().execute("endAtualizaXML()");
 		addErrorMessage("Processamento XML", "O processamento do XML falhou");
-		addErrorMessage("Processamento XML", getRootCauseMessage(e));
+		addErrorMessage("Processamento XML", ValidationUtils.getRootCauseMsg(e));
 		e.printStackTrace();
 	    }
 	} catch (Exception e) {
 	    setProgress(0);
 	    RequestContext.getCurrentInstance().execute("endAtualizaXML()");
 	    addErrorMessage("Importação XML", "A importação do XML falhou");
-	    addErrorMessage("Importação XML", getRootCauseMessage(e));
+	    addErrorMessage("Importação XML", ValidationUtils.getRootCauseMsg(e));
 	    e.printStackTrace();
 	}
     }
